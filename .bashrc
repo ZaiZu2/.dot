@@ -15,7 +15,7 @@ export NVM_DIR="$HOME/.nvm"
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 FZF_DEFAULT_OPTS='--height 40% --border'
 
-for file in ~/.bash_*; do
+for file in ~/.bash_git ~/.bash_prompt; do
     [ -r "$file" ] && [ -f "$file" ] && source "$file";
 done
 unset file;
