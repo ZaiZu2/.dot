@@ -4,10 +4,6 @@ export XDG_CONFIG_HOME="$HOME/.config"
 export FLYCTL_INSTALL="/home/jakub/.fly"
 export PATH="$FLYCTL_INSTALL/bin:$PATH"
 
-# Add `~/bin` to the `$PATH`
-export PATH="$HOME/bin:$PATH";
-export PYTHONPATH="/home/jakub/Git/forloop_platform/:${PYTHONPATH}"
-
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
