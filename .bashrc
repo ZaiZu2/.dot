@@ -1,4 +1,5 @@
 export XDG_CONFIG_HOME="$HOME/.config"
+export PATH="$PATH:/opt/nvim-linux64/bin"
 
 # Add fly.io CLI
 export FLYCTL_INSTALL="/home/jakub/.fly"
