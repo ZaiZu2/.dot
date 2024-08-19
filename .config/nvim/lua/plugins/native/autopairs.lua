@@ -1,7 +1,7 @@
 -- autopairs
 -- https://github.com/windwp/nvim-autopairs
 
-return {
+return {{
   'windwp/nvim-autopairs',
   event = 'InsertEnter',
   -- Optional dependency
@@ -13,4 +13,5 @@ return {
     local cmp = require 'cmp'
     cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
   end,
+}
 }
