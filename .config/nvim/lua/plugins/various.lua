@@ -46,7 +46,6 @@ return {
 
     end,
   },
-
   -- :help lazy.nvim-lazy.nvim-structuring-your-plugins
   -- require 'plugins.debug',
   -- require 'plugins.indent_line',
