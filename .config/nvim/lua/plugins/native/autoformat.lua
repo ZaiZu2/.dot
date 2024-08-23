@@ -22,7 +22,7 @@ return { { -- Autoformat
     end,
     formatters_by_ft = {
       lua = { 'stylua' },
-      python = { "ruff" },
+      python = { "ruff_organize_imports", "ruff_format" },
       javascript = { { "prettierd", "prettier" } },
     },
   },

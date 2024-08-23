@@ -30,7 +30,7 @@ vim.opt.list = true
 vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 vim.opt.inccommand = 'split' -- Preview substitutions live, as you type!
 vim.opt.scrolloff = 10
-vim.opt.hlsearch = true      -- Set highlight on search, but clear on pressing <Esc> in normal mode
+vim.opt.hlsearch = true -- Set highlight on search, but clear on pressing <Esc> in normal mode
 
 -- :help vim.keymap.set()
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>') -- Deactive search highlights
@@ -71,7 +71,7 @@ local selectPlugins = function()
   local module_names = {}
   local path
 
-  for _, plugin in ipairs(require('plugins.various')) do
+  for _, plugin in ipairs(require 'plugins.various') do
     table.insert(plugins, plugin)
   end
 
@@ -80,8 +80,7 @@ local selectPlugins = function()
     module_names = {}
   else
     path = 'plugins.native.'
-    module_names = { 'autocompletion', 'autoformat', 'autopairs', 'debug', 'gitsigns', 'indent_line', 'lint', 'neo-tree',
-      'various' }
+    module_names = { 'autocompletion', 'autoformat', 'autopairs', 'debug', 'gitsigns', 'indent_line', 'lint', 'neo-tree', 'various' }
   end
 
   for _, module_name in ipairs(module_names) do
@@ -94,30 +93,27 @@ local selectPlugins = function()
   return plugins
 end
 
-require('lazy').setup(
-  selectPlugins(),
-  {
-    ui = {
-      -- If you are using a Nerd Font: set icons to an empty table which will use the
-      -- default lazy.nvim defined Nerd Font icons, otherwise define a unicode icons table
-      icons = vim.g.have_nerd_font and {} or {
-        cmd = '⌘',
-        config = '🛠',
-        event = '📅',
-        ft = '📂',
-        init = '⚙',
-        keys = '🗝',
-        plugin = '🔌',
-        runtime = '💻',
-        require = '🌙',
-        source = '📄',
-        start = '🚀',
-        task = '📌',
-        lazy = '💤 ',
-      },
+require('lazy').setup(selectPlugins(), {
+  ui = {
+    -- If you are using a Nerd Font: set icons to an empty table which will use the
+    -- default lazy.nvim defined Nerd Font icons, otherwise define a unicode icons table
+    icons = vim.g.have_nerd_font and {} or {
+      cmd = '⌘',
+      config = '🛠',
+      event = '📅',
+      ft = '📂',
+      init = '⚙',
+      keys = '🗝',
+      plugin = '🔌',
+      runtime = '💻',
+      require = '🌙',
+      source = '📄',
+      start = '🚀',
+      task = '📌',
+      lazy = '💤 ',
     },
-  }
-)
+  },
+})
 
 require 'health'
 -- vim: ts=2 sts=2 sw=2 et
