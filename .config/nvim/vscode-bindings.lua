@@ -1,0 +1,6 @@
+vim.keymap.set({ 'n', 'v' }, '<leader>ss', "<cmd>lua require('vscode').action('workbench.action.gotoSymbol')", { desc = '[S]earch [S]ymbols' })
+vim.keymap.set({ 'n', 'v' }, '<leader>sp', "<cmd>lua require('vscode').action('workbench.action.showAllSymbols')", { desc = '[S]earch symbols in [P]roject' })
+vim.keymap.set({ 'n', 'v' }, '<leader>sf', "<cmd>lua require('vscode').action('workbench.action.quickOpen')", { desc = '[S]earch [F]iles' })
+vim.keymap.set({ 'n', 'v' }, '<leader>sw', "<cmd>lua require('vscode').action('editor.action.startFindReplaceAction')", { desc = '[S]earch [W]ord' })
+vim.keymap.set({ 'n', 'v' }, '<leader>q', "<cmd>lua require('vscode').action('editor.action.quickFix')", { desc = 'Open [Q]uickFix' })
+vim.keymap.set({ 'n', 'v' }, '<leader>z', "<cmd>lua require('vscode').action('workbench.action.toggleZenMode')", { desc = 'Toggle [Z]en Mode' })

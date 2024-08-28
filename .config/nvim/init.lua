@@ -21,7 +21,7 @@ vim.opt.ignorecase = true
 vim.opt.smartcase = true
 vim.opt.signcolumn = 'yes' -- Keep signcolumn on by default
 vim.opt.updatetime = 250
-vim.opt.timeoutlen = 300
+vim.opt.timeoutlen = 1000
 vim.opt.splitright = true
 vim.opt.splitbelow = true
 -- :help 'list'
@@ -80,7 +80,7 @@ local selectPlugins = function()
     module_names = {}
   else
     path = 'plugins.native.'
-    module_names = { 'autocompletion', 'autoformat', 'autopairs', 'debug', 'gitsigns', 'indent_line', 'lint', 'neo-tree', 'various' }
+    module_names = { 'lsp', 'autocompletion', 'autoformat', 'autopairs', 'debug', 'gitsigns', 'indent_line', 'lint', 'neo-tree', 'various' }
   end
 
   for _, module_name in ipairs(module_names) do
@@ -95,25 +95,14 @@ end
 
 require('lazy').setup(selectPlugins(), {
   ui = {
-    -- If you are using a Nerd Font: set icons to an empty table which will use the
-    -- default lazy.nvim defined Nerd Font icons, otherwise define a unicode icons table
-    icons = vim.g.have_nerd_font and {} or {
-      cmd = '⌘',
-      config = '🛠',
-      event = '📅',
-      ft = '📂',
-      init = '⚙',
-      keys = '🗝',
-      plugin = '🔌',
-      runtime = '💻',
-      require = '🌙',
-      source = '📄',
-      start = '🚀',
-      task = '📌',
-      lazy = '💤 ',
-    },
+    icons = {},
   },
 })
 
+if vim.g.vscode then
+  require 'plugins.vscode.bindings'
+end
+
 require 'health'
+
 -- vim: ts=2 sts=2 sw=2 et

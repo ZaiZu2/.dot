@@ -1,6 +1,6 @@
 return {
   {
-    "echasnovski/mini.nvim",
+    'echasnovski/mini.nvim',
     opts = {},
     config = function()
       local statusline = require 'mini.statusline'
@@ -10,14 +10,14 @@ return {
       statusline.section_location = function()
         return '%2l:%-2v'
       end
-    end
+    end,
   },
-  {                                         -- Useful plugin to show you pending keybinds.
+  { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
-    event = 'VimEnter',                     -- Sets the loading event to 'VimEnter'
-    config = function()                     -- This is the function that runs, AFTER loading
+    event = 'VimEnter', -- Sets the loading event to 'VimEnter'
+    config = function() -- This is the function that runs, AFTER loading
       require('which-key').setup()
-      require('which-key').register {       -- Document existing key chains
+      require('which-key').register { -- Document existing key chains
         ['<leader>c'] = { name = '[C]ode', _ = 'which_key_ignore' },
         ['<leader>d'] = { name = '[D]ocument', _ = 'which_key_ignore' },
         ['<leader>r'] = { name = '[R]ename', _ = 'which_key_ignore' },
@@ -28,10 +28,10 @@ return {
       }
       require('which-key').register({
         ['<leader>h'] = { 'Git [H]unk' },
-      }, { mode = 'v' })       -- Only in visual mode
+      }, { mode = 'v' }) -- Only in visual mode
     end,
   },
-  {   -- Fuzzy Finder (files, lsp, etc)
+  { -- Fuzzy Finder (files, lsp, etc)
     'nvim-telescope/telescope.nvim',
     event = 'VimEnter',
     branch = '0.1.x',
@@ -102,10 +102,34 @@ return {
     -- Nvim color scheme
     -- :Telescope colorscheme`
     'folke/tokyonight.nvim',
-    priority = 1000,     -- Make sure to load this before all the other start plugins.
+    priority = 1000, -- Make sure to load this before all the other start plugins.
     init = function()
       vim.cmd.colorscheme 'tokyonight-night'
       vim.cmd.hi 'Comment gui=none'
     end,
-  }
+  },
+  {
+    -- Neo-tree is a Neovim plugin to browse the file system
+    -- https://github.com/nvim-neo-tree/neo-tree.nvim
+    'nvim-neo-tree/neo-tree.nvim',
+    version = '*',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'nvim-tree/nvim-web-devicons', -- not strictly required, but recommended
+      'MunifTanjim/nui.nvim',
+    },
+    cmd = 'Neotree',
+    keys = {
+      { '\\', ':Neotree reveal<CR>', { desc = 'NeoTree reveal' } },
+    },
+    opts = {
+      filesystem = {
+        window = {
+          mappings = {
+            ['\\'] = 'close_window',
+          },
+        },
+      },
+    },
+  },
 }
