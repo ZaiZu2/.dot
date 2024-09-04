@@ -6,8 +6,8 @@ vim.keymap.set(
   { desc = '[S]earch symbols in [P]roject' }
 )
 vim.keymap.set({ 'n', 'v' }, '<leader>sf', "<cmd>lua require('vscode').action('workbench.action.quickOpen')<CR>", { desc = '[S]earch [F]iles' })
-vim.keymap.set({ 'n', 'v' }, '<leader>sw', "<cmd>lua require('vscode').action('editor.action.startFindReplaceAction')<CR>", { desc = '[S]earch [W]ord' })
-vim.keymap.set({ 'n', 'v' }, '<leader>sr', "<cmd>lua require('vscode').action('workbench.view.search.focus')<CR>", { desc = '[S]earch and [R]eplace globally' })
+vim.keymap.set({ 'n', 'v' }, '<leader>sw', "<cmd>lua require('vscode').action('actions.find')<CR>", { desc = '[S]earch [W]ord' })
+vim.keymap.set({ 'n', 'v' }, '<leader>sg', "<cmd>lua require('vscode').action('workbench.action.findInFiles')<CR>", { desc = '[S]earch [G]lobally' })
 vim.keymap.set({ 'n', 'v' }, '<leader>q', "<cmd>lua require('vscode').action('editor.action.quickFix')<CR>", { desc = 'Open [Q]uickFix' })
 vim.keymap.set({ 'n', 'v' }, '<leader>z', "<cmd>lua require('vscode').action('workbench.action.toggleZenMode')<CR>", { desc = 'Toggle [Z]en Mode' })
 
