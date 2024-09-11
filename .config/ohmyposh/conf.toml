@@ -7,12 +7,43 @@ console_title_template = '{{ .Shell }} in {{ .Folder }}'
   alignment = 'left'
   newline = true
 
+  # [[blocks.segments]]
+  #   type = 'root'
+  #   style = 'plain'
+  #   background = 'transparent'
+  #   foreground = 'red'
+  #   template = ''
+  #
+  #   [blocks.segments.properties]
+  #     style = 'full'
+  #
+[[blocks.segments]]
+    type = 'session'
+    style = 'plain'
+    background = 'transparent'
+    foreground = 'red'
+    template = "{{ if .SSHSession }} {{ end }}"
+
+    [blocks.segments.properties]
+      style = 'full'
+
+  [[blocks.segments]]
+    type = 'text'
+    style = 'plain'
+    background = 'transparent'
+    foreground = 'p:orange'
+    template = "{{ .UserName }}{{ if .Root }} {{ end }}"
+
+    [blocks.segments.properties]
+      style = 'full'
+
+
   [[blocks.segments]]
     type = 'path'
     style = 'plain'
     background = 'transparent'
-    foreground = 'blue'
-    template = '{{ .Path }}'
+    foreground = 'green'
+    template = ' <white>in</> {{ .Path }}'
 
     [blocks.segments.properties]
       style = 'full'
@@ -20,10 +51,10 @@ console_title_template = '{{ .Shell }} in {{ .Folder }}'
   [[blocks.segments]]
     type = 'git'
     style = 'plain'
-    foreground = 'p:grey'
+    foreground = 'magenta'
     background = 'transparent'
-    template = ' {{ .HEAD }}{{ if or (.Working.Changed) (.Staging.Changed) }}*{{ end }} <cyan>{{ if gt .Behind 0 }}⇣{{ end }}{{ if gt .Ahead 0 }}⇡{{ end }}</>'
-
+    template = ' <white>on</> {{ .HEAD }}{{ if or (.Working.Changed) (.Staging.Changed) }}*{{ end }} <cyan>{{ if gt .Behind 0 }}⇣{{ end }}{{ if gt .Ahead 0 }}⇡{{ end }}</>'
+    
     [blocks.segments.properties]
       branch_icon = ''
       commit_icon = '@'
@@ -51,22 +82,22 @@ console_title_template = '{{ .Shell }} in {{ .Folder }}'
   [[blocks.segments]]
     type = 'text'
     style = 'plain'
-    foreground_templates = [
-      "{{if gt .Code 0}}red{{end}}",
-      "{{if eq .Code 0}}magenta{{end}}",
-    ]
+    foreground = 'p:orange'
     background = 'transparent'
     template = '❯'
 
 [transient_prompt]
   foreground_templates = [
     "{{if gt .Code 0}}red{{end}}",
-    "{{if eq .Code 0}}magenta{{end}}",
+    "{{if eq .Code 0}}green{{end}}",
   ]
   background = 'transparent'
   template = '❯ '
 
 [secondary_prompt]
-  foreground = 'magenta'
+  foreground = 'p:orange'
   background = 'transparent'
   template = '❯❯ '
+
+[palette]
+orange = '#FFA500'

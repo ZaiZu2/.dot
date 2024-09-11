@@ -8,6 +8,10 @@ source "/home/jakub/.fzf/shell/completion.zsh"
 source "/home/jakub/.fzf/shell/key-bindings.zsh"
 FZF_DEFAULT_OPTS='--height 40% --border'
 
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
 # Download Zinit, if it's not there yet
 if [ ! -d "$ZINIT_HOME" ]; then
    mkdir -p "$(dirname $ZINIT_HOME)"
@@ -20,29 +24,29 @@ source "${ZINIT_HOME}/zinit.zsh"
 alias df='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 df config --local status.showUntrackedFiles no
 
-# # Start SSH agent and load all keys (mainly for Git)
-# env=~/.ssh/agent.env
-#
-# agent_load_env () { [[ -f "$env" ]] && . "$env" >| /dev/null }
-#
-# agent_start () {
-#     (umask 077; ssh-agent >| "$env")
-#     . "$env" >| /dev/null
-# }
-#
-# agent_load_env
-#
-# # agent_run_state: 0=agent running w/ key; 1=agent w/o key; 2=agent not running
-# agent_run_state=$(ssh-add -l >| /dev/null 2>&1; echo $?)
-#
-# if [[ ! "$SSH_AUTH_SOCK" || $agent_run_state = 2 ]]; then
-#     agent_start
-#     ssh-add
-# elif [[ "$SSH_AUTH_SOCK" && $agent_run_state = 1 ]]; then
-#     ssh-add
-# fi
-#
-# unset env
+# Start SSH agent and load all keys (mainly for Git)
+env=~/.ssh/agent.env
+
+agent_load_env () { [[ -f "$env" ]] && . "$env" >| /dev/null }
+
+agent_start () {
+    (umask 077; ssh-agent >| "$env")
+    . "$env" >| /dev/null
+}
+
+agent_load_env
+
+# agent_run_state: 0=agent running w/ key; 1=agent w/o key; 2=agent not running
+agent_run_state=$(ssh-add -l >| /dev/null 2>&1; echo $?)
+
+if [[ ! "$SSH_AUTH_SOCK" || $agent_run_state = 2 ]]; then
+    agent_start
+    ssh-add
+elif [[ "$SSH_AUTH_SOCK" && $agent_run_state = 1 ]]; then
+    ssh-add
+fi
+
+unset env
 
 eval "$(oh-my-posh init zsh --config $HOME/.config/ohmyposh/conf.toml)"
 
