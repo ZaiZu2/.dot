@@ -1,4 +1,3 @@
--- https://learnxinyminutes.com/docs/lua/
 -- :help lua-guide
 -- https://neovim.io/doc/user/lua-guide.html
 -- :help mapleader
@@ -68,19 +67,25 @@ vim.opt.rtp:prepend(lazypath)
 
 local selectPlugins = function()
   local plugins = {}
-  local module_names = {}
-  local path
 
-  for _, plugin in ipairs(require 'plugins.various') do
-    table.insert(plugins, plugin)
+  -- load global plugins
+  for _, module_name in ipairs { 'plugins.various', 'plugins.mini' } do
+    local module = require(module_name)
+    for _, plugin in ipairs(module) do
+      table.insert(plugins, plugin)
+    end
   end
 
+  local module_names = {}
+  local path
   if vim.g.vscode then
+    -- vscode-specific plugins
     path = 'plugins.vscode.'
     module_names = {}
   else
+    -- native-nvim specific plugins
     path = 'plugins.native.'
-    module_names = { 'lsp', 'autocompletion', 'autoformat', 'autopairs', 'debug', 'gitsigns', 'indent_line', 'lint', 'neo-tree', 'various' }
+    module_names = { 'lsp', 'autocompletion', 'autoformat', 'autopairs', 'debug', 'gitsigns', 'indent_line', 'lint', 'neo-tree', 'various', 'toggleterm' }
   end
 
   for _, module_name in ipairs(module_names) do
@@ -100,7 +105,7 @@ require('lazy').setup(selectPlugins(), {
 })
 
 if vim.g.vscode then
-  require 'plugins.vscode.bindings'
+  require 'vscode_bindings'
 end
 
 require 'health'

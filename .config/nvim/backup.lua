@@ -274,24 +274,24 @@ require('lazy').setup({
   --  config = function() ... end
 
   { -- Useful plugin to show you pending keybinds.
-      'folke/which-key.nvim',
-      event = 'VimEnter', -- Sets the loading event to 'VimEnter'
-      config = function() -- This is the function that runs, AFTER loading
-        require('which-key').setup()
-        require('which-key').register { -- Document existing key chains
-          { "<leader>c", group = "[C]ode" },
-          { "<leader>d", group = "[D]ocument" },
-          { "<leader>h", group = "Git [H]unk" },
-          { "<leader>r", group = "[R]ename" },
-          { "<leader>s", group = "[S]earch" },
-          { "<leader>t", group = "[T]oggle" },
-          { "<leader>w", group = "[W]orkspace" },
-        }
-        require('which-key').register({
-          { "<leader>h", desc = "Git [H]unk", mode = "v" },
-        })
-      end,
-    },
+    'folke/which-key.nvim',
+    event = 'VimEnter', -- Sets the loading event to 'VimEnter'
+    config = function() -- This is the function that runs, AFTER loading
+      require('which-key').setup()
+      require('which-key').register { -- Document existing key chains
+        { '<leader>c', group = '[C]ode' },
+        { '<leader>d', group = '[D]ocument' },
+        { '<leader>h', group = 'Git [H]unk' },
+        { '<leader>r', group = '[R]ename' },
+        { '<leader>s', group = '[S]earch' },
+        { '<leader>t', group = '[T]oggle' },
+        { '<leader>w', group = '[W]orkspace' },
+      }
+      require('which-key').register {
+        { '<leader>h', desc = 'Git [H]unk', mode = 'v' },
+      }
+    end,
+  },
 
   -- NOTE: Plugins can specify dependencies.
   --
