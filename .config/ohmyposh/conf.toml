@@ -7,22 +7,12 @@ console_title_template = '{{ .Shell }} in {{ .Folder }}'
   alignment = 'left'
   newline = true
 
-  # [[blocks.segments]]
-  #   type = 'root'
-  #   style = 'plain'
-  #   background = 'transparent'
-  #   foreground = 'red'
-  #   template = ''
-  #
-  #   [blocks.segments.properties]
-  #     style = 'full'
-  #
-[[blocks.segments]]
-    type = 'session'
+  [[blocks.segments]]
+    type = 'python'
     style = 'plain'
     background = 'transparent'
-    foreground = 'red'
-    template = "{{ if .SSHSession }} {{ end }}"
+    foreground = 'blue'
+    template = "(venv {{ .Major }}.{{ .Minor }}) "
 
     [blocks.segments.properties]
       style = 'full'
@@ -37,6 +27,15 @@ console_title_template = '{{ .Shell }} in {{ .Folder }}'
     [blocks.segments.properties]
       style = 'full'
 
+  [[blocks.segments]]
+    type = 'session'
+    style = 'plain'
+    background = 'transparent'
+    foreground = 'red'
+    template = "{{ if .SSHSession }} {{ end }}"
+
+    [blocks.segments.properties]
+      style = 'full'
 
   [[blocks.segments]]
     type = 'path'
