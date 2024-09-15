@@ -1,18 +1,12 @@
 export PATH="/bin:/usr/bin:/usr/local/bin:$HOME/bin:$HOME/.local/bin:$PATH"
 export PATH="/opt/nvim-linux64/bin:$PATH"
 
-ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
-
-export PATH="$HOME/.fzf/bin:$PATH"
-source "/home/jakub/.fzf/shell/completion.zsh"
-source "/home/jakub/.fzf/shell/key-bindings.zsh"
-FZF_DEFAULT_OPTS='--height 40% --border'
-
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 # Download Zinit, if it's not there yet
+ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 if [ ! -d "$ZINIT_HOME" ]; then
    mkdir -p "$(dirname $ZINIT_HOME)"
    git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
@@ -24,36 +18,17 @@ source "${ZINIT_HOME}/zinit.zsh"
 alias df='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 df config --local status.showUntrackedFiles no
 
-# Start SSH agent and load all keys (mainly for Git)
-env=~/.ssh/agent.env
-
-agent_load_env () { [[ -f "$env" ]] && . "$env" >| /dev/null }
-
-agent_start () {
-    (umask 077; ssh-agent >| "$env")
-    . "$env" >| /dev/null
-}
-
-agent_load_env
-
-# agent_run_state: 0=agent running w/ key; 1=agent w/o key; 2=agent not running
-agent_run_state=$(ssh-add -l >| /dev/null 2>&1; echo $?)
-
-if [[ ! "$SSH_AUTH_SOCK" || $agent_run_state = 2 ]]; then
-    agent_start
-    ssh-add
-elif [[ "$SSH_AUTH_SOCK" && $agent_run_state = 1 ]]; then
-    ssh-add
-fi
-
-unset env
-
 eval "$(oh-my-posh init zsh --config $HOME/.config/ohmyposh/conf.toml)"
 
 # Add in zsh plugins
-# zinit light zsh-users/zsh-syntax-highlighing
-zinit light zsh-users/zsh-completions
+zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-autosuggestions
+zinit light Aloxaf/fzf-tab
+
+# Load completions
+zinit light zsh-users/zsh-completions
+autoload -U compinit && compinit
+zinit cdreplay -q # Replay all cached completions
 
 # VIM support
 zinit light softmoth/zsh-vim-mode
@@ -66,9 +41,6 @@ MODE_CURSOR_VLINE="$MODE_CURSOR_VISUAL #00ffff"
 bindkey -v
 export KEYTIMEOUT=1
 alias vim='nvim'
-
-# Load completions
-autoload -U compinit && compinit
 
 # History
 HISTSIZE=5000
@@ -91,13 +63,19 @@ zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*' menu no
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
-zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 
 alias ls='ls --color'
 
-# Shell integrations
-# eval "$(fzf --zsh)"
-# eval "$(zoxide init --cmd cd zsh)"
+if [[ ! "$PATH" == */home/jakub/.fzf/bin* ]]; then
+  PATH="${PATH:+${PATH}:}/home/jakub/.fzf/bin"
+fi
+source <(fzf --zsh)
+source "/home/jakub/.fzf/shell/completion.zsh"
+source "/home/jakub/.fzf/shell/key-bindings.zsh"
+FZF_DEFAULT_OPTS='--height 40% --border'
 
-# TODO: Add VIM mod to zsh
+for file in ~/zsh/.ssh.sh; do
+    [ -r "$file" ] && [ -f "$file" ] && source "$file";
+done
+unset file;
 
