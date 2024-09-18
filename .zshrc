@@ -1,9 +1,6 @@
+# zmodload zsh/zprof
 export PATH="/bin:/usr/bin:/usr/local/bin:$HOME/bin:$HOME/.local/bin:$PATH"
 export PATH="/opt/nvim-linux64/bin:$PATH"
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 # Download Zinit, if it's not there yet
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
@@ -27,8 +24,9 @@ zinit light Aloxaf/fzf-tab
 
 # Load completions
 zinit light zsh-users/zsh-completions
-autoload -U compinit && compinit
 zinit cdreplay -q # Replay all cached completions
+autoload -U compinit
+compinit -C
 
 # VIM support
 zinit light softmoth/zsh-vim-mode
@@ -79,3 +77,4 @@ for file in ~/zsh/.ssh.sh; do
 done
 unset file;
 
+# zprof
