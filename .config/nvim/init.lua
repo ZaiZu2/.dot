@@ -86,7 +86,7 @@ local selectPlugins = function()
     -- native-nvim specific plugins
     path = 'plugins.native.'
     module_names =
-      { 'lsp', 'autocompletion', 'autoformat', 'autopairs', 'debug', 'gitsigns', 'indent_line', 'lint', 'neo-tree', 'various', 'toggleterm', 'llm' }
+      { 'lsp', 'autocompletion', 'autoformat', 'autopairs', 'debug', 'gitsigns', 'indent_line', 'lint', 'neo-tree', 'various', 'toggleterm', 'copilot' }
   end
 
   for _, module_name in ipairs(module_names) do
