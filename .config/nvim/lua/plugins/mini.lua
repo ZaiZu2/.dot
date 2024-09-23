@@ -15,18 +15,20 @@ return {
       -- - sr)'  - [S]urround [R]eplace [)] [']
       require('mini.surround').setup()
 
-      require('mini.animate').setup {
-        cursor = {
-          enable = false,
-        },
-        scroll = {},
-        open = {
-          enable = false,
-        },
-        close = {
-          enable = false,
-        },
-      }
+      if not vim.g.vscode then
+        require('mini.animate').setup {
+          cursor = {
+            enable = false,
+          },
+          scroll = {},
+          open = {
+            enable = false,
+          },
+          close = {
+            enable = false,
+          },
+        }
+      end
 
       local statusline = require 'mini.statusline'
       statusline.setup { use_icons = vim.g.have_nerd_font }
