@@ -13,7 +13,7 @@ source "${ZINIT_HOME}/zinit.zsh"
 
 alias tmux="tmux -f ~/.config/tmux/tmux.conf"
 alias ls='ls --color'
-alias df='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+alias df='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 df config --local status.showUntrackedFiles no
 
 eval "$(oh-my-posh init zsh --config $HOME/.config/ohmyposh/conf.toml)"
@@ -63,12 +63,13 @@ zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*' menu no
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 
-#fnm
+# Node.js manager
+export PATH="$HOME/.fmt:$PATH"
 eval "$(fnm completions --shell zsh)"
 eval "$(fnm env --use-on-cd --shell zsh)"
 
 for file in ~/zsh/.ssh.sh ~/zsh/.fzf.sh; do
-    [ -r "$file" ] && [ -f "$file" ] && source "$file";
+    source "$file";
 done
 unset file;
 
