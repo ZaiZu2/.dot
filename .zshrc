@@ -1,8 +1,8 @@
-# zmodload zsh/zprof
+
 export PATH="/bin:/usr/bin:/usr/local/bin:$HOME/bin:$HOME/.local/bin:$PATH"
 export PATH="/opt/nvim-linux64/bin:$PATH"
 
-# Download Zinit, if it's not there yet
+# Install Zsh plugin manager - Zinit
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 if [ ! -d "$ZINIT_HOME" ]; then
    mkdir -p "$(dirname $ZINIT_HOME)"
@@ -11,7 +11,8 @@ fi
 # Source/Load zinit
 source "${ZINIT_HOME}/zinit.zsh"
 
-# Alias for saving changes to backup .dotfiles repo
+alias tmux="tmux -f ~/.config/tmux/tmux.conf"
+alias ls='ls --color'
 alias df='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 df config --local status.showUntrackedFiles no
 
@@ -24,9 +25,9 @@ zinit light Aloxaf/fzf-tab
 
 # Load completions
 zinit light zsh-users/zsh-completions
-zinit cdreplay -q # Replay all cached completions
 autoload -U compinit
 compinit -C
+zinit cdreplay -q # Replay all cached completions
 
 # VIM support
 zinit light softmoth/zsh-vim-mode
@@ -62,17 +63,11 @@ zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*' menu no
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 
-alias ls='ls --color'
+#fnm
+eval "$(fnm completions --shell zsh)"
+eval "$(fnm env --use-on-cd --shell zsh)"
 
-if [[ ! "$PATH" == */home/jakub/.fzf/bin* ]]; then
-  PATH="${PATH:+${PATH}:}/home/jakub/.fzf/bin"
-fi
-source <(fzf --zsh)
-source "/home/jakub/.fzf/shell/completion.zsh"
-source "/home/jakub/.fzf/shell/key-bindings.zsh"
-FZF_DEFAULT_OPTS='--height 40% --border'
-
-for file in ~/zsh/.ssh.sh; do
+for file in ~/zsh/.ssh.sh ~/zsh/.fzf.sh; do
     [ -r "$file" ] && [ -f "$file" ] && source "$file";
 done
 unset file;
