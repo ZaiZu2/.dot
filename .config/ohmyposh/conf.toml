@@ -12,10 +12,11 @@ console_title_template = '{{ .Shell }} in {{ .Folder }}'
     style = 'plain'
     background = 'transparent'
     foreground = 'blue'
-    template = "(venv {{ .Major }}.{{ .Minor }}) "
-
+    template = "({{ .Venv }} {{ .Major }}.{{ .Minor }}) "
+    
     [blocks.segments.properties]
       style = 'full'
+      home_enabled = true
 
   [[blocks.segments]]
     type = 'text'

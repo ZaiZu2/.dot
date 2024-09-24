@@ -1,6 +1,5 @@
 
 export PATH="/bin:/usr/bin:/usr/local/bin:$HOME/bin:$HOME/.local/bin:$PATH"
-export PATH="/opt/nvim-linux64/bin:$PATH"
 
 # Install Zsh plugin manager - Zinit
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
@@ -39,7 +38,6 @@ MODE_CURSOR_VISUAL="$MODE_CURSOR_VICMD steady bar"
 MODE_CURSOR_VLINE="$MODE_CURSOR_VISUAL #00ffff"
 bindkey -v
 export KEYTIMEOUT=1
-alias vim='nvim'
 
 # History
 HISTSIZE=5000
@@ -64,9 +62,16 @@ zstyle ':completion:*' menu no
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 
 # Node.js manager
-export PATH="$HOME/.fmt:$PATH"
 eval "$(fnm completions --shell zsh)"
 eval "$(fnm env --use-on-cd --shell zsh)"
+
+if [[ "$(uname)" == "Darwin" ]]; then
+  # macOS
+else
+  # Linux
+export PATH="/opt/nvim-linux64/bin:$PATH"
+  export PATH="$HOME/.fmt:$PATH"
+fi
 
 for file in ~/zsh/.ssh.sh ~/zsh/.fzf.sh; do
     source "$file";
