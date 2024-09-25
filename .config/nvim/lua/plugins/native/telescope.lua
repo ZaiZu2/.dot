@@ -1,34 +1,4 @@
 return {
-  {
-    'folke/which-key.nvim',
-    event = 'VimEnter',
-    config = function()
-      require('which-key').setup()
-
-      -- Updated general key mappings
-      require('which-key').add {
-        { '<leader>c', group = '[c]ode' },
-        { '<leader>c_', hidden = true },
-        { '<leader>d', group = '[d]ocument', icon = { icon = '', color = 'purple' } },
-        { '<leader>d_', hidden = true },
-        { '<leader>r', group = '[r]ename' },
-        { '<leader>r_', hidden = true },
-        { '<leader>s', group = '[s]earch' },
-        { '<leader>s_', hidden = true },
-        { '<leader>t', group = '[t]oggle' },
-        { '<leader>t_', hidden = true },
-        { '<leader>w', group = '[w]orkspace' },
-        { '<leader>w_', hidden = true },
-        { '<leader>h', group = 'Git [h]unk' },
-        { '<leader>h_', hidden = true },
-      }
-
-      -- Updated visual mode key mappings
-      require('which-key').add {
-        { '<leader>h', desc = 'Git [h]unk', mode = 'v' },
-      }
-    end,
-  },
   { -- Fuzzy Finder (files, lsp, etc)
     'nvim-telescope/telescope.nvim',
     event = 'VimEnter',
@@ -95,57 +65,5 @@ return {
         builtin.find_files { cwd = vim.fn.stdpath 'config' }
       end, { desc = '[s]earch [n]eovim files' })
     end,
-  },
-  {
-    -- Nvim color scheme
-    -- :Telescope colorscheme`
-    'rebelot/kanagawa.nvim',
-    priority = 1000, -- Make sure to load this before all the other start plugins.
-    init = function()
-      vim.cmd.colorscheme 'kanagawa-wave'
-      vim.cmd.hi 'Comment gui=none'
-    end,
-  },
-  {
-    -- Neo-tree is a Neovim plugin to browse the file system
-    -- https://github.com/nvim-neo-tree/neo-tree.nvim
-    'nvim-neo-tree/neo-tree.nvim',
-    version = '*',
-    dependencies = {
-      'nvim-lua/plenary.nvim',
-      'nvim-tree/nvim-web-devicons', -- not strictly required, but recommended
-      'MunifTanjim/nui.nvim',
-    },
-    cmd = 'Neotree',
-    keys = {
-      { '\\', ':Neotree reveal<CR>', { desc = 'NeoTree reveal' } },
-    },
-    opts = {
-      filesystem = {
-        window = {
-          mappings = {
-            ['\\'] = 'close_window',
-          },
-        },
-      },
-    },
-  },
-  {
-    'christoomey/vim-tmux-navigator',
-    event = 'BufReadPre',
-    cmd = {
-      'TmuxNavigateLeft',
-      'TmuxNavigateDown',
-      'TmuxNavigateUp',
-      'TmuxNavigateRight',
-      'TmuxNavigatePrevious',
-    },
-    keys = {
-      { '<c-h>', '<cmd><C-U>TmuxNavigateLeft<cr>' },
-      { '<c-j>', '<cmd><C-U>TmuxNavigateDown<cr>' },
-      { '<c-k>', '<cmd><C-U>TmuxNavigateUp<cr>' },
-      { '<c-l>', '<cmd><C-U>TmuxNavigateRight<cr>' },
-      { '<c-\\>', '<cmd><C-U>TmuxNavigatePrevious<cr>' },
-    },
   },
 }
