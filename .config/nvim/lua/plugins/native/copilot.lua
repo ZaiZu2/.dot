@@ -160,72 +160,18 @@ return {
     end,
     event = 'VeryLazy',
     keys = {
-      -- Show help actions with telescope
-      {
-        '<leader>ah',
-        function()
-          local actions = require 'CopilotChat.actions'
-          require('CopilotChat.integrations.telescope').pick(actions.help_actions())
-        end,
-        desc = 'CopilotChat - Help actions',
-      },
-      -- Show prompts actions with telescope
-      {
-        '<leader>ap',
-        function()
-          local actions = require 'CopilotChat.actions'
-          require('CopilotChat.integrations.telescope').pick(actions.prompt_actions())
-        end,
-        desc = 'CopilotChat - Prompt actions',
-      },
-      {
-        '<leader>ap',
-        ":lua require('CopilotChat.integrations.telescope').pick(require('CopilotChat.actions').prompt_actions({selection = require('CopilotChat.select').visual}))<CR>",
-        mode = 'x',
-        desc = 'CopilotChat - Prompt actions',
-      },
-      -- Code related commands
-      { '<leader>ae', '<cmd>CopilotChatExplain<cr>', desc = 'CopilotChat - Explain code' },
-      { '<leader>at', '<cmd>CopilotChatTests<cr>', desc = 'CopilotChat - Generate tests' },
-      { '<leader>ar', '<cmd>CopilotChatReview<cr>', desc = 'CopilotChat - Review code' },
-      { '<leader>aR', '<cmd>CopilotChatRefactor<cr>', desc = 'CopilotChat - Refactor code' },
-      { '<leader>an', '<cmd>CopilotChatBetterNamings<cr>', desc = 'CopilotChat - Better Naming' },
-      -- Chat with Copilot in visual mode
       {
         '<leader>av',
         ':CopilotChatVisual',
-        mode = 'x',
-        desc = 'CopilotChat - Open in vertical split',
+        mode = { 'x', 'n' },
+        desc = 'Copilot - Open in vertical split',
       },
       {
         '<leader>ax',
         ':CopilotChatInline<cr>',
-        mode = 'x',
-        desc = 'CopilotChat - Inline chat',
+        mode = { 'x', 'n' },
+        desc = 'Copilot - Inline chat',
       },
-      -- Custom input for CopilotChat
-      {
-        '<leader>ai',
-        function()
-          local input = vim.fn.input 'Ask Copilot: '
-          if input ~= '' then
-            vim.cmd('CopilotChat ' .. input)
-          end
-        end,
-        desc = 'CopilotChat - Ask input',
-      },
-      -- Generate commit message based on the git diff
-      {
-        '<leader>am',
-        '<cmd>CopilotChatCommit<cr>',
-        desc = 'CopilotChat - Generate commit message for all changes',
-      },
-      {
-        '<leader>aM',
-        '<cmd>CopilotChatCommitStaged<cr>',
-        desc = 'CopilotChat - Generate commit message for staged changes',
-      },
-      -- Quick chat with Copilot
       {
         '<leader>aq',
         function()
@@ -234,161 +180,53 @@ return {
             vim.cmd('CopilotChatBuffer ' .. input)
           end
         end,
-        desc = 'CopilotChat - Quick chat',
+        desc = 'Copilot - Quick chat',
       },
+      { '<leader>al', '<cmd>CopilotChatReset<cr>', desc = 'Copilot - Clear buffer and chat history' }, -- Toggle Copilot Chat Vsplit
+      { '<leader>av', '<cmd>CopilotChatToggle<cr>', desc = 'Copilot - Toggle' },
+      { '<leader>a?', '<cmd>CopilotChatModels<cr>', desc = 'Copilot - Select Models' },
+      { -- Show help actions with telescope
+        '<leader>ah',
+        function()
+          local actions = require 'CopilotChat.actions'
+          require('CopilotChat.integrations.telescope').pick(actions.help_actions())
+        end,
+        desc = 'Copilot - Help actions',
+      },
+      { -- Show prompts actions with telescope
+        '<leader>ap',
+        ":lua require('CopilotChat.integrations.telescope').pick(require('CopilotChat.actions').prompt_actions({selection = require('CopilotChat.select').visual}))<CR>",
+        mode = 'x',
+        desc = 'Copilot - Prompt actions',
+      },
+      -- Custom input for CopilotChat
+      -- {
+      --   '<leader>ai',
+      --   function()
+      --     local input = vim.fn.input 'Ask Copilot: '
+      --     if input ~= '' then
+      --       vim.cmd('CopilotChat ' .. input)
+      --     end
+      --   end,
+      --   desc = 'Copilot - Ask input',
+      -- },
+      -- Generate commit message based on the git diff
+      -- {
+      --   '<leader>am',
+      --   '<cmd>CopilotChatCommit<cr>',
+      --   desc = 'Copilot - Generate commit message for all changes',
+      -- },
+      -- {
+      --   '<leader>aM',
+      --   '<cmd>CopilotChatCommitStaged<cr>',
+      --   desc = 'Copilot - Generate commit message for staged changes',
+      -- },
+      -- Quick chat with Copilot
       -- Debug
-      { '<leader>ad', '<cmd>CopilotChatDebugInfo<cr>', desc = 'CopilotChat - Debug Info' },
+      -- { '<leader>ad', '<cmd>CopilotChatDebugInfo<cr>', desc = 'Copilot - Debug Info' },
       -- Fix the issue with diagnostic
-      { '<leader>af', '<cmd>CopilotChatFixDiagnostic<cr>', desc = 'CopilotChat - Fix Diagnostic' },
+      -- { '<leader>af', '<cmd>CopilotChatFixDiagnostic<cr>', desc = 'Copilot - Fix Diagnostic' },
       -- Clear buffer and chat history
-      { '<leader>al', '<cmd>CopilotChatReset<cr>', desc = 'CopilotChat - Clear buffer and chat history' },
-      -- Toggle Copilot Chat Vsplit
-      { '<leader>av', '<cmd>CopilotChatToggle<cr>', desc = 'CopilotChat - Toggle' },
-      -- Copilot Chat Models
-      { '<leader>a?', '<cmd>CopilotChatModels<cr>', desc = 'CopilotChat - Select Models' },
     },
   },
-  -- { -- LLM chat integration
-  --   'robitx/gp.nvim',
-  --   config = function()
-  --     require('gp').setup {
-  --       providers = {
-  --         copilot = {
-  --           disable = false,
-  --           endpoint = 'https://api.githubcopilot.com/chat/completions',
-  --           secret = {
-  --             'bash',
-  --             '-c',
-  --             "cat ~/.config/github-copilot/apps.json | sed -e 's/.*oauth_token...//;s/\".*//'",
-  --           },
-  --         },
-  --       },
-  --       agents = {
-  --         {
-  --           name = 'ChatGPT3-5',
-  --           disable = true,
-  --         },
-  --         {
-  --           provider = 'copilot',
-  --           name = 'ChatCopilot',
-  --           chat = true,
-  --           command = true,
-  --           -- string with model name or table with model name and parameters
-  --           model = { model = 'gpt-4o', temperature = 1.1, top_p = 1 },
-  --           -- system prompt (use this to specify the persona/role of the AI)
-  --           system_prompt = require('gp.defaults').chat_system_prompt,
-  --         },
-  --       },
-  --     }
-  --
-  --     require('which-key').add {
-  --       -- VISUAL mode mappings
-  --       -- s, x, v modes are handled the same way by which_key
-  --       {
-  --         mode = { 'v' },
-  --         nowait = true,
-  --         remap = false,
-  --         { '<C-g><C-t>', ":<C-u>'<,'>GpChatNew tabnew<cr>", desc = 'ChatNew tabnew' },
-  --         { '<C-g><C-v>', ":<C-u>'<,'>GpChatNew vsplit<cr>", desc = 'ChatNew vsplit' },
-  --         { '<C-g><C-x>', ":<C-u>'<,'>GpChatNew split<cr>", desc = 'ChatNew split' },
-  --         { '<C-g>a', ":<C-u>'<,'>GpAppend<cr>", desc = 'Visual Append (after)' },
-  --         { '<C-g>b', ":<C-u>'<,'>GpPrepend<cr>", desc = 'Visual Prepend (before)' },
-  --         { '<C-g>c', ":<C-u>'<,'>GpChatNew<cr>", desc = 'Visual Chat New' },
-  --         { '<C-g>g', group = 'generate into new ..' },
-  --         { '<C-g>ge', ":<C-u>'<,'>GpEnew<cr>", desc = 'Visual GpEnew' },
-  --         { '<C-g>gn', ":<C-u>'<,'>GpNew<cr>", desc = 'Visual GpNew' },
-  --         { '<C-g>gp', ":<C-u>'<,'>GpPopup<cr>", desc = 'Visual Popup' },
-  --         { '<C-g>gt', ":<C-u>'<,'>GpTabnew<cr>", desc = 'Visual GpTabnew' },
-  --         { '<C-g>gv', ":<C-u>'<,'>GpVnew<cr>", desc = 'Visual GpVnew' },
-  --         { '<C-g>i', ":<C-u>'<,'>GpImplement<cr>", desc = 'Implement selection' },
-  --         { '<C-g>n', '<cmd>GpNextAgent<cr>', desc = 'Next Agent' },
-  --         { '<C-g>p', ":<C-u>'<,'>GpChatPaste<cr>", desc = 'Visual Chat Paste' },
-  --         { '<C-g>r', ":<C-u>'<,'>GpRewrite<cr>", desc = 'Visual Rewrite' },
-  --         { '<C-g>s', '<cmd>GpStop<cr>', desc = 'GpStop' },
-  --         { '<C-g>t', ":<C-u>'<,'>GpChatToggle<cr>", desc = 'Visual Toggle Chat' },
-  --         { '<C-g>w', group = 'Whisper' },
-  --         { '<C-g>wa', ":<C-u>'<,'>GpWhisperAppend<cr>", desc = 'Whisper Append' },
-  --         { '<C-g>wb', ":<C-u>'<,'>GpWhisperPrepend<cr>", desc = 'Whisper Prepend' },
-  --         { '<C-g>we', ":<C-u>'<,'>GpWhisperEnew<cr>", desc = 'Whisper Enew' },
-  --         { '<C-g>wn', ":<C-u>'<,'>GpWhisperNew<cr>", desc = 'Whisper New' },
-  --         { '<C-g>wp', ":<C-u>'<,'>GpWhisperPopup<cr>", desc = 'Whisper Popup' },
-  --         { '<C-g>wr', ":<C-u>'<,'>GpWhisperRewrite<cr>", desc = 'Whisper Rewrite' },
-  --         { '<C-g>wt', ":<C-u>'<,'>GpWhisperTabnew<cr>", desc = 'Whisper Tabnew' },
-  --         { '<C-g>wv', ":<C-u>'<,'>GpWhisperVnew<cr>", desc = 'Whisper Vnew' },
-  --         { '<C-g>ww', ":<C-u>'<,'>GpWhisper<cr>", desc = 'Whisper' },
-  --         { '<C-g>x', ":<C-u>'<,'>GpContext<cr>", desc = 'Visual GpContext' },
-  --       },
-  --
-  --       -- NORMAL mode mappings
-  --       {
-  --         mode = { 'n' },
-  --         nowait = true,
-  --         remap = false,
-  --         { '<C-g><C-t>', '<cmd>GpChatNew tabnew<cr>', desc = 'New Chat tabnew' },
-  --         { '<C-g><C-v>', '<cmd>GpChatNew vsplit<cr>', desc = 'New Chat vsplit' },
-  --         { '<C-g><C-x>', '<cmd>GpChatNew split<cr>', desc = 'New Chat split' },
-  --         { '<C-g>a', '<cmd>GpAppend<cr>', desc = 'Append (after)' },
-  --         { '<C-g>b', '<cmd>GpPrepend<cr>', desc = 'Prepend (before)' },
-  --         { '<C-g>c', '<cmd>GpChatNew<cr>', desc = 'New Chat' },
-  --         { '<C-g>f', '<cmd>GpChatFinder<cr>', desc = 'Chat Finder' },
-  --         { '<C-g>g', group = 'generate into new ..' },
-  --         { '<C-g>ge', '<cmd>GpEnew<cr>', desc = 'GpEnew' },
-  --         { '<C-g>gn', '<cmd>GpNew<cr>', desc = 'GpNew' },
-  --         { '<C-g>gp', '<cmd>GpPopup<cr>', desc = 'Popup' },
-  --         { '<C-g>gt', '<cmd>GpTabnew<cr>', desc = 'GpTabnew' },
-  --         { '<C-g>gv', '<cmd>GpVnew<cr>', desc = 'GpVnew' },
-  --         { '<C-g>n', '<cmd>GpNextAgent<cr>', desc = 'Next Agent' },
-  --         { '<C-g>r', '<cmd>GpRewrite<cr>', desc = 'Inline Rewrite' },
-  --         { '<C-g>s', '<cmd>GpStop<cr>', desc = 'GpStop' },
-  --         { '<C-g>t', '<cmd>GpChatToggle<cr>', desc = 'Toggle Chat' },
-  --         { '<C-g>w', group = 'Whisper' },
-  --         { '<C-g>wa', '<cmd>GpWhisperAppend<cr>', desc = 'Whisper Append (after)' },
-  --         { '<C-g>wb', '<cmd>GpWhisperPrepend<cr>', desc = 'Whisper Prepend (before)' },
-  --         { '<C-g>we', '<cmd>GpWhisperEnew<cr>', desc = 'Whisper Enew' },
-  --         { '<C-g>wn', '<cmd>GpWhisperNew<cr>', desc = 'Whisper New' },
-  --         { '<C-g>wp', '<cmd>GpWhisperPopup<cr>', desc = 'Whisper Popup' },
-  --         { '<C-g>wr', '<cmd>GpWhisperRewrite<cr>', desc = 'Whisper Inline Rewrite' },
-  --         { '<C-g>wt', '<cmd>GpWhisperTabnew<cr>', desc = 'Whisper Tabnew' },
-  --         { '<C-g>wv', '<cmd>GpWhisperVnew<cr>', desc = 'Whisper Vnew' },
-  --         { '<C-g>ww', '<cmd>GpWhisper<cr>', desc = 'Whisper' },
-  --         { '<C-g>x', '<cmd>GpContext<cr>', desc = 'Toggle GpContext' },
-  --       },
-  --
-  --       -- INSERT mode mappings
-  --       {
-  --         mode = { 'i' },
-  --         nowait = true,
-  --         remap = false,
-  --         { '<C-g><C-t>', '<cmd>GpChatNew tabnew<cr>', desc = 'New Chat tabnew' },
-  --         { '<C-g><C-v>', '<cmd>GpChatNew vsplit<cr>', desc = 'New Chat vsplit' },
-  --         { '<C-g><C-x>', '<cmd>GpChatNew split<cr>', desc = 'New Chat split' },
-  --         { '<C-g>a', '<cmd>GpAppend<cr>', desc = 'Append (after)' },
-  --         { '<C-g>b', '<cmd>GpPrepend<cr>', desc = 'Prepend (before)' },
-  --         { '<C-g>c', '<cmd>GpChatNew<cr>', desc = 'New Chat' },
-  --         { '<C-g>f', '<cmd>GpChatFinder<cr>', desc = 'Chat Finder' },
-  --         { '<C-g>g', group = 'generate into new ..' },
-  --         { '<C-g>ge', '<cmd>GpEnew<cr>', desc = 'GpEnew' },
-  --         { '<C-g>gn', '<cmd>GpNew<cr>', desc = 'GpNew' },
-  --         { '<C-g>gp', '<cmd>GpPopup<cr>', desc = 'Popup' },
-  --         { '<C-g>gt', '<cmd>GpTabnew<cr>', desc = 'GpTabnew' },
-  --         { '<C-g>gv', '<cmd>GpVnew<cr>', desc = 'GpVnew' },
-  --         { '<C-g>n', '<cmd>GpNextAgent<cr>', desc = 'Next Agent' },
-  --         { '<C-g>r', '<cmd>GpRewrite<cr>', desc = 'Inline Rewrite' },
-  --         { '<C-g>s', '<cmd>GpStop<cr>', desc = 'GpStop' },
-  --         { '<C-g>t', '<cmd>GpChatToggle<cr>', desc = 'Toggle Chat' },
-  --         { '<C-g>w', group = 'Whisper' },
-  --         { '<C-g>wa', '<cmd>GpWhisperAppend<cr>', desc = 'Whisper Append (after)' },
-  --         { '<C-g>wb', '<cmd>GpWhisperPrepend<cr>', desc = 'Whisper Prepend (before)' },
-  --         { '<C-g>we', '<cmd>GpWhisperEnew<cr>', desc = 'Whisper Enew' },
-  --         { '<C-g>wn', '<cmd>GpWhisperNew<cr>', desc = 'Whisper New' },
-  --         { '<C-g>wp', '<cmd>GpWhisperPopup<cr>', desc = 'Whisper Popup' },
-  --         { '<C-g>wr', '<cmd>GpWhisperRewrite<cr>', desc = 'Whisper Inline Rewrite' },
-  --         { '<C-g>wt', '<cmd>GpWhisperTabnew<cr>', desc = 'Whisper Tabnew' },
-  --         { '<C-g>wv', '<cmd>GpWhisperVnew<cr>', desc = 'Whisper Vnew' },
-  --         { '<C-g>ww', '<cmd>GpWhisper<cr>', desc = 'Whisper' },
-  --         { '<C-g>x', '<cmd>GpContext<cr>', desc = 'Toggle GpContext' },
-  --       },
-  --     }
-  --   end,
-  -- },
 }

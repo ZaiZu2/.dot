@@ -4,7 +4,7 @@ return {
     version = '*',
     config = function()
       require('toggleterm').setup {
-        open_mapping = [[<c-\>]],
+        open_mapping = [[<leader>gt]],
         size = function(term)
           if term.direction == 'horizontal' then
             return 15
@@ -15,7 +15,7 @@ return {
         hide_numbers = true, -- hide the number column in toggleterm buffers
         shade_filetypes = {},
         autochdir = false, -- when neovim changes it current directory the terminal will change it's own when next it's opened
-        shade_terminals = true, -- NOTE: this option takes priority over highlights specified so if you specify Normal highlights you should set this to false
+        shade_terminals = false, -- NOTE: this option takes priority over highlights specified so if you specify Normal highlights you should set this to false
         start_in_insert = true,
         insert_mappings = true, -- whether or not the open mapping applies in insert mode
         terminal_mappings = true, -- whether or not the open mapping applies in the opened terminals
@@ -31,7 +31,7 @@ return {
           -- see :h nvim_open_win for details on borders however
           -- the 'curved' border is a custom border type
           -- not natively supported but implemented in this plugin.
-          border = 'single', -- 'single' | 'double' | 'shadow' | 'curved' | ... other options supported by win open
+          border = 'rounded', -- 'single' | 'double' | 'shadow' | 'curved' | ... other options supported by win open
           -- like `size`, width, height, row, and col can be a number or function which is passed the current terminal
           -- width = <value>,
           -- height = <value>,
@@ -72,7 +72,7 @@ return {
       function _Lazygit_toggle()
         lazygit:toggle()
       end
-      vim.api.nvim_set_keymap('n', '<leader>gs', '<cmd>lua _Lazygit_toggle()<CR>', { noremap = true, silent = true, desc = '[G]o to [S]ource Control' })
+      vim.api.nvim_set_keymap('n', '<leader>gs', '<cmd>lua _Lazygit_toggle()<CR>', { noremap = true, silent = true, desc = '[g]o to [s]ource Control' })
 
       local pythonInteractive = Terminal:new {
         cmd = 'python3',
@@ -87,7 +87,7 @@ return {
         'n',
         '<leader>gp',
         '<cmd>lua _Python_interactive_toggle()<CR>',
-        { noremap = true, silent = true, desc = '[G]o to [P]ython Interactive Shell' }
+        { noremap = true, silent = true, desc = '[g]o to [p]ython Interactive Shell' }
       )
     end,
   },
