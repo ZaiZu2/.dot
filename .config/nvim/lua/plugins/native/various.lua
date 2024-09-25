@@ -9,7 +9,7 @@ return {
       require('which-key').add {
         { '<leader>c', group = '[c]ode' },
         { '<leader>c_', hidden = true },
-        { '<leader>d', group = '[d]ocument' },
+        { '<leader>d', group = '[d]ocument', icon = { icon = '', color = 'purple' } },
         { '<leader>d_', hidden = true },
         { '<leader>r', group = '[r]ename' },
         { '<leader>r_', hidden = true },

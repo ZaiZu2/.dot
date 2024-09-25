@@ -161,71 +161,71 @@ return {
     event = 'VeryLazy',
     keys = {
       {
-        '<leader>av',
+        '<leader>cv',
         ':CopilotChatVisual',
         mode = { 'x', 'n' },
-        desc = 'Copilot - Open in vertical split',
+        desc = 'Open in vertical split',
       },
       {
-        '<leader>ax',
+        '<leader>cx',
         ':CopilotChatInline<cr>',
         mode = { 'x', 'n' },
-        desc = 'Copilot - Inline chat',
+        desc = 'Inline chat',
       },
       {
-        '<leader>aq',
+        '<leader>cq',
         function()
           local input = vim.fn.input 'Quick Chat: '
           if input ~= '' then
             vim.cmd('CopilotChatBuffer ' .. input)
           end
         end,
-        desc = 'Copilot - Quick chat',
+        desc = 'Quick chat',
       },
-      { '<leader>al', '<cmd>CopilotChatReset<cr>', desc = 'Copilot - Clear buffer and chat history' }, -- Toggle Copilot Chat Vsplit
-      { '<leader>av', '<cmd>CopilotChatToggle<cr>', desc = 'Copilot - Toggle' },
-      { '<leader>a?', '<cmd>CopilotChatModels<cr>', desc = 'Copilot - Select Models' },
+      { '<leader>cl', '<cmd>CopilotChatReset<cr>', desc = 'Clear buffer and chat history' }, -- Toggle Copilot Chat Vsplit
+      { '<leader>cv', '<cmd>CopilotChatToggle<cr>', desc = 'Toggle' },
+      { '<leader>c?', '<cmd>CopilotChatModels<cr>', desc = 'Select Models' },
       { -- Show help actions with telescope
-        '<leader>ah',
+        '<leader>ch',
         function()
           local actions = require 'CopilotChat.actions'
           require('CopilotChat.integrations.telescope').pick(actions.help_actions())
         end,
-        desc = 'Copilot - Help actions',
+        desc = 'Help actions',
       },
       { -- Show prompts actions with telescope
-        '<leader>ap',
+        '<leader>cp',
         ":lua require('CopilotChat.integrations.telescope').pick(require('CopilotChat.actions').prompt_actions({selection = require('CopilotChat.select').visual}))<CR>",
         mode = 'x',
-        desc = 'Copilot - Prompt actions',
+        desc = 'Prompt actions',
       },
       -- Custom input for CopilotChat
       -- {
-      --   '<leader>ai',
+      --   '<leader>ci',
       --   function()
       --     local input = vim.fn.input 'Ask Copilot: '
       --     if input ~= '' then
       --       vim.cmd('CopilotChat ' .. input)
       --     end
       --   end,
-      --   desc = 'Copilot - Ask input',
+      --   desc = 'Ask input',
       -- },
       -- Generate commit message based on the git diff
       -- {
-      --   '<leader>am',
+      --   '<leader>cm',
       --   '<cmd>CopilotChatCommit<cr>',
-      --   desc = 'Copilot - Generate commit message for all changes',
+      --   desc = 'Generate commit message for all changes',
       -- },
       -- {
-      --   '<leader>aM',
+      --   '<leader>cM',
       --   '<cmd>CopilotChatCommitStaged<cr>',
-      --   desc = 'Copilot - Generate commit message for staged changes',
+      --   desc = 'Generate commit message for staged changes',
       -- },
       -- Quick chat with Copilot
       -- Debug
-      -- { '<leader>ad', '<cmd>CopilotChatDebugInfo<cr>', desc = 'Copilot - Debug Info' },
+      -- { '<leader>cd', '<cmd>CopilotChatDebugInfo<cr>', desc = 'Debug Info' },
       -- Fix the issue with diagnostic
-      -- { '<leader>af', '<cmd>CopilotChatFixDiagnostic<cr>', desc = 'Copilot - Fix Diagnostic' },
+      -- { '<leader>cf', '<cmd>CopilotChatFixDiagnostic<cr>', desc = 'Fix Diagnostic' },
       -- Clear buffer and chat history
     },
   },
