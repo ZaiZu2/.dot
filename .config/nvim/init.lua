@@ -103,6 +103,7 @@ local selectPlugins = function()
       'vim-tmux-navigator',
       'theme',
       'colorizer',
+      'which-key',
     }
   end
 

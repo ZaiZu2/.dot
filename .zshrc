@@ -30,9 +30,9 @@ zinit cdreplay -q # Replay all cached completions
 
 # VIM support
 zinit light softmoth/zsh-vim-mode
-MODE_CURSOR_VIINS="white blinking bar"
+MODE_CURSOR_VIINS="#C8C093 blinking bar"
 MODE_CURSOR_REPLACE="$MODE_CURSOR_VIINS #ff0000"
-MODE_CURSOR_VICMD="white block"
+MODE_CURSOR_VICMD="#C8C093 block"
 MODE_CURSOR_SEARCH="#ff00ff steady underline"
 MODE_CURSOR_VISUAL="$MODE_CURSOR_VICMD steady bar"
 MODE_CURSOR_VLINE="$MODE_CURSOR_VISUAL #00ffff"
