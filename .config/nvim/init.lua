@@ -117,11 +117,7 @@ local selectPlugins = function()
   return plugins
 end
 
-require('lazy').setup(selectPlugins(), {
-  ui = {
-    icons = {},
-  },
-})
+require('lazy').setup(selectPlugins(), {})
 
 if vim.g.vscode then
   require 'vscode_bindings'

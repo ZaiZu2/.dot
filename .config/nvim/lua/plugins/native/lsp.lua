@@ -25,18 +25,18 @@ return {
             vim.keymap.set('n', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
           end
 
-          map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
-          map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
-          map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
-          map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
-          map('<leader>D', require('telescope.builtin').lsp_type_definitions, 'Type [D]efinition')
+          map(';d', require('telescope.builtin').lsp_definitions, '[d]efinition')
+          map(';D', vim.lsp.buf.declaration, '[D]eclaration')
+          map(';R', require('telescope.builtin').lsp_references, '[r]eferences')
+          map(';I', require('telescope.builtin').lsp_implementations, '[I]mplementation')
+          map(';t', require('telescope.builtin').lsp_type_definitions, '[t]ype definition')
 
-          map('<leader>ss', require('telescope.builtin').lsp_document_symbols, '[S]earch [S]ymbols')
-          map('<leader>sp', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[S]earch Symbols in [P]roject')
-          map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
+          map(';s', require('telescope.builtin').lsp_document_symbols, '[s]ymbols')
+          map(';p', require('telescope.builtin').lsp_dynamic_workspace_symbols, 'symbols in [p]roject')
+          map(';r', vim.lsp.buf.rename, '[r]ename')
           -- Execute a code action, usually your cursor needs to be on top of an error
           -- or a suggestion from your LSP for this to activate.
-          map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
+          map(';c', vim.lsp.buf.code_action, '[c]ode action')
           -- Opens a popup that displays documentation about the word under your cursor
           --  :help K
           map('K', vim.lsp.buf.hover, 'Hover Documentation')

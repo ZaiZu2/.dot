@@ -42,7 +42,7 @@ console_title_template = '{{ .Shell }} in {{ .Folder }}'
     type = 'path'
     style = 'plain'
     background = 'transparent'
-    foreground = 'green'
+    foreground = 'p:light_green'
     template = ' <white>in</> {{ .Path }}'
 
     [blocks.segments.properties]
@@ -82,7 +82,7 @@ console_title_template = '{{ .Shell }} in {{ .Folder }}'
   [[blocks.segments]]
     type = 'text'
     style = 'plain'
-    foreground = 'p:orange'
+    foreground = 'white'
     background = 'transparent'
     template = '❯'
 
@@ -95,9 +95,10 @@ console_title_template = '{{ .Shell }} in {{ .Folder }}'
   template = '❯ '
 
 [secondary_prompt]
-  foreground = 'p:orange'
+  foreground = 'white'
   background = 'transparent'
   template = '❯❯ '
 
 [palette]
-orange = '#FFA500'
+orange = '#ffa066'
+light_green = '#98bb6c'

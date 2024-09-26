@@ -21,8 +21,8 @@ eval "$(oh-my-posh init zsh --config $HOME/.config/ohmyposh/conf.toml)"
 zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-autosuggestions
 zinit light Aloxaf/fzf-tab
+zinit snippet OMZP::ssh-agent/ssh-agent.plugin.zsh
 
-# Load completions
 zinit light zsh-users/zsh-completions
 autoload -U compinit
 compinit -C
@@ -73,7 +73,7 @@ export PATH="/opt/nvim-linux64/bin:$PATH"
   export PATH="$HOME/.fmt:$PATH"
 fi
 
-for file in ~/zsh/.ssh.sh ~/zsh/.fzf.sh; do
+for file in ~/zsh/.fzf.sh; do
     source "$file";
 done
 unset file;

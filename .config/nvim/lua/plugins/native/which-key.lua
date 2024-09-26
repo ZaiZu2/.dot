@@ -7,9 +7,9 @@ return {
 
       -- Updated general key mappings
       require('which-key').add {
-        { '<leader>c', group = '[c]ode' },
+        { '<leader>c', group = '[c]opilot' },
         { '<leader>c_', hidden = true },
-        { '<leader>d', group = '[d]ocument', icon = { icon = '', color = 'purple' } },
+        { '<leader>d', group = '[d]ebuger', icon = { icon = '', color = 'purple' } },
         { '<leader>d_', hidden = true },
         { '<leader>r', group = '[r]ename' },
         { '<leader>r_', hidden = true },
