@@ -22,7 +22,7 @@ console_title_template = '{{ .Shell }} in {{ .Folder }}'
     type = 'text'
     style = 'plain'
     background = 'transparent'
-    foreground = 'p:orange'
+    foreground = 'p:user'
     template = "{{ .UserName }}{{ if .Root }} {{ end }}"
 
     [blocks.segments.properties]
@@ -42,7 +42,7 @@ console_title_template = '{{ .Shell }} in {{ .Folder }}'
     type = 'path'
     style = 'plain'
     background = 'transparent'
-    foreground = 'p:light_green'
+    foreground = 'p:path'
     template = ' <white>in</> {{ .Path }}'
 
     [blocks.segments.properties]
@@ -92,7 +92,7 @@ console_title_template = '{{ .Shell }} in {{ .Folder }}'
     "{{if eq .Code 0}}green{{end}}",
   ]
   background = 'transparent'
-  template = '❯ '
+  template = '<p:path>{{ .Folder }}</> ❯ '
 
 [secondary_prompt]
   foreground = 'white'
@@ -100,5 +100,5 @@ console_title_template = '{{ .Shell }} in {{ .Folder }}'
   template = '❯❯ '
 
 [palette]
-orange = '#ffa066'
-light_green = '#98bb6c'
+user = '#ffa066'
+path = '#98bb6c'
