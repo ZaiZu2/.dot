@@ -15,27 +15,17 @@ return {
       -- - sr)'  - [S]urround [R]eplace [)] [']
       require('mini.surround').setup()
 
-      if not vim.g.vscode then
-        require('mini.animate').setup {
-          cursor = {
-            enable = false,
-          },
-          scroll = {},
-          open = {
-            enable = false,
-          },
-          close = {
-            enable = false,
-          },
-        }
-      end
+      require('mini.operators').setup()
+
+      require('mini.trailspace').setup()
+
+      require('mini.splitjoin').setup()
+
+      require('mini.notify').setup()
 
       require('mini.starter').setup()
 
-      require('mini.sessions').setup {
-        autoread = true,
-        autowrite = true,
-      }
+      require('mini.sessions').setup { autoread = true }
 
       local statusline = require 'mini.statusline'
       statusline.setup { use_icons = vim.g.have_nerd_font }

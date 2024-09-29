@@ -104,6 +104,7 @@ local selectPlugins = function()
       'theme',
       'colorizer',
       'which-key',
+      'neoscroll',
     }
   end
 
