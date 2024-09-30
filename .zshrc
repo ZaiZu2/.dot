@@ -23,12 +23,12 @@ zinit light zsh-users/zsh-autosuggestions
 zinit light Aloxaf/fzf-tab
 zinit snippet OMZP::ssh-agent/ssh-agent.plugin.zsh
 
-autoload -U compinit
-compinit -C
-zinit cdreplay -q # Replay all cached completions
-
+autoload -U compinit && compinit
 zinit light zsh-users/zsh-completions
+zinit cdreplay -q # Replay all cached completions
+source <(podman completion zsh)
 source <(gh completion -s zsh) # GitHub completions
+eval "$(fnm completions --shell zsh)"
 
 # VIM support
 zinit light softmoth/zsh-vim-mode
@@ -64,7 +64,6 @@ zstyle ':completion:*' menu no
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 
 # Node.js manager
-eval "$(fnm completions --shell zsh)"
 eval "$(fnm env --use-on-cd --shell zsh)"
 
 if [[ "$(uname)" == "Darwin" ]]; then
