@@ -1,7 +1,7 @@
+-- Neo-tree is a Neovim plugin to browse the file system
+-- https://github.com/nvim-neo-tree/neo-tree.nvim
 return {
   {
-    -- Neo-tree is a Neovim plugin to browse the file system
-    -- https://github.com/nvim-neo-tree/neo-tree.nvim
     'nvim-neo-tree/neo-tree.nvim',
     version = '*',
     dependencies = {
@@ -19,6 +19,14 @@ return {
           mappings = {
             ['\\'] = 'close_window',
           },
+        },
+        filtered_items = {
+          visible = true,
+          show_hidden_count = true,
+          hide_dotfiles = false,
+          hide_gitignored = true,
+          hide_by_name = {}, -- '.git', '.DS_Store', 'thumbs.db'
+          never_show = {},
         },
       },
     },

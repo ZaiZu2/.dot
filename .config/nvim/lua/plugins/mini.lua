@@ -21,6 +21,26 @@ return {
 
       require('mini.splitjoin').setup()
 
+      require('mini.files').setup { -- Module mappings created only inside explorer.
+        options = {
+          permanent_delete = false,
+          use_as_default_explorer = true,
+        },
+        windows = {
+          -- Maximum number of windows to show side by side
+          max_number = math.huge,
+          -- Whether to show preview of file/directory under cursor
+          preview = true,
+          -- Width of focused window
+          width_focus = 50,
+          -- Width of non-focused window
+          width_nofocus = 15,
+          -- Width of preview window
+          width_preview = 25,
+        },
+      }
+      vim.api.nvim_set_keymap('n', '<C-\\>', '<cmd>lua MiniFiles.open()<CR>', { noremap = true, silent = true, desc = '[g]o to [s]ource Control' })
+
       require('mini.notify').setup()
 
       require('mini.starter').setup()

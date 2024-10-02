@@ -95,16 +95,17 @@ local selectPlugins = function()
       'gitsigns',
       'indent_line',
       'lint',
-      'neo-tree',
+      'neotree',
       'toggleterm',
       'copilot',
       'telescope',
-      'neo-tree',
+      'neotree',
       'vim-tmux-navigator',
       'theme',
       'colorizer',
       'which-key',
       'neoscroll',
+      'lazygit',
     }
   end
 
