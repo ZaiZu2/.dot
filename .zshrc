@@ -23,12 +23,14 @@ zinit light zsh-users/zsh-autosuggestions
 zinit light Aloxaf/fzf-tab
 zinit snippet OMZP::ssh-agent/ssh-agent.plugin.zsh
 
-autoload -U compinit && compinit
+autoload bashcompinit && bashcompinit
+autoload -Uz compinit && compinit
 zinit light zsh-users/zsh-completions
 zinit cdreplay -q # Replay all cached completions
 source <(podman completion zsh)
 source <(gh completion -s zsh) # GitHub completions
 eval "$(fnm completions --shell zsh)"
+complete -C 'aws_completer' aws
 
 # VIM support
 zinit light softmoth/zsh-vim-mode
