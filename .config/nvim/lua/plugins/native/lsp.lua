@@ -1,24 +1,17 @@
 return {
-
   { -- LSP Configuration & Plugins
     'neovim/nvim-lspconfig',
     dependencies = {
-      -- Automatically install LSPs and related tools to stdpath for Neovim
       { 'williamboman/mason.nvim', config = true }, -- NOTE: Must be loaded before dependants
       'williamboman/mason-lspconfig.nvim',
-      'WhoIsSethDaniel/mason-tool-installer.nvim',
+      'WhoIsSethDaniel/mason-tool-installer.nvim', -- Automatic installation of formatters/linters/DAPs
 
-      -- Useful status updates for LSP.
-      { 'j-hui/fidget.nvim', opts = {} },
-
+      { 'j-hui/fidget.nvim', opts = {} }, -- Useful status updates for LSP.
       -- `neodev` configures Lua LSP for your Neovim config, runtime and plugins
       -- used for completion, annotations and signatures of Neovim apis
       { 'folke/neodev.nvim', opts = {} },
     },
     config = function()
-      -- :help lsp-vs-treesitter
-
-      --  This function gets run when an LSP attaches to a particular buffer.
       vim.api.nvim_create_autocmd('LspAttach', {
         group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
         callback = function(event)
@@ -31,7 +24,6 @@ return {
           map(';R', require('telescope.builtin').lsp_references, '[r]eferences')
           map(';I', require('telescope.builtin').lsp_implementations, '[I]mplementation')
           map(';t', require('telescope.builtin').lsp_type_definitions, '[t]ype definition')
-
           map(';s', require('telescope.builtin').lsp_document_symbols, '[s]ymbols')
           map(';p', require('telescope.builtin').lsp_dynamic_workspace_symbols, 'symbols in [p]roject')
           map(';r', vim.lsp.buf.rename, '[r]ename')
@@ -76,8 +68,8 @@ return {
           -- code, if the language server you are using supports them
           if client and client.server_capabilities.inlayHintProvider and vim.lsp.inlay_hint then
             map('<leader>th', function()
-              vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
-            end, '[T]oggle Inlay [H]ints')
+              vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled {})
+            end, '[t]oggle Inlay [h]ints')
           end
         end,
       })
@@ -89,24 +81,30 @@ return {
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
-      -- Enable the following language servers
-      --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
-      --
-      --  Add any additional override configuration in the following tables. Available keys are:
-      --  - cmd (table): Override the default command used to start the server
-      --  - filetypes (table): Override the default list of associated filetypes for the server
-      --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
-      --  - settings (table): Override the default settings passed when initializing the server.
-      --  For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
+      -- :Mason
+      require('mason').setup {
+        ui = {
+          border = 'rounded',
+        },
+      }
+
+      -- Install all language tools
+      local tools = {}
+
+      local linters = {}
+      vim.list_extend(tools, linters)
+
+      local formatters = { 'stylua', 'ruff' }
+      vim.list_extend(tools, formatters)
+
+      local daps = { 'debugpy' }
+      vim.list_extend(tools, daps)
+
       -- :help lspconfig-all
-      local servers = {
+      local lsp_servers = {
         ts_ls = {},
         pyright = {},
-        mypy = {},
         lua_ls = {
-          -- cmd = {...},
-          -- filetypes = { ...},
-          -- capabilities = {},
           settings = {
             Lua = {
               completion = {
@@ -118,19 +116,15 @@ return {
           },
         },
       }
+      vim.list_extend(tools, vim.tbl_keys(lsp_servers))
+      -- `mason-lspconfig` only allows to install LSPs - `mason-tool-installer` can install all tools
+      require('mason-tool-installer').setup { ensure_installed = tools }
 
-      -- :Mason
-      require('mason').setup()
-      local ensure_installed = vim.tbl_keys(servers or {})
-      vim.list_extend(ensure_installed, {
-        'stylua', -- Used to format Lua code
-      })
-      require('mason-tool-installer').setup { ensure_installed = ensure_installed }
-
+      -- Setup baseline configs for all used LSPs
       require('mason-lspconfig').setup {
         handlers = {
           function(server_name)
-            local server = servers[server_name] or {}
+            local server = lsp_servers[server_name] or {}
             -- This handles overriding only values explicitly passed
             -- by the server configuration above. Useful when disabling
             -- certain features of an LSP (for example, turning off formatting for tsserver)
