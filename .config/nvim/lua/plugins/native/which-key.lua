@@ -11,6 +11,8 @@ return {
         { '<leader>c_', hidden = true },
         { '<leader>d', group = '[d]ebuger', icon = { icon = '', color = 'purple' } },
         { '<leader>d_', hidden = true },
+        { '<leader>g', group = '[g]o to', icon = { icon = '', color = 'purple' } },
+        { '<leader>g_', hidden = true },
         { '<leader>r', group = '[r]ename' },
         { '<leader>r_', hidden = true },
         { '<leader>s', group = '[s]earch' },

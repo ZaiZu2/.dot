@@ -1,4 +1,5 @@
 return {
+
   { -- LSP Configuration & Plugins
     'neovim/nvim-lspconfig',
     dependencies = {
@@ -40,6 +41,8 @@ return {
           -- Opens a popup that displays documentation about the word under your cursor
           --  :help K
           map('K', vim.lsp.buf.hover, 'Hover Documentation')
+
+          vim.keymap.set('i', '<C-k>', vim.lsp.buf.signature_help, { desc = 'Show signature' })
 
           -- The following two autocommands are used to highlight references of the
           -- word under your cursor when your cursor rests there for a little while.
@@ -99,6 +102,7 @@ return {
       local servers = {
         ts_ls = {},
         pyright = {},
+        mypy = {},
         lua_ls = {
           -- cmd = {...},
           -- filetypes = { ...},

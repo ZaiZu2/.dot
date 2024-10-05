@@ -39,13 +39,17 @@ return {
           width_preview = 25,
         },
       }
-      vim.api.nvim_set_keymap('n', '<C-\\>', '<cmd>lua MiniFiles.open()<CR>', { noremap = true, silent = true, desc = '[g]o to [s]ource Control' })
+      vim.api.nvim_set_keymap('n', '<C-\\>', '<cmd>lua MiniFiles.open()<CR>', { noremap = true, silent = true, desc = 'Open Mini.Files' })
 
       require('mini.notify').setup()
 
       require('mini.starter').setup()
 
       require('mini.sessions').setup { autoread = true }
+
+      require('mini.icons').setup()
+
+      -- require('mini.completion').setup()
 
       local statusline = require 'mini.statusline'
       statusline.setup { use_icons = vim.g.have_nerd_font }

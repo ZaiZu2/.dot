@@ -72,7 +72,7 @@ return {
       function _Lazygit_toggle()
         lazygit:toggle()
       end
-      vim.api.nvim_set_keymap('n', '<leader>gs', '<cmd>lua _Lazygit_toggle()<CR>', { noremap = true, silent = true, desc = '[g]o to [s]ource Control' })
+      vim.api.nvim_set_keymap('n', '<leader>gg', '<cmd>lua _Lazygit_toggle()<CR>', { noremap = true, silent = true, desc = '[g]it' })
 
       local pythonInteractive = Terminal:new {
         cmd = 'python3',
@@ -87,7 +87,7 @@ return {
         'n',
         '<leader>gp',
         '<cmd>lua _Python_interactive_toggle()<CR>',
-        { noremap = true, silent = true, desc = '[g]o to [p]ython Interactive Shell' }
+        { noremap = true, silent = true, desc = '[p]ython Interactive Shell' }
       )
     end,
   },

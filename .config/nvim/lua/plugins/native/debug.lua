@@ -60,7 +60,7 @@ return {
       -- -- :help nvim-dap-ui
       dapui.setup()
       -- Toggle to see last session result. Without this, you can't see session output in case of unhandled exception.
-      vim.keymap.set('n', '<leader>dt', dapui.toggle, { desc = '[t]oggle last session results' })
+      vim.keymap.set('n', '<leader>dt', dapui.toggle, { desc = '[t]oggle UI' })
       vim.keymap.set('n', '<leader>dk', function()
         require('dapui').eval(nil, { enter = True })
       end, { desc = 'inspect variable' })
@@ -72,7 +72,7 @@ return {
       -- :help dap-configuration
       -- :help dap-python
       require('dap-python').setup 'python'
-      -- require('dap-python').test_runner = 'pytest'
+      require('dap-python').test_runner = 'pytest'
     end,
   },
 }
