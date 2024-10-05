@@ -49,8 +49,7 @@ return {
           ['<C-b>'] = cmp.mapping.scroll_docs(-4), -- Scroll [b]ack
           ['<C-f>'] = cmp.mapping.scroll_docs(4), -- Scroll [f]orward
           ['<C-y>'] = cmp.mapping.confirm { select = true }, -- Accept ([y]es) the completion.
-          -- ['<C-k>'] = vim.lsp.buf.signature_help(),
-          ['<C-Space>'] = cmp.mapping.complete {}, -- Manually trigger a completion from nvim-cmp.
+          ['<C-c>'] = cmp.mapping.complete {}, -- Manually trigger a completion from nvim-cmp.
           -- <c-l> will move you to the right of each of the expansion locations.
           -- <c-h> is similar, except moving you backwards.
           ['<C-l>'] = cmp.mapping(function()
