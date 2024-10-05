@@ -15,7 +15,16 @@ return {
       -- - sr)'  - [S]urround [R]eplace [)] [']
       require('mini.surround').setup()
 
-      require('mini.operators').setup()
+      require('mini.operators').setup {
+        exchange = {
+          prefix = 'g=',
+          reindent_linewise = true, -- Whether to reindent new text to match previous indent
+        },
+        evaluate = {
+          prefix = '',
+          func = nil,
+        },
+      }
 
       require('mini.trailspace').setup()
 
@@ -24,7 +33,7 @@ return {
       require('mini.files').setup { -- Module mappings created only inside explorer.
         options = {
           permanent_delete = false,
-          use_as_default_explorer = true,
+          use_as_default_explorer = false,
         },
         windows = {
           -- Maximum number of windows to show side by side
