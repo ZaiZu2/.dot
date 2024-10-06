@@ -82,11 +82,12 @@ return {
     opts = {
       doc_lines = 0,
       bind = true,
+      hint_enable = false,
       handler_opts = {
         border = 'rounded',
       },
     },
-    config = function(_, opts)
+    config = function(opts)
       require('lsp_signature').setup(opts)
     end,
   },

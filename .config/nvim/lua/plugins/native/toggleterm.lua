@@ -83,12 +83,7 @@ return {
       function _Python_interactive_toggle()
         pythonInteractive:toggle()
       end
-      vim.api.nvim_set_keymap(
-        'n',
-        '<leader>gp',
-        '<cmd>lua _Python_interactive_toggle()<CR>',
-        { noremap = true, silent = true, desc = '[p]ython Interactive Shell' }
-      )
+      vim.keymap.set('n', '<leader>gp', _Python_interactive_toggle, { noremap = true, silent = true, desc = '[p]ython Interactive Shell' })
     end,
   },
 }
