@@ -107,6 +107,7 @@ local selectPlugins = function()
       'colorizer',
       'which-key',
       'neoscroll',
+      'neotest',
     }
   end
 

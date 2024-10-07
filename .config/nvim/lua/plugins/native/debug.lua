@@ -31,16 +31,16 @@ return {
         },
       }
 
-      vim.keymap.set('n', '<leader>dj', dap.run_to_cursor, { desc = '[j]ump to Cursor' })
-      vim.keymap.set('n', '<leader>dc', dap.continue, { desc = '[c]ontinue/Start' })
-      vim.keymap.set('n', '<leader>dd', dap.step_into, { desc = 'Step [d]own (Into)' })
-      vim.keymap.set('n', '<leader>do', dap.step_over, { desc = 'Step [o]ver' })
-      vim.keymap.set('n', '<leader>du', dap.step_out, { desc = 'Step [u]p (Out)' })
+      vim.keymap.set('n', '<leader>dJ', dap.run_to_cursor, { desc = '[J]ump to cursor' })
+      vim.keymap.set('n', '<leader>ds', dap.continue, { desc = 'Continue/start' })
+      vim.keymap.set('n', '<leader>dj', dap.step_into, { desc = 'Step into' })
+      vim.keymap.set('n', '<leader>dl', dap.step_over, { desc = 'Step over' })
+      vim.keymap.set('n', '<leader>dk', dap.step_out, { desc = 'Step out' })
       vim.keymap.set('n', '<leader>dr', dap.restart, { desc = '[r]estart' })
-      vim.keymap.set('n', '<leader>ds', function()
+      vim.keymap.set('n', '<leader>dS', function()
         dap.disconnect { terminateDebuggee = true }
         dap.close()
-      end, { desc = '[s]top debugger' })
+      end, { desc = '[S]top debugger' })
       vim.keymap.set('n', '<leader>db', dap.toggle_breakpoint, { desc = 'Toggle [b]reakpoint' })
       vim.keymap.set('n', '<leader>dB', function()
         dap.set_breakpoint(vim.fn.input 'Breakpoint condition: ')
@@ -61,7 +61,7 @@ return {
       dapui.setup()
       -- Toggle to see last session result. Without this, you can't see session output in case of unhandled exception.
       vim.keymap.set('n', '<leader>dt', dapui.toggle, { desc = '[t]oggle UI' })
-      vim.keymap.set('n', '<leader>dk', function()
+      vim.keymap.set('n', '<leader>dK', function()
         require('dapui').eval(nil, { enter = True })
       end, { desc = 'inspect variable' })
 
@@ -73,6 +73,8 @@ return {
       -- :help dap-python
       require('dap-python').setup 'python'
       require('dap-python').test_runner = 'pytest'
+      vim.keymap.set('n', '<leader>df', require('dap-python').test_method, { desc = 'test [f]unction' })
+      vim.keymap.set('n', '<leader>dm', require('dap-python').debug_selection, { desc = 'test selection' })
     end,
   },
 }
