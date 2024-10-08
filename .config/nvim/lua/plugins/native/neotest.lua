@@ -15,16 +15,25 @@ return {
         },
       }
 
-      vim.keymap.set('n', '<leader>dt', function()
-        require('neotest').run.run { strategy = 'dap' }
-      end, { desc = '[d]ebug [t]est case' })
-      vim.keymap.set('n', '<leader>do', function()
+      vim.keymap.set('n', ',tt', require('neotest').run.run, { desc = '[t]est case run' })
+      vim.keymap.set('n', ',tT', function()
+        require('neotest').run { suite = true }
+      end, { desc = '[T]est suite run' })
+      vim.keymap.set('n', ',ts', require('neotest').run.stop, { desc = '[t]est case [s]top' })
+      vim.keymap.set('n', ',tS', function()
+        require('neotest').run.stop { suite = true }
+      end, { desc = '[t]est suite [S]top' })
+      vim.keymap.set('n', ',td', function()
+        require('neotest').run.run { strategy = 'dap', suite = true }
+      end, { desc = '[t]est case [d]ebug' })
+
+      vim.keymap.set('n', ',o', function()
         require('neotest').output.open { enter = true }
       end, { desc = 'toggle [o]utput' })
-      vim.keymap.set('n', '<leader>dO', function()
+      vim.keymap.set('n', ',O', function()
         require('neotest').output_panel.toggle()
       end, { desc = 'toggle [O]utput panel' })
-      vim.keymap.set('n', '<leader>dT', function()
+      vim.keymap.set('n', ',T', function()
         require('neotest').summary.toggle()
       end, { desc = 'open test [T]ree' })
     end,

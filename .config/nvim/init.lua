@@ -34,10 +34,10 @@ vim.opt.hlsearch = true -- Set highlight on search, but clear on pressing <Esc> 
 -- :help vim.keymap.set()
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>') -- Deactive search highlights
-vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]iagnostic message' })
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next [D]iagnostic message' })
-vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror messages' })
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [d]iagnostic message' })
+vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next [d]iagnostic message' })
+vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic [e]rror messages' })
+vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [q]uickfix list' })
 -- Add border to the diagnostic popup window
 vim.diagnostic.config {
   virtual_text = {
@@ -88,26 +88,26 @@ local selectPlugins = function()
     -- native-nvim specific plugins
     path = 'plugins.native.'
     module_names = {
+      'theme',
       'lsp',
       'treesitter',
-      'autocompletion',
-      'autoformat',
-      'autopairs',
-      'debug',
-      'gitsigns',
-      'indent_line',
       'lint',
+      'cmp',
+      'surround',
+      'autopairs',
+      'indent_line',
+      'debug',
+      'neotest',
+      'gitsigns',
       'neotree',
       'toggleterm',
       'copilot',
       'telescope',
       'neotree',
       'vim-tmux-navigator',
-      'theme',
-      'colorizer',
       'which-key',
       'neoscroll',
-      'neotest',
+      'auto-save',
     }
   end
 

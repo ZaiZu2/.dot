@@ -2,11 +2,11 @@
 return {
   {
     'mfussenegger/nvim-dap',
+    event = 'VeryLazy',
     dependencies = {
       'rcarriga/nvim-dap-ui', -- Creates a beautiful debugger UI
       'nvim-neotest/nvim-nio', -- Required dependency for nvim-dap-ui
       'theHamsta/nvim-dap-virtual-text',
-      -- Installs the debug adapters for you
       'williamboman/mason.nvim',
       'jay-babu/mason-nvim-dap.nvim',
       -- Add your own debuggers here
@@ -31,18 +31,20 @@ return {
         },
       }
 
-      vim.keymap.set('n', '<leader>dJ', dap.run_to_cursor, { desc = '[J]ump to cursor' })
-      vim.keymap.set('n', '<leader>ds', dap.continue, { desc = 'Continue/start' })
-      vim.keymap.set('n', '<leader>dj', dap.step_into, { desc = 'Step into' })
-      vim.keymap.set('n', '<leader>dl', dap.step_over, { desc = 'Step over' })
-      vim.keymap.set('n', '<leader>dk', dap.step_out, { desc = 'Step out' })
-      vim.keymap.set('n', '<leader>dr', dap.restart, { desc = '[r]estart' })
-      vim.keymap.set('n', '<leader>dS', function()
+      -- 4 main stepping mechanism are represented by 'hjkl' keys
+      vim.keymap.set('n', ',s', dap.continue, { desc = 'Continue/start' })
+      vim.keymap.set('n', ',j', dap.step_into, { desc = 'Step into (down)' })
+      vim.keymap.set('n', ',k', dap.step_out, { desc = 'Step out (up)' })
+      vim.keymap.set('n', ',l', dap.step_over, { desc = 'Step over (right)' })
+      vim.keymap.set('n', ',J', dap.run_to_cursor, { desc = '[J]ump to cursor' })
+      vim.keymap.set('n', ',r', dap.restart, { desc = '[r]estart' })
+      vim.keymap.set('n', ',S', function()
         dap.disconnect { terminateDebuggee = true }
         dap.close()
       end, { desc = '[S]top debugger' })
-      vim.keymap.set('n', '<leader>db', dap.toggle_breakpoint, { desc = 'Toggle [b]reakpoint' })
-      vim.keymap.set('n', '<leader>dB', function()
+
+      vim.keymap.set('n', ',b', dap.toggle_breakpoint, { desc = 'Toggle [b]reakpoint' })
+      vim.keymap.set('n', ',B', function()
         dap.set_breakpoint(vim.fn.input 'Breakpoint condition: ')
       end, { desc = 'Set conditional [B]reakpoint' })
 
@@ -60,8 +62,8 @@ return {
       -- -- :help nvim-dap-ui
       dapui.setup()
       -- Toggle to see last session result. Without this, you can't see session output in case of unhandled exception.
-      vim.keymap.set('n', '<leader>dt', dapui.toggle, { desc = '[t]oggle UI' })
-      vim.keymap.set('n', '<leader>dK', function()
+      vim.keymap.set('n', ',u', dapui.toggle, { desc = 'toggle [u]I' })
+      vim.keymap.set('n', ',K', function()
         require('dapui').eval(nil, { enter = True })
       end, { desc = 'inspect variable' })
 
@@ -73,8 +75,9 @@ return {
       -- :help dap-python
       require('dap-python').setup 'python'
       require('dap-python').test_runner = 'pytest'
-      vim.keymap.set('n', '<leader>df', require('dap-python').test_method, { desc = 'test [f]unction' })
-      vim.keymap.set('n', '<leader>dm', require('dap-python').debug_selection, { desc = 'test selection' })
+      -- Following functionalities provided by `neotest`
+      -- vim.keymap.set('n', ',f', require('dap-python').test_method, { desc = 'test [f]unction' })
+      -- vim.keymap.set('n', ',m', require('dap-python').debug_selection, { desc = 'test selection' })
     end,
   },
 }

@@ -9,8 +9,6 @@ return {
       require('which-key').add {
         { '<leader>c', group = '[c]opilot' },
         { '<leader>c_', hidden = true },
-        { '<leader>d', group = '[d]ebuger', icon = { icon = '', color = 'purple' } },
-        { '<leader>d_', hidden = true },
         { '<leader>g', group = '[g]o to', icon = { icon = '', color = 'purple' } },
         { '<leader>g_', hidden = true },
         { '<leader>r', group = '[r]ename' },
@@ -23,6 +21,8 @@ return {
         { '<leader>w_', hidden = true },
         { '<leader>h', group = 'Git [h]unk' },
         { '<leader>h_', hidden = true },
+        { ',t', group = '[t]ests' },
+        { ',t_', hidden = true },
       }
 
       -- Updated visual mode key mappings
