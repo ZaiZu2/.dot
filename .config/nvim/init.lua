@@ -107,7 +107,7 @@ local selectPlugins = function()
       'vim-tmux-navigator',
       'which-key',
       'neoscroll',
-      'auto-save',
+      'colorizer',
     }
   end
 
