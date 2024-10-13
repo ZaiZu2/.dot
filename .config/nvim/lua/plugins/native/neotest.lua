@@ -24,7 +24,7 @@ return {
         require('neotest').run.stop { suite = true }
       end, { desc = '[t]est suite [S]top' })
       vim.keymap.set('n', ',td', function()
-        require('neotest').run.run { strategy = 'dap', suite = true }
+        require('neotest').run.run { strategy = 'dap', suite = false }
       end, { desc = '[t]est case [d]ebug' })
 
       vim.keymap.set('n', ',o', function()

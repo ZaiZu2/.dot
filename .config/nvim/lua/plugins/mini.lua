@@ -52,9 +52,9 @@ return {
 
       require('mini.notify').setup()
 
-      require('mini.starter').setup()
+      -- require('mini.starter').setup()
 
-      require('mini.sessions').setup { autoread = true }
+      -- require('mini.sessions').setup { autoread = true }
 
       require('mini.icons').setup()
 

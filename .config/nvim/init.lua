@@ -38,7 +38,10 @@ vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [d]
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next [d]iagnostic message' })
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic [e]rror messages' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [q]uickfix list' })
--- Add border to the diagnostic popup window
+
+vim.keymap.set('n', '<leader>gn', ':tabnew<CR>', { desc = '[n]ew tab' })
+vim.keymap.set('n', '<leader>gN', ':tabclose<CR>', { desc = 'Close the current tab' })
+
 vim.diagnostic.config {
   virtual_text = {
     prefix = '■ ',
@@ -46,12 +49,44 @@ vim.diagnostic.config {
   float = { border = 'rounded' },
 }
 
+-- vim.api.nvim_create_autocmd({ 'TextChanged', 'InsertLeave' }, {
+--   desc = 'Autosave files on any changes',
+--   group = vim.api.nvim_create_augroup('auto-save', { clear = true }),
+--   callback = function(ctx)
+--     local debouce_time = 1000
+--     local init_autosave, autosave_locked = pcall(vim.api.nvim_buf_get_var, ctx.buf, 'autosave_locked')
+--
+--     if (not init_autosave or not autosave_locked) and vim.bo.buftype == '' then
+--       vim.cmd 'silent w'
+--       vim.notify('Saved at ' .. os.date '%H:%M:%S')
+--
+--       vim.api.nvim_buf_set_var(ctx.buf, 'autosave_locked', true)
+--       vim.defer_fn(function()
+--         if vim.api.nvim_buf_is_valid(ctx.buf) then
+--           vim.api.nvim_buf_set_var(ctx.buf, 'autosave_locked', false)
+--         end
+--       end, debouce_time)
+--     end
+--   end,
+-- })
+vim.api.nvim_create_autocmd({ 'TextChanged', 'InsertLeave' }, {
+  desc = 'Autosave files on any changes',
+  group = vim.api.nvim_create_augroup('auto-save', { clear = true }),
+  callback = function(ctx)
+    if not vim.bo.buftype == '' or not vim.bo.modified or vim.fn.findfile(ctx.file, '.') == '' then
+      return
+    end
+
+    vim.cmd 'silent w'
+  end,
+})
+
 -- Highlight when yanking (copying) text
 -- :help lua-guide-autocommands
 -- :help vim.highlight.on_yank()
 vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',
-  group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
+  group = vim.api.nvim_create_augroup('highlight-yank', { clear = true }),
   callback = function()
     vim.highlight.on_yank()
   end,

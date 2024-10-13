@@ -72,7 +72,7 @@ if [[ "$(uname)" == "Darwin" ]]; then
   # macOS
 else
   # Linux
-export PATH="/opt/nvim-linux64/bin:$PATH"
+  export PATH="/opt/nvim-linux64/bin:$PATH"
   export PATH="$HOME/.fmt:$PATH"
 fi
 

@@ -48,6 +48,9 @@ return {
         dap.set_breakpoint(vim.fn.input 'Breakpoint condition: ')
       end, { desc = 'Set conditional [B]reakpoint' })
 
+      vim.keymap.set('n', ',d', dap.down, { desc = 'Move [d]own the stack frame' })
+      vim.keymap.set('n', ',u', dap.up, { desc = 'Move [u]p the stack frame' })
+
       require('nvim-dap-virtual-text').setup {
         display_callback = function(variable)
           if #variable.value > 15 then
@@ -62,7 +65,7 @@ return {
       -- -- :help nvim-dap-ui
       dapui.setup()
       -- Toggle to see last session result. Without this, you can't see session output in case of unhandled exception.
-      vim.keymap.set('n', ',u', dapui.toggle, { desc = 'toggle [u]I' })
+      vim.keymap.set('n', ',U', dapui.toggle, { desc = 'toggle [U]I' })
       vim.keymap.set('n', ',K', function()
         require('dapui').eval(nil, { enter = True })
       end, { desc = 'inspect variable' })

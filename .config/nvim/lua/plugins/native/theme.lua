@@ -9,4 +9,11 @@ return {
       vim.cmd.hi 'Comment gui=none'
     end,
   },
+  {
+    'nvim-zh/colorful-winsep.nvim',
+    event = { 'WinLeave' },
+    opts = { hi = {
+      fg = '#dcd7ba',
+    }, smooth = false },
+  },
 }
