@@ -26,7 +26,7 @@ return {
           hide_dotfiles = false,
           hide_gitignored = true,
           hide_by_name = {}, -- '.git', '.DS_Store', 'thumbs.db'
-          never_show = {},
+          never_show = {'.DS_Store', '__pycache__', '.ruff_cache', '.mypy_cache', '.pytest_cache'},
         },
       },
     },
