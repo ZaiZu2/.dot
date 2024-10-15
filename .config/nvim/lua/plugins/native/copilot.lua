@@ -5,6 +5,8 @@ return {
     event = 'InsertEnter',
     config = function()
       require('copilot').setup {
+        enabled = true,
+        auto_trigger = true,
         suggestion = {
           keymap = {
             accept = '<M-y>',
@@ -25,6 +27,7 @@ return {
       { 'nvim-lua/plenary.nvim' },
       { 'zbirenbaum/copilot.lua' },
     },
+    event = 'VeryLazy',
     build = 'make tiktoken', -- Only on MacOS or Linux
     opts = {
       question_header = '## User ',
@@ -48,55 +51,9 @@ return {
         Wording = 'Please improve the grammar and wording of the following text.',
         Concise = 'Please rewrite the following text to make it more concise.',
       },
-      auto_follow_cursor = false, -- Don't follow the cursor after getting response
-      show_help = true, -- Show help in virtual text, set to true if that's 1st time using Copilot Chat
-      mappings = {
-        -- Use tab for completion
-        complete = {
-          detail = 'Use @<Tab> or /<Tab> for options.',
-          insert = '<Tab>',
-        },
-        -- Close the chat
-        close = {
-          normal = 'q',
-          insert = '<C-c>',
-        },
-        -- Reset the chat buffer
-        reset = {
-          normal = '<C-x>',
-          insert = '<C-x>',
-        },
-        -- Submit the prompt to Copilot
-        submit_prompt = {
-          normal = '<CR>',
-          insert = '<C-CR>',
-        },
-        -- Accept the diff
-        accept_diff = {
-          normal = '<C-y>',
-          insert = '<C-y>',
-        },
-        -- Yank the diff in the response to register
-        yank_diff = {
-          normal = 'gmy',
-        },
-        -- Show the diff
-        show_diff = {
-          normal = 'gmd',
-        },
-        -- Show the prompt
-        show_system_prompt = {
-          normal = 'gmp',
-        },
-        -- Show the user selection
-        show_user_selection = {
-          normal = 'gms',
-        },
-        -- Show help
-        show_help = {
-          normal = 'gmh',
-        },
-      },
+      auto_follow_cursor = true, -- Don't follow the cursor after getting response
+      insert_at_end = true,
+      show_help = true,
     },
     config = function(_, opts)
       local chat = require 'CopilotChat'
@@ -117,23 +74,21 @@ return {
       }
 
       chat.setup(opts)
-      -- Setup the CMP integration
-      require('CopilotChat.integrations.cmp').setup()
 
       vim.api.nvim_create_user_command('CopilotChatVisual', function(args)
         chat.ask(args.args, { selection = select.visual })
       end, { nargs = '*', range = true })
 
       -- Inline chat with Copilot
-      vim.api.nvim_create_user_command('CopilotChatInline', function(args)
+      vim.api.nvim_create_user_command('CopilotChatFloat', function(args)
         chat.ask(args.args, {
           selection = select.visual,
           window = {
             layout = 'float',
-            relative = 'cursor',
-            width = 1,
-            height = 0.4,
-            row = 1,
+            relative = 'editor',
+            border = 'rounded',
+            width = 0.9,
+            height = 0.9,
           },
         })
       end, { nargs = '*', range = true })
@@ -158,7 +113,6 @@ return {
         end,
       })
     end,
-    event = 'VeryLazy',
     keys = {
       {
         '<leader>cv',
@@ -168,7 +122,7 @@ return {
       },
       {
         '<leader>cx',
-        ':CopilotChatInline<cr>',
+        ':CopilotChatFloat<cr>',
         mode = { 'x', 'n' },
         desc = 'Inline chat',
       },
