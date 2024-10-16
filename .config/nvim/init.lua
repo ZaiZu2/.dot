@@ -1,5 +1,6 @@
 -- Read `init.lua` from cwd, and save the result to `vim.g.custom`
 -- `vim.g.custom` can be used to modify lua initialization
+vim.g.custom = {}
 local init_file = vim.fn.getcwd() .. '/nvim.lua'
 if vim.fn.filereadable(init_file) == 1 then
   local ok, custom = pcall(dofile, init_file)
@@ -7,7 +8,7 @@ if vim.fn.filereadable(init_file) == 1 then
     if type(custom) == 'table' then
       vim.g.custom = custom
     else
-      vim.notify('vim.init must return a table' .. custom, vim.log.levels.ERROR)
+      vim.notify('vim.lua must return a table' .. custom, vim.log.levels.ERROR)
     end
   else
     vim.notify('Error loading `nvim.lua`: ' .. custom, vim.log.levels.ERROR)

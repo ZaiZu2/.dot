@@ -7,11 +7,17 @@ return {
       'nvim-treesitter/nvim-treesitter',
     },
     config = function()
+      local neo_python_conf = {
+        dap = { justMyCode = true },
+      }
+      if vim.g.custom.neotest_python ~= nil then
+        neo_python_conf = vim.tbl_extend('force', neo_python_conf, vim.g.custom.neotest_python)
+        -- print('neotest_python ' .. vim.g.custom.neotest_python)
+      end
+
       require('neotest').setup {
         adapters = {
-          require 'neotest-python' {
-            dap = { justMyCode = false }, -- optional DAP configuration
-          },
+          require 'neotest-python'(neo_python_conf),
         },
       }
 
