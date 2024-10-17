@@ -13,31 +13,44 @@ return {
         end,
       },
       'nvim-telescope/telescope-ui-select.nvim',
-      -- { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
+      'nvim-tree/nvim-web-devicons',
     },
     config = function()
       -- :Telescope help_tags
       -- - Insert mode: <c-/>
       -- - Normal mode: ?
       require('telescope').setup {
-        -- :help telescope / :help telescope.setup()
+        defaults = {
+          -- path_display = filename_first,
+        },
         extensions = {
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
           },
         },
       }
-
       pcall(require('telescope').load_extension, 'fzf')
       pcall(require('telescope').load_extension, 'ui-select')
 
       -- :help telescope.builtin
       local builtin = require 'telescope.builtin'
+      local pickers = require 'plugins.native.pickers'
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[s]earch [h]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[s]earch [k]eymaps' })
-      vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[s]earch [f]iles' })
-      vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[s]earch current [w]ord' })
-      vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[s]earch by [g]rep' })
+
+      vim.keymap.set('n', '<leader>sf', function()
+        pickers.prettyFilesPicker { picker = 'find_files', hidden = true, no_ignore = true }
+      end, { desc = '[s]earch [f]iles' })
+      pickers.prettyFilesPicker { picker = 'find_files' }
+
+      vim.keymap.set('n', '<leader>sw', function()
+        pickers.prettyGrepPicker { picker = 'grep_string' }
+      end, { desc = '[s]earch current [w]ord' })
+
+      vim.keymap.set('n', '<leader>sg', function()
+        pickers.prettyGrepPicker { picker = 'live_grep' }
+      end, { desc = '[s]earch by [g]rep' })
+
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[s]earch [d]iagnostics' })
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[s]earch [r]esume' })
       -- vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[s]earch Recent Files ("." for repeat)' })

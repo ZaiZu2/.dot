@@ -81,13 +81,16 @@ return {
           local map = function(keys, func, desc)
             vim.keymap.set('n', keys, func, { buffer = event.buf, desc = desc })
           end
-          map(';d', require('telescope.builtin').lsp_definitions, '[d]efinition')
+
+          local telescope = require('telescope.builtin')
+          local pickers = require('plugins.native.pickers')
+          map(';d', telescope.lsp_definitions, '[d]efinition')
           map(';D', vim.lsp.buf.declaration, '[D]eclaration')
-          map(';r', require('telescope.builtin').lsp_references, '[r]eferences')
-          map(';i', require('telescope.builtin').lsp_implementations, '[i]mplementation')
-          map(';t', require('telescope.builtin').lsp_type_definitions, '[t]ype definition')
-          map(';s', require('telescope.builtin').lsp_document_symbols, '[s]ymbols')
-          map(';p', require('telescope.builtin').lsp_dynamic_workspace_symbols, 'symbols in [p]roject')
+          map(';r', telescope.lsp_references, '[r]eferences')
+          map(';i', telescope.lsp_implementations, '[i]mplementation')
+          map(';t', telescope.lsp_type_definitions, '[t]ype definition')
+          map(';s', pickers.prettyDocumentSymbols, '[s]ymbols')
+          map(';p', pickers.prettyWorkspaceSymbols, 'symbols in [p]roject')
           map(';R', vim.lsp.buf.rename, '[R]ename')
           -- Execute a code action, usually your cursor needs to be on top of an error
           -- or a suggestion from your LSP for this to activate.
