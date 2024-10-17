@@ -41,7 +41,6 @@ return {
       vim.keymap.set('n', '<leader>sf', function()
         pickers.prettyFilesPicker { picker = 'find_files', hidden = true, no_ignore = true }
       end, { desc = '[s]earch [f]iles' })
-      pickers.prettyFilesPicker { picker = 'find_files' }
 
       vim.keymap.set('n', '<leader>sw', function()
         pickers.prettyGrepPicker { picker = 'grep_string' }
@@ -74,7 +73,7 @@ return {
       end, { desc = '[s]earch [/] in Open Files' })
 
       vim.keymap.set('n', '<leader>sn', function()
-        builtin.find_files { cwd = vim.fn.stdpath 'config' }
+        pickers.prettyFilesPicker { picker = 'find_files', cwd = vim.fn.stdpath 'config' }
       end, { desc = '[s]earch [n]eovim files' })
     end,
   },
