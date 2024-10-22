@@ -13,7 +13,11 @@ return {
     'nvim-zh/colorful-winsep.nvim',
     event = { 'WinLeave' },
     opts = { hi = {
-      fg = '#dcd7ba',
+      fg = '#e6c384',
     }, smooth = false },
+    config = function(_, opts)
+      vim.api.nvim_set_hl(0, 'WinSeparator', { fg = '#727169' })
+      require('colorful-winsep').setup(opts)
+    end,
   },
 }
