@@ -1,4 +1,3 @@
--- Shows how to use the DAP plugin to debug your code.
 return {
   {
     'mfussenegger/nvim-dap',
@@ -41,6 +40,7 @@ return {
       vim.keymap.set('n', ',S', function()
         dap.disconnect { terminateDebuggee = true }
         dap.close()
+        dapui.close()
       end, { desc = '[S]top debugger' })
 
       vim.keymap.set('n', ',b', dap.toggle_breakpoint, { desc = 'Toggle [b]reakpoint' })
@@ -61,18 +61,33 @@ return {
         end,
       }
 
-      -- -- Dap UI setup
       -- -- :help nvim-dap-ui
       dapui.setup()
       -- Toggle to see last session result. Without this, you can't see session output in case of unhandled exception.
       vim.keymap.set('n', ',U', dapui.toggle, { desc = 'toggle [U]I' })
       vim.keymap.set('n', ',K', function()
-        require('dapui').eval(nil, { enter = True })
-      end, { desc = 'inspect variable' })
+        require('dapui').eval()
+      end, { desc = 'Inspect variable' })
 
       dap.listeners.after.event_initialized['dapui_config'] = dapui.open
       dap.listeners.before.event_terminated['dapui_config'] = dapui.close
       dap.listeners.before.event_exited['dapui_config'] = dapui.close
+      dap.listeners.before.event_terminated['dapui_config'] = dapui.close
+
+      -- Shortcuts to focus nvim-dap-ui windows
+      FocusElement = function(el_name)
+        local buf_id = require('dapui').elements[el_name].buffer()
+        for _, win in ipairs(vim.api.nvim_list_wins()) do
+          if vim.api.nvim_win_get_buf(win) == buf_id then
+            vim.api.nvim_set_current_win(win)
+            return
+          end
+        end
+      end
+      vim.keymap.set('n', ',v', ':lua FocusElement("repl")<CR>i', { desc = 'Focus REPL' })
+      vim.keymap.set('n', ',c', ':lua FocusElement("stacks")<CR>', { desc = 'Focus Stacks' })
+      vim.keymap.set('n', ',x', ':lua FocusElement("breakpoints")<CR>', { desc = 'Focus Breakpoints' })
+      vim.keymap.set('n', ',z', ':lua FocusElement("scopes")<CR>', { desc = 'Focus Scopes' })
 
       -- :help dap-configuration
       -- :help dap-python
@@ -81,6 +96,14 @@ return {
       -- Following functionalities provided by `neotest`
       -- vim.keymap.set('n', ',f', require('dap-python').test_method, { desc = 'test [f]unction' })
       -- vim.keymap.set('n', ',m', require('dap-python').debug_selection, { desc = 'test selection' })
+
+      -- table.insert(require('dap').configurations.python, {
+      --   type = 'python',
+      --   request = 'launch',
+      --   name = 'My custom launch configuration',
+      --   program = '${file}',
+      --   -- ... more options, see https://github.com/microsoft/debugpy/wiki/Debug-configuration-settings
+      -- })
     end,
   },
 }

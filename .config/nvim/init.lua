@@ -8,7 +8,7 @@ if vim.fn.filereadable(init_file) == 1 then
     if type(custom) == 'table' then
       vim.g.custom = custom
     else
-      vim.notify('vim.lua must return a table' .. custom, vim.log.levels.ERROR)
+      vim.notify('nvim.lua must return a table' .. custom, vim.log.levels.ERROR)
     end
   else
     vim.notify('Error loading `nvim.lua`: ' .. custom, vim.log.levels.ERROR)
@@ -58,6 +58,8 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 
 vim.keymap.set('n', '<leader>gn', ':tabnew<CR>', { desc = '[n]ew tab' })
 vim.keymap.set('n', '<leader>gN', ':tabclose<CR>', { desc = 'Close the current tab' })
+vim.keymap.set('n', '<C-_>', '<C-w><h>', { desc = 'Split window horizontally' })
+vim.keymap.set('n', '<C-|>', '<C-w><v>', { desc = 'Split window vertically' })
 
 vim.diagnostic.config {
   virtual_text = {
