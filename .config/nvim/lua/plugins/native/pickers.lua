@@ -6,6 +6,7 @@ local telescopeUtilities = require 'telescope.utils'
 local telescopeMakeEntryModule = require 'telescope.make_entry'
 local plenaryStrings = require 'plenary.strings'
 local devIcons = require 'nvim-web-devicons'
+local icons = require 'mini.icons'
 local telescopeEntryDisplayModule = require 'telescope.pickers.entry_display'
 
 -- Obtain Filename icon width

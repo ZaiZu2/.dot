@@ -6,7 +6,6 @@ return {
     version = '*',
     dependencies = {
       'nvim-lua/plenary.nvim',
-      -- 'nvim-tree/nvim-web-devicons', -- not strictly required, but recommended
       'MunifTanjim/nui.nvim',
     },
     cmd = 'Neotree',
@@ -24,7 +23,7 @@ return {
           visible = true,
           show_hidden_count = true,
           hide_dotfiles = false,
-          hide_gitignored = true,
+          hide_gitignored = false,
           hide_by_name = {}, -- '.git', '.DS_Store', 'thumbs.db'
           never_show = {'.DS_Store', '__pycache__', '.ruff_cache', '.mypy_cache', '.pytest_cache'},
         },

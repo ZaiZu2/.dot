@@ -1,4 +1,4 @@
--- Read `init.lua` from cwd, and save the result to `vim.g.custom`
+-- Read `nvim.lua` from cwd, and save the result to `vim.g.custom`
 -- `vim.g.custom` can be used to modify lua initialization
 vim.g.custom = {}
 local init_file = vim.fn.getcwd() .. '/nvim.lua'
@@ -111,6 +111,28 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
+local findAndReplace = function()
+  local cword = vim.fn.expand '<cword>'
+  local cmd_string = ':%s/' .. cword .. '//g<Left><Left>'
+  return cmd_string
+  -- vim.cmd 'normal! :'
+  -- vim.api.nvim_feedkeys(cmd_string, 'm', true)
+end
+vim.keymap.set('n', '<leader>sr', findAndReplace, { desc = '[s]earch and [r]eplace' })
+
+local findAndReplaceGlobally = function()
+  if vim.fn.getwininfo(vim.fn.win_getid())[1].quickfix ~= 1 then
+    print 'This function can only be used in a quickfix buffer.'
+    return
+  end
+
+  local cword = vim.fn.expand '<cword>'
+  local cmd_string = string.format('<cmd>cdo %%s/%s/', cword)
+  vim.cmd 'normal! :'
+  vim.api.nvim_feedkeys(cmd_string, 't', true)
+end
+vim.keymap.set('n', '<leader>sR', findAndReplaceGlobally, { desc = '[s]earch and [R]eplace globally' })
+
 -- Install plugin manager - lazy.nvim
 -- :help lazy.nvim.txt
 -- :Lazy / :Lazy update
@@ -147,7 +169,6 @@ local selectPlugins = function()
       'treesitter',
       'lint',
       'cmp',
-      'surround',
       'autopairs',
       'indent_line',
       'debug',

@@ -13,11 +13,12 @@ return {
       -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
       -- - sd'   - [S]urround [D]elete [']quotes
       -- - sr)'  - [S]urround [R]eplace [)] [']
+      vim.keymap.set({ 'n', 'x' }, 's', '<Nop>')
       require('mini.surround').setup()
 
       require('mini.operators').setup {
         exchange = {
-          prefix = 'g=',
+          prefix = 'ge',
           reindent_linewise = true, -- Whether to reindent new text to match previous indent
         },
         evaluate = {
@@ -56,7 +57,9 @@ return {
 
       -- require('mini.sessions').setup { autoread = true }
 
-      require('mini.icons').setup()
+      local miniIcons = require('mini.icons')
+      miniIcons.setup()
+      miniIcons.mock_nvim_web_devicons()
 
       -- require('mini.completion').setup()
 

@@ -65,6 +65,8 @@ zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*' menu no
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 
+setopt globdots # Allow matching hidden files with wildcards
+
 # Node.js manager
 eval "$(fnm env --use-on-cd --shell zsh)"
 

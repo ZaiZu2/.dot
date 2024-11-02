@@ -2,8 +2,14 @@ return {
   {
     'folke/which-key.nvim',
     event = 'VimEnter',
-    config = function()
-      require('which-key').setup()
+    opts = {
+      triggers = {
+        { '<auto>', mode = 'nixsotc' },
+        { 's', mode = { 'n', 'v' } },
+      },
+    },
+    config = function(_, opts)
+      require('which-key').setup(opts)
 
       -- Updated general key mappings
       require('which-key').add {
@@ -11,8 +17,6 @@ return {
         { '<leader>c_', hidden = true },
         { '<leader>g', group = '[g]o to', icon = { icon = '', color = 'purple' } },
         { '<leader>g_', hidden = true },
-        { '<leader>r', group = '[r]ename' },
-        { '<leader>r_', hidden = true },
         { '<leader>s', group = '[s]earch' },
         { '<leader>s_', hidden = true },
         { '<leader>t', group = '[t]oggle' },

@@ -75,7 +75,8 @@ return {
       dap.listeners.before.event_terminated['dapui_config'] = dapui.close
 
       -- Shortcuts to focus nvim-dap-ui windows
-      FocusElement = function(el_name)
+      ---@diagnostic disable-next-line: unused-local, unused-function
+      local focusDapuiElement = function(el_name)
         local buf_id = require('dapui').elements[el_name].buffer()
         for _, win in ipairs(vim.api.nvim_list_wins()) do
           if vim.api.nvim_win_get_buf(win) == buf_id then
@@ -84,10 +85,10 @@ return {
           end
         end
       end
-      vim.keymap.set('n', ',v', ':lua FocusElement("repl")<CR>i', { desc = 'Focus REPL' })
-      vim.keymap.set('n', ',c', ':lua FocusElement("stacks")<CR>', { desc = 'Focus Stacks' })
-      vim.keymap.set('n', ',x', ':lua FocusElement("breakpoints")<CR>', { desc = 'Focus Breakpoints' })
-      vim.keymap.set('n', ',z', ':lua FocusElement("scopes")<CR>', { desc = 'Focus Scopes' })
+      vim.keymap.set('n', ',v', '<cmd>lua focusDapuiElement("repl")<CR>i', { desc = 'Focus REPL' })
+      vim.keymap.set('n', ',c', '<cmd>lua focusDapuiElement("stacks")<CR>', { desc = 'Focus Stacks' })
+      vim.keymap.set('n', ',x', '<cmd>lua focusDapuiElement("breakpoints")<CR>', { desc = 'Focus Breakpoints' })
+      vim.keymap.set('n', ',z', '<cmd>lua focusDapuiElement("scopes")<CR>', { desc = 'Focus Scopes' })
 
       -- :help dap-configuration
       -- :help dap-python
