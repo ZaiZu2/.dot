@@ -1,0 +1,16 @@
+- name: "{{ role_name }} | {{ ansible_distribution }} | Dependencies"
+  community.general.homebrew:
+    name:
+      - cmake
+      - curl
+      - pkg-config
+      - libtool
+      - unzip
+      - ansible-lint
+      - ripgrep
+    state: present
+
+- name: "{{ role_name }} | {{ ansible_distribution }} | Install"
+  community.general.homebrew:
+    name: neovim
+    state: present

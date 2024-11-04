@@ -1,0 +1,19 @@
+- name: "{{ role_name }} | {{ ansible_distribution }} | Dependencies"
+  ansible.builtin.apt:
+    name:
+      - cmake
+      - curl
+      - pkg-config
+      - libtool
+      - unzip
+      - ansible-lint
+      - ripgrep
+    state: present
+  become: true
+
+- name: "{{ role_name }} | {{ ansible_distribution }} | Install"
+  ansible.builtin.apt_repository:
+    repo: ppa:neovim-ppa/stable
+    state: present
+    mode: "0644"
+  become: true

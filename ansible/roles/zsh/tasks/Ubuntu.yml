@@ -1,0 +1,16 @@
+- name: "{{ role_name }} | {{ ansible_distribution }} | Install"
+  ansible.builtin.apt:
+    name: zsh
+    state: present
+  become: true
+
+- name: "{{ role_name }} | {{ ansible_distribution }} | Set {{ role_name }} as default"
+  ansible.builtin.user:
+    name: "{{ the_user }}"
+    shell: /bin/zsh
+  become: true
+
+- name: "{{ role_name }} | {{ ansible_distribution }} | Install Oh-my-posh"
+  ansible.builtin.shell: "curl -s https://ohmyposh.dev/install.sh | bash -s -- -d ~/.local/bin/"
+  args:
+    creates: ~/.local/bin/oh-my-posh

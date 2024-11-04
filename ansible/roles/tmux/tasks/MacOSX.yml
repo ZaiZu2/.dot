@@ -1,0 +1,5 @@
+- name: "{{ role_name }} | {{ ansible_distribution }} | Install"
+  community.general.homebrew:
+    name: tmux
+    state: present
+

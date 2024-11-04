@@ -1,0 +1,21 @@
+- name: "{{ role_name }} | {{ ansible_distribution }} | Check for distribution config"
+  ansible.builtin.stat:
+   path: "{{ role_path }}/tasks/{{ ansible_distribution }}.yml"
+  register: distribution_config
+
+- name: "{{ role_name }} | {{ ansible_distribution }} | Run Tasks"
+  ansible.builtin.include_tasks: "{{ ansible_distribution}}.yml"
+  when: distribution_config.stat.exists
+
+# TODO: Copy config here instead of using bare git repo
+# - name: "Neovim | Config folder"
+#   ansible.builtin.file:
+#     mode: "0755"
+#     path: "{{ ansible_user_dir }}/.config/nvim"
+#     state: directory
+# - name: "Neovim | Config folder"
+#   ansible.builtin.file:
+#     src: "{{ role_path}}/files"
+#     dest: "{{ ansible_user_dir}}/.config/nvim"
+#     state: link
+#     force: true

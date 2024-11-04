@@ -1,0 +1,10 @@
+- name: "{{ role_name }} | {{ ansible_distribution }} | Copy"
+  ansible.builtin.copy:
+    src: "roles/{{ role_name }}/files/"
+    dest: "/usr/share/fonts"
+    mode: "0644"
+    owner: "root"
+    group: "root"
+    remote_src: no
+  # with_fileglob:
+  # - "roles/{{ role_name }}/files/*"

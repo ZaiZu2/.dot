@@ -1,0 +1,15 @@
+- name: "{{ role_name }} | {{ ansible_distribution }} | Install"
+  ansible.builtin.shell: "curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin"
+  args:
+    creates: ~/.local/kitty.app
+
+- name: "{{ role_name }} | {{ ansible_distribution }} | Add to '~/.local/bin'"
+  ansible.builtin.file:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    state: link
+  loop:
+    - { src: "~/.local/kitty.app/bin/kitty", dest: "~/.local/bin/kitty" }
+    - { src: "~/.local/kitty.app/bin/kitten", dest: "~/.local/bin/kitten" }
+
+#TODO: Add desktop icon - https://sw.kovidgoyal.net/kitty/binary/
