@@ -6,12 +6,3 @@
 - name: "Run Tasks"
   ansible.builtin.include_tasks: "{{ ansible_distribution}}.yml"
   when: distribution_config.stat.exists
-
-# TODO: Copy config here instead of using bare git repo
-# - name: "Tmux | Configure tmux"
-#   ansible.builtin.copy:
-#     src: tmux
-#     dest: "{{ ansible_user_dir }}/.config/"
-#     mode: "0644"
-#     directory_mode: "0755"
-#     force: true

@@ -1,4 +1,4 @@
-- name: "{{ role_name }} | {{ ansible_distribution }} | Install"
+- name: "Install"
   ansible.builtin.shell: "curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin"
   args:
     creates: /Applications/kitty.app

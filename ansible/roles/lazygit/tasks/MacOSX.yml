@@ -1,5 +1,5 @@
 - name: "Install"
   community.general.homebrew:
-    name: tmux
+    name: lazygit
     state: present
 

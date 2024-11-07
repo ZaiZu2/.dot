@@ -1,0 +1,8 @@
+- name: "Update APT"
+  ansible.builtin.apt:
+    update_cache: true
+    upgrade: full
+    autoremove: true
+    autoclean: true
+  become: true
+  ignore_errors: true

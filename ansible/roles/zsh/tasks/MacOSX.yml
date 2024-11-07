@@ -1,15 +1,15 @@
-- name: "{{ role_name }} | {{ ansible_distribution }} | Install"
+- name: "Install"
   community.general.homebrew:
     name: zsh
     state: present
 
-- name: "{{ role_name }} | {{ ansible_distribution }} | Set {{ role_name }} as default"
+- name: "Set as default"
   ansible.builtin.user:
     name: "{{ ansible_user_id }}"
     shell: /bin/zsh
   become: true
 
-- name: "{{ role_name }} | {{ ansible_distribution }} | Install Oh-my-posh"
+- name: "Install Oh-my-posh"
   community.general.homebrew:
     name: jandedobbeleer/oh-my-posh/oh-my-posh
     state: present

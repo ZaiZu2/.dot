@@ -3,11 +3,14 @@
   vars:
     the_user: "{{ ansible_user_id }}"
     default_roles:
-    - neovim
-    - tmux
+    - package_manager
     - zsh
+    - fzf
+    - tmux
+    - neovim
     - kitty
     - fonts
+    - lazygit
 
   tasks:
   - name: Run roles

@@ -1,0 +1,3 @@
+- name: Update Homebrew packages # Execute after all tasks are executed
+  community.general.homebrew:
+    update_all: true
