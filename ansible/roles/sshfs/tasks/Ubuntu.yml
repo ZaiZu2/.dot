@@ -1,0 +1,6 @@
+---
+- name: Install
+  ansible.builtin.apt:
+    name: sshfs
+    state: present
+  become: true

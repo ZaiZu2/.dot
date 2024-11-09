@@ -1,0 +1,6 @@
+---
+- name: Install
+  community.general.pacman:
+    name: sshfs
+    state: present
+  become: true

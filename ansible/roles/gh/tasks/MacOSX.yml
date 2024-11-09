@@ -1,5 +1,5 @@
 ---
-- name: "Install fzf"
+- name: "Install"
   community.general.homebrew:
-    name: fzf
+    name: gh
     state: present

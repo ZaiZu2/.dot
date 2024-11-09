@@ -1,16 +1,4 @@
-- name: "Install"
-  ansible.builtin.apt:
-    name: zsh
-    state: present
-  become: true
-
-- name: "Set {{ role_name }} as default"
-  ansible.builtin.user:
-    name: "{{ the_user }}"
-    shell: /bin/zsh
-  become: true
-
-- name: "Install Oh-my-posh"
-  ansible.builtin.shell: "curl -s https://ohmyposh.dev/install.sh | bash -s -- -d ~/.local/bin/"
+- name: Install
+  ansible.builtin.shell: "curl -fsSL https://fnm.vercel.app/install | bash -s -- --install-dir \"{{ ansible_user_dir }}/.local/fnm\" --skip-shell"
   args:
-    creates: ~/.local/bin/oh-my-posh
+    creates: ~/.local/fnm

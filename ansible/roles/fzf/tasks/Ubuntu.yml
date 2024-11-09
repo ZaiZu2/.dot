@@ -1,20 +1,27 @@
-- name: "Uninstall APT fzf"
+- name: Uninstall APT fzf
   ansible.builtin.apt:
     name: fzf
     state: absent
   become: true
 
-- name: "Clone latest version"
+- name: Clone latest version
   ansible.builtin.git:
     repo: https://github.com/junegunn/fzf.git
     depth: 1
-    dest: "/usr/local/bin/fzf"
+    dest: "{{ ansible_user_dir }}/.local/fzf"
   become: true
   register: fzf_clone
 
-- name: "Install FZF"
-  ansible.builtin.shell: "/usr/local/bin/fzf/install --all --no-update-rc --no-fish"
+- name: Install
+  ansible.builtin.shell: "install --all --no-update-rc --no-fish"
   args:
-    chdir: "/usr/local/bin/fzf"
+    chdir: "{{ ansible_user_dir }}/.local/fzf"
   become: true
   when: fzf_clone.changed
+
+- name: Create symlink
+  ansible.builtin.file:
+    src: "{{ ansible_user_dir }}/.local/fzf/bin/fzf"
+    dest: "{{ ansible_user_dir }}/.local/bin/fzf"
+    state: link
+    force: yes
