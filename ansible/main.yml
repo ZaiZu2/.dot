@@ -1,11 +1,16 @@
 - name: Bootstrap development environment
   hosts: localhost
   vars:
-    the_user: "{{ ansible_user_id }}"
     default_roles:
     - package_manager
+    - git
     - zsh
     - fzf
+    - fnm
+    - gh
+    - docker
+    - sshfs
+    - python
     - tmux
     - neovim
     - kitty

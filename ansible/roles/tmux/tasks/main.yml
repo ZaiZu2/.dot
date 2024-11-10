@@ -11,6 +11,7 @@
   ansible.builtin.git:
     repo: https://github.com/tmux-plugins/tpm
     dest: ~/.tmux/plugins/tpm
+    depth: 1
 
 # TODO: Copy config here instead of using bare git repo
 # - name: "Tmux | Configure tmux"

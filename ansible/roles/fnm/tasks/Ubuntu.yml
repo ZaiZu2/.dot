@@ -1,0 +1,14 @@
+- name: "Install"
+  ansible.builtin.shell: "curl -fsSL https://fnm.vercel.app/install | bash -s -- --install-dir \"{{ ansible_user_dir }}/.local/share/fnm\" --skip-shell"
+  # args:
+  #   creates: "{{ ansible_user_dir }}/.local/share/fnm" # NOTE: Script checks by itselfi
+
+- name: Create symlink
+  ansible.builtin.file:
+    src: "{{ ansible_user_dir }}/.local/share/fnm/fnm"
+    dest: "{{ ansible_user_dir }}/.local/bin/fnm"
+    state: link
+
+- name: "Install latest Node.js"
+  ansible.builtin.shell: "fnm install --lts"
+  ignore_errors: true

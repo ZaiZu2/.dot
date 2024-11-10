@@ -6,4 +6,4 @@
   become: true
 
 # - name: Authenticate with GitHub using SSH key
-#   command: gh auth login --hostname github.com --method ssh
+  #   command: gh auth login --hostname github.com --method ssh

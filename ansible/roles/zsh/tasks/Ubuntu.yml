@@ -1,4 +1,23 @@
 - name: Install
-  ansible.builtin.shell: "curl -fsSL https://fnm.vercel.app/install | bash -s -- --install-dir \"{{ ansible_user_dir }}/.local/fnm\" --skip-shell"
+  ansible.builtin.apt:
+    name: zsh
+    state: present
+  become: true
+
+- name: "Set {{ role_name }} as default"
+  ansible.builtin.user:
+    name: "{{ ansible_user_id }}"
+    shell: /bin/zsh
+  become: true
+
+- name: Install Oh-my-posh
+  ansible.builtin.shell: "curl -s https://ohmyposh.dev/install.sh | bash -s -- -d ~/.local/bin/"
   args:
-    creates: ~/.local/fnm
+    creates: ~/.local/bin/oh-my-posh
+
+- name: Install Zinit
+  ansible.builtin.shell: "curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh | bash -"
+  # args:
+  #   creates: ~/.local/share/zinit
+
+

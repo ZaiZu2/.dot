@@ -1,21 +1,15 @@
-
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_DATA_HOME="$HOME/.local/share"
+export XDG_CACHE_HOME="$HOME/.cache"
 export PATH="/bin:/usr/bin:/usr/local/bin:$HOME/bin:$HOME/.local/bin:$PATH"
 
-# Install Zsh plugin manager - Zinit
-ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
-if [ ! -d "$ZINIT_HOME" ]; then
-   mkdir -p "$(dirname $ZINIT_HOME)"
-   git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
-fi
-# Source/Load zinit
-source "${ZINIT_HOME}/zinit.zsh"
-
-alias tmux="tmux -f ~/.config/tmux/tmux.conf"
+alias tmux="tmux -f $XDG_CONFIG_HOME/tmux/tmux.conf"
 alias ls='ls --color'
 alias df='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 df config --local status.showUntrackedFiles no
 
-eval "$(oh-my-posh init zsh --config $HOME/.config/ohmyposh/conf.toml)"
+eval "$(oh-my-posh init zsh --config $XDG_CONFIG_HOME/ohmyposh/conf.toml)"
+source "$HOME/.local/share/zinit/zinit.git/zinit.zsh"
 
 # Add in zsh plugins
 zinit light zsh-users/zsh-syntax-highlighting
@@ -27,6 +21,7 @@ autoload bashcompinit && bashcompinit
 autoload -Uz compinit && compinit
 zinit light zsh-users/zsh-completions
 zinit cdreplay -q # Replay all cached completions
+source <(fzf --zsh)
 source <(podman completion zsh)
 source <(gh completion -s zsh) # GitHub completions
 eval "$(fnm completions --shell zsh)"
@@ -66,21 +61,5 @@ zstyle ':completion:*' menu no
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 
 setopt globdots # Allow matching hidden files with wildcards
-
-# Node.js manager
-eval "$(fnm env --use-on-cd --shell zsh)"
-
-if [[ "$(uname)" == "Darwin" ]]; then
-  # macOS
-else
-  # Linux
-  export PATH="/opt/nvim-linux64/bin:$PATH"
-  export PATH="$HOME/.fmt:$PATH"
-fi
-
-for file in ~/zsh/.fzf.sh; do
-    source "$file";
-done
-unset file;
 
 # zprof

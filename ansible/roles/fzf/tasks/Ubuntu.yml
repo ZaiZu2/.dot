@@ -9,14 +9,12 @@
     repo: https://github.com/junegunn/fzf.git
     depth: 1
     dest: "{{ ansible_user_dir }}/.local/fzf"
-  become: true
   register: fzf_clone
 
 - name: Install
-  ansible.builtin.shell: "install --all --no-update-rc --no-fish"
+  ansible.builtin.shell: "./install  --all --no-update-rc --no-fish"
   args:
     chdir: "{{ ansible_user_dir }}/.local/fzf"
-  become: true
   when: fzf_clone.changed
 
 - name: Create symlink
@@ -24,4 +22,3 @@
     src: "{{ ansible_user_dir }}/.local/fzf/bin/fzf"
     dest: "{{ ansible_user_dir }}/.local/bin/fzf"
     state: link
-    force: yes

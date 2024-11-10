@@ -6,3 +6,18 @@
     autoclean: true
   become: true
   ignore_errors: true
+
+- name: "Install APT packages"
+  ansible.builtin.apt:
+    name:
+      - cmake
+      - curl
+      - pkg-config
+      - libtool
+      - unzip
+      - ansible-lint
+      - ripgrep
+      - xclip
+    state: present
+  become: true
+

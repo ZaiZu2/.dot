@@ -1,0 +1,6 @@
+- name: "Install"
+  ansible.builtin.shell: "curl -fsSL https://fnm.vercel.app/install | bash -s -- ---skip-shell"
+
+- name: "Install latest Node.js"
+  ansible.builtin.shell: "fnm install --lts"
+  ignore_errors: true

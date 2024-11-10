@@ -2,6 +2,13 @@
   ansible.builtin.command: which brew
   register: homebrew_check
 
+- name: Install Homebrew
+  ansible.builtin.shell: "curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh | bash -s"
+  become: true
+  when: homebrew_check.rc =! 0
+  notify:
+    - Update Homebrew packages
+
 - name: Update Homebrew
   community.general.homebrew:
     update_homebrew: true
@@ -10,10 +17,19 @@
   notify:
     - Update Homebrew packages
 
-- name: Install Homebrew
-  ansible.builtin.shell: /bin/sh -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  args:
-    creates: /usr/local/bin/brew
-  become: true
-  when: homebrew_check.rc =! 0
+- name: Install Homebrew packages
+  community.general.homebrew:
+    name:
+      - cmake
+      - curl
+      - pkg-config
+      - libtool
+      - unzip
+      - ansible-lint
+      - ripgrep
+      - pbcopy
+    state: present
 
+- name: Update Homebrew packages
+  community.general.homebrew:
+    update_all: true

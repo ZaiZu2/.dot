@@ -72,8 +72,8 @@
         remote_src: true
         src: /tmp/lazygit
         dest: /usr/local/bin/
-        owner: "{{ the_user }}"
-        group: "{{ the_user }}"
+        owner: "{{ ansible_user_id }}"
+        group: "{{ ansible_user_id }}"
         force: true
         mode: "0755"
       become: true

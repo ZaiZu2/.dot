@@ -37,14 +37,14 @@
         dest: /opt/
         remote_src: yes
 
-    - name: Create symlink
-      ansible.builtin.file:
-        src: /opt/nvim-linux64/bin/nvim
-        dest: /usr/local/bin/nvim
-        state: link
-        force: yes
-
     - name: Clean up downloaded archive
       ansible.builtin.file:
         path: /tmp/nvim-linux64.tar.gz
         state: absent
+
+- name: Create symlink
+  ansible.builtin.file:
+    src: /opt/nvim-linux64/bin/nvim
+    dest: /usr/local/bin/nvim
+    state: link
+  become: true

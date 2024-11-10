@@ -1,4 +1,5 @@
-- name: "Install"
+---
+- name: Install
   community.general.homebrew:
-    name: neovim
+    name: git
     state: present
