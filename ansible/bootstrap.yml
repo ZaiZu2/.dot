@@ -1,7 +1,7 @@
 - name: Bootstrap development environment
   hosts: localhost
   vars:
-    default_roles:
+    all_roles:
     - package_manager
     - git
     - zsh
@@ -16,6 +16,7 @@
     - kitty
     - fonts
     - lazygit
+    - uv
 
   tasks:
   - name: Run roles
@@ -26,4 +27,4 @@
       name: "{{ roles_item }}"
     loop_control:
       loop_var: roles_item
-    with_items: "{{ default_roles }}"
+    with_items: "{{ all_roles }}"

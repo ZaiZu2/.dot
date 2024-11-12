@@ -1,4 +1,5 @@
 export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_BIN_HOME="$HOME/.local/bin"
 export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_CACHE_HOME="$HOME/.cache"
 export PATH="/bin:/usr/bin:/usr/local/bin:$HOME/bin:$HOME/.local/bin:$PATH"
@@ -11,6 +12,7 @@ df config --local status.showUntrackedFiles no
 source "$HOME/.local/share/zinit/zinit.git/zinit.zsh"
 eval "$(oh-my-posh init zsh --config $XDG_CONFIG_HOME/ohmyposh/conf.toml)"
 source <(fzf --zsh)
+eval "$(fnm env --use-on-cd --shell zsh)"
 
 # Add in zsh plugins
 zinit light zsh-users/zsh-syntax-highlighting
