@@ -182,7 +182,6 @@ local selectPlugins = function()
       'vim-tmux-navigator',
       'which-key',
       'neoscroll',
-      'colorizer',
     }
   end
 

@@ -25,6 +25,7 @@ source <(fzf --zsh)
 source <(podman completion zsh)
 source <(gh completion -s zsh) # GitHub completions
 eval "$(fnm completions --shell zsh)"
+eval "$(uv generate-shell-completion zsh)"
 complete -C 'aws_completer' aws
 
 # VIM support
@@ -61,5 +62,3 @@ zstyle ':completion:*' menu no
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 
 setopt globdots # Allow matching hidden files with wildcards
-
-# zprof

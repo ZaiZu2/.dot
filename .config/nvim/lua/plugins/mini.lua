@@ -51,13 +51,24 @@ return {
       }
       vim.api.nvim_set_keymap('n', '<C-\\>', '<cmd>lua MiniFiles.open()<CR>', { noremap = true, silent = true, desc = 'Open Mini.Files' })
 
+      local hipatterns = require 'mini.hipatterns'
+      hipatterns.setup {
+        highlighters = {
+          fixme = { pattern = '%f[%w]()FIXME()%f[%W]', group = 'MiniHipatternsFixme' },
+          hack = { pattern = '%f[%w]()HACK()%f[%W]', group = 'MiniHipatternsHack' },
+          todo = { pattern = '%f[%w]()TODO()%f[%W]', group = 'MiniHipatternsTodo' },
+          note = { pattern = '%f[%w]()NOTE()%f[%W]', group = 'MiniHipatternsNote' },
+          hex_color = hipatterns.gen_highlighter.hex_color(),
+        },
+      }
+
       require('mini.notify').setup()
 
       -- require('mini.starter').setup()
 
       -- require('mini.sessions').setup { autoread = true }
 
-      local miniIcons = require('mini.icons')
+      local miniIcons = require 'mini.icons'
       miniIcons.setup()
       miniIcons.mock_nvim_web_devicons()
 

@@ -31,6 +31,11 @@ return {
             },
           },
         },
+        taplo = {
+          formatting = {
+            indent_string = '  ',
+          },
+        }, -- toml
       }
       vim.list_extend(tools, linters)
       vim.list_extend(tools, formatters)
@@ -82,8 +87,8 @@ return {
             vim.keymap.set('n', keys, func, { buffer = event.buf, desc = desc })
           end
 
-          local telescope = require('telescope.builtin')
-          local pickers = require('plugins.native.pickers')
+          local telescope = require 'telescope.builtin'
+          local pickers = require 'plugins.native.pickers'
           map(';d', telescope.lsp_definitions, '[d]efinition')
           map(';D', vim.lsp.buf.declaration, '[D]eclaration')
           map(';r', telescope.lsp_references, '[r]eferences')
