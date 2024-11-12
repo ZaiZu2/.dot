@@ -8,8 +8,9 @@ alias ls='ls --color'
 alias df='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 df config --local status.showUntrackedFiles no
 
-eval "$(oh-my-posh init zsh --config $XDG_CONFIG_HOME/ohmyposh/conf.toml)"
 source "$HOME/.local/share/zinit/zinit.git/zinit.zsh"
+eval "$(oh-my-posh init zsh --config $XDG_CONFIG_HOME/ohmyposh/conf.toml)"
+source <(fzf --zsh)
 
 # Add in zsh plugins
 zinit light zsh-users/zsh-syntax-highlighting
@@ -21,7 +22,6 @@ autoload bashcompinit && bashcompinit
 autoload -Uz compinit && compinit
 zinit light zsh-users/zsh-completions
 zinit cdreplay -q # Replay all cached completions
-source <(fzf --zsh)
 source <(podman completion zsh)
 source <(gh completion -s zsh) # GitHub completions
 eval "$(fnm completions --shell zsh)"
