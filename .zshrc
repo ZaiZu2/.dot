@@ -10,7 +10,7 @@ alias df='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 df config --local status.showUntrackedFiles no
 
 source "$XDG_DATA_HOME/zinit/zinit.git/zinit.zsh"
-eval "$(oh-my-posh init zsh --config $XDG_CONFIG_HOME/ohmyposh/conf.toml)"
+eval "$(oh-my-posh init zsh --config $XDG_CONFIG_HOME/oh-my-posh.toml)"
 source <(fzf --zsh)
 eval "$(fnm env --use-on-cd --shell zsh)"
 
