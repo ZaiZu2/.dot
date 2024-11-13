@@ -12,7 +12,7 @@
   register: fzf_clone
 
 - name: Install
-  ansible.builtin.shell: "./install  --all --no-update-rc --no-fish"
+  ansible.builtin.shell: "./install --bin --no-update-rc --no-fish"
   args:
     chdir: "{{ ansible_user_dir }}/.local/fzf"
   when: fzf_clone.changed

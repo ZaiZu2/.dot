@@ -9,12 +9,8 @@ alias ls='ls --color'
 alias df='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 df config --local status.showUntrackedFiles no
 
-source "$XDG_DATA_HOME/zinit/zinit.git/zinit.zsh"
-eval "$(oh-my-posh init zsh --config $XDG_CONFIG_HOME/oh-my-posh.toml)"
-source <(fzf --zsh)
-eval "$(fnm env --use-on-cd --shell zsh)"
-
 # Add in zsh plugins
+source "$XDG_DATA_HOME/zinit/zinit.git/zinit.zsh"
 zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-autosuggestions
 zinit light Aloxaf/fzf-tab
@@ -66,3 +62,7 @@ zstyle ':completion:*' menu no
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 
 setopt globdots # Allow matching hidden files with wildcards
+
+source <(fzf --zsh)
+eval "$(oh-my-posh init zsh --config $XDG_CONFIG_HOME/oh-my-posh.toml)"
+eval "$(fnm env --use-on-cd --shell zsh)"
