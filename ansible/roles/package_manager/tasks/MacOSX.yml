@@ -1,11 +1,11 @@
-- name: "Check if Homebrew is installed"
+- name: Check if Homebrew is installed
   ansible.builtin.command: which brew
   register: homebrew_check
 
 - name: Install Homebrew
   ansible.builtin.shell: "curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh | bash -s"
   become: true
-  when: homebrew_check.rc =! 0
+  when: homebrew_check.rc != 0
   notify:
     - Update Homebrew packages
 
@@ -14,8 +14,6 @@
     update_homebrew: true
   when:
     - homebrew_check.rc == 0
-  notify:
-    - Update Homebrew packages
 
 - name: Install Homebrew packages
   community.general.homebrew:
@@ -25,11 +23,9 @@
       - pkg-config
       - libtool
       - unzip
-      - ansible-lint
       - ripgrep
-      - pbcopy
     state: present
 
 - name: Update Homebrew packages
   community.general.homebrew:
-    update_all: true
+    upgrade_all: true

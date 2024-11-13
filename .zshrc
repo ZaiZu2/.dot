@@ -2,14 +2,14 @@ export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_BIN_HOME="$HOME/.local/bin"
 export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_CACHE_HOME="$HOME/.cache"
-export PATH="/bin:/usr/bin:/usr/local/bin:$HOME/bin:$HOME/.local/bin:$PATH"
+export PATH="/bin:/usr/bin:/usr/local/bin:$HOME/.local/bin:$PATH"
 
 alias tmux="tmux -f $XDG_CONFIG_HOME/tmux/tmux.conf"
 alias ls='ls --color'
 alias df='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 df config --local status.showUntrackedFiles no
 
-source "$HOME/.local/share/zinit/zinit.git/zinit.zsh"
+source "$XDG_DATA_HOME/zinit/zinit.git/zinit.zsh"
 eval "$(oh-my-posh init zsh --config $XDG_CONFIG_HOME/ohmyposh/conf.toml)"
 source <(fzf --zsh)
 eval "$(fnm env --use-on-cd --shell zsh)"
@@ -54,8 +54,10 @@ setopt hist_save_no_dups
 setopt hist_ignore_dups
 setopt hist_find_no_dups
 
-bindkey '^p' history-search-backward
-bindkey '^n' history-search-forward
+# bindkey '^p' history-search-backward
+# bindkey '^n' history-search-forward
+# bindkey '^p' up-line-or-search
+# bindkey '^n' down-line-or-search
 
 # Completion styling
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'

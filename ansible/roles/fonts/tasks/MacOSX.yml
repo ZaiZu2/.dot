@@ -1,11 +1,9 @@
-- name: "Copy"
+- name: Copy
   ansible.builtin.copy:
     src: "roles/{{ role_name }}/files/"
-    dest: "/Library/Fonts"
+    dest: /Library/Fonts
     mode: "0644"
-    owner: "root"
-    group: "root"
+    owner: root
+    group: wheel
     remote_src: no
   become: True
-  # with_fileglob:
-  # - "roles/{{ role_name }}/files/*"
