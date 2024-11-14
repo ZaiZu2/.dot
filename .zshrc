@@ -66,3 +66,7 @@ setopt globdots # Allow matching hidden files with wildcards
 source <(fzf --zsh)
 eval "$(oh-my-posh init zsh --config $XDG_CONFIG_HOME/oh-my-posh.toml)"
 eval "$(fnm env --use-on-cd --shell zsh)"
+
+if [ -f .zsh_custom ]; then
+  source .zsh_custom
+fi
