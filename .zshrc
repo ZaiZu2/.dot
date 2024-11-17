@@ -6,7 +6,7 @@ export PATH="/bin:/usr/bin:/usr/local/bin:$HOME/.local/bin:$PATH"
 
 alias tmux="tmux -f $XDG_CONFIG_HOME/tmux/tmux.conf"
 alias ls='ls --color'
-alias df='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+alias df='git --git-dir=$HOME/.dotfiles.git/ --work-tree=$HOME'
 df config --local status.showUntrackedFiles no
 
 # Add in zsh plugins

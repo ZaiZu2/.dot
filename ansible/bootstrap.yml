@@ -2,6 +2,8 @@
   hosts: localhost
   vars:
     all_roles:
+    - python
+    - rust
     - package_manager
     - git
     - zsh
@@ -10,10 +12,10 @@
     - gh
     - docker
     - sshfs
-    - python
     - tmux
     - neovim
     - kitty
+    - alacritty
     - fonts
     - lazygit
     - uv

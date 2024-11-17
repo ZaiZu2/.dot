@@ -1,5 +1,8 @@
-- name: "Install"
+- name: Install
   ansible.builtin.apt:
     name: tmux
     state: present
   become: true
+
+- name: Install plugins
+  ansible.builtin.shell: "{{ ansible_user_dir }}/.tmux/plugins/tpm/bin/install_plugins"

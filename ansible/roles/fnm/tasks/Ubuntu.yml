@@ -10,5 +10,5 @@
     state: link
 
 - name: "Install latest Node.js"
-  ansible.builtin.shell: "fnm install --lts"
+  ansible.builtin.shell: "{{ansible_user_dir}}/.local/share/fnm/fnm install --lts"
   ignore_errors: true

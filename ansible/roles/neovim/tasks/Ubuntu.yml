@@ -36,6 +36,7 @@
         src: /tmp/nvim-linux64.tar.gz
         dest: /opt/
         remote_src: yes
+      become: true
 
     - name: Clean up downloaded archive
       ansible.builtin.file:

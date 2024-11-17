@@ -7,9 +7,9 @@
     state: present
   become: true
 
-- name: Install pip packages
-  ansible.builtin.pip:
-    name: "{{ item }}"
-    state: present
-  loop:
-    - shell-gpt
+# - name: Install pip packages
+#   ansible.builtin.pip:
+#     name: "{{ item }}"
+#     state: present
+#   loop:
+#     - shell-gpt
