@@ -2,19 +2,19 @@
 size = 13
 
 [font.normal]
-family = "Ubuntu Sans Mono Nerd Font"
+family = "UbuntuSansMono Nerd Font Mono"
 style = "Regular"
 
 [font.bold]
-family = "Ubuntu Sans Mono Nerd Font"
+family = "UbuntuSansMono Nerd Font Mono"
 style = "SemiBold"
 
 [font.italic]
-family = "Ubuntu Sans Mono Nerd Font"
+family = "UbuntuSansMono Nerd Font Mono"
 style = "Italic"
 
 [font.bold_italic]
-family = "Ubuntu Sans Mono Nerd Font"
+family = "UbuntuSansMono Nerd Font Mono"
 style = "SemiBoldItalic"
 
 [colors.primary]

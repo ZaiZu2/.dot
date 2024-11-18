@@ -1,5 +1,4 @@
-- name: "Install"
+- name: Install
   community.general.homebrew:
     name: tmux
     state: present
-

@@ -20,11 +20,12 @@ autoload bashcompinit && bashcompinit
 autoload -Uz compinit && compinit
 zinit light zsh-users/zsh-completions
 zinit cdreplay -q # Replay all cached completions
-source <(podman completion zsh)
-source <(gh completion -s zsh) # GitHub completions
-eval "$(fnm completions --shell zsh)"
-eval "$(uv generate-shell-completion zsh)"
-complete -C 'aws_completer' aws
+
+which podman > /dev/null && source <(podman completion zsh)
+which gh > /dev/null && source <(gh completion -s zsh) # GitHub completions
+which fnm > /dev/null && eval "$(fnm completions --shell zsh)"
+which uv > /dev/null && eval "$(uv generate-shell-completion zsh)"
+which aws > /dev/null && complete -C 'aws_completer' aws
 
 # VIM support
 zinit light softmoth/zsh-vim-mode
