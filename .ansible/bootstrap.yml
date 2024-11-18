@@ -27,9 +27,7 @@
     - zsh
     - fzf
     - gh
-    - tmux
     - neovim
-    - fonts
     - lazygit
     - rclone
 
