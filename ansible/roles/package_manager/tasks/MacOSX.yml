@@ -18,12 +18,12 @@
 - name: Install Homebrew packages
   community.general.homebrew:
     name:
-      - cmake
-      - curl
-      - pkg-config
-      - libtool
-      - unzip
-      - ripgrep
+    - cmake
+    - curl
+    - pkg-config
+    - libtool
+    - unzip
+    - ripgrep
     state: present
 
 - name: Update Homebrew packages

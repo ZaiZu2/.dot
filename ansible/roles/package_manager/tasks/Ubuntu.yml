@@ -20,4 +20,3 @@
       - xclip
     state: present
   become: true
-
