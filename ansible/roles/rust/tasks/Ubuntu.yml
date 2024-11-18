@@ -1,6 +1,3 @@
-# - name: Install
-#   ansible.builtin.command: curl -sSf https://sh.rustup.rs | sh -s -- -yq
-#
 - name: Check if exists
   shell: command -v cargo
   register: cargo_exists

@@ -11,13 +11,9 @@
   become: true
 
 - name: Install Oh-my-posh
-  ansible.builtin.shell: "curl -s https://ohmyposh.dev/install.sh | bash -s -- -d ~/.local/bin/"
+  ansible.builtin.shell: "curl -LsSf https://ohmyposh.dev/install.sh | bash -s -- -d ~/.local/bin/"
   args:
     creates: ~/.local/bin/oh-my-posh
 
 - name: Install Zinit
-  ansible.builtin.shell: "curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh | bash -"
-  # args:
-  #   creates: ~/.local/share/zinit
-
-
+  ansible.builtin.shell: "curl -LsSf https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh | bash"
