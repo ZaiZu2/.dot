@@ -1,0 +1,42 @@
+- name: Check if exists
+  shell: command -v go
+  register: go_exists
+  ignore_errors: yes
+
+- name: Install
+  when: go_exists is failed
+  become: true
+  block:
+  - name: Delete previous installation
+    command: rm -rf /usr/local/go
+
+  - name: Download binary
+    ansible.builtin.get_url:
+      url: "https://go.dev/dl/go{{ go_version }}.linux-amd64.tar.gz"
+      dest: "/tmp/go{{ go_version }}.linux-amd64.tar.gz"
+      mode: '0755'
+
+  - name: "Extract tar file"
+    ansible.builtin.unarchive:
+      src: "/tmp/go{{ go_version }}.linux-amd64.tar.gz"
+      dest: "/usr/local"
+      mode: "0755"
+
+  - name: Delete downloaded tar file
+    ansible.builtin.file:
+      path: "/tmp/go{{ go_version }}.linux-amd64.tar.gz"
+      state: absent
+
+- name: Create go symlink
+  ansible.builtin.file:
+    src: "/usr/local/go/bin/go"
+    dest: "/usr/local/bin/go"
+    state: link
+  become: true
+
+- name: Create gofmt symlink
+  ansible.builtin.file:
+    src: "/usr/local/go/bin/gofmt"
+    dest: "/usr/local/bin/gofmt"
+    state: link
+  become: true

@@ -7,18 +7,17 @@
 - name: Clone latest version
   ansible.builtin.git:
     repo: https://github.com/junegunn/fzf.git
-    depth: 1
-    dest: "{{ ansible_user_dir }}/.local/fzf"
+    dest: "{{ ansible_user_dir }}/.local/share/fzf"
   register: fzf_clone
 
 - name: Install
   ansible.builtin.shell: "./install --bin --no-update-rc --no-fish"
   args:
-    chdir: "{{ ansible_user_dir }}/.local/fzf"
+    chdir: "{{ ansible_user_dir }}/.local/share/fzf"
   when: fzf_clone.changed
 
-- name: Create symlink
-  ansible.builtin.file:
-    src: "{{ ansible_user_dir }}/.local/fzf/bin/fzf"
-    dest: "{{ ansible_user_dir }}/.local/bin/fzf"
-    state: link
+# - name: Create symlink
+#   ansible.builtin.file:
+#     src: "{{ ansible_user_dir }}/.local/share/fzf/bin/fzf"
+#     dest: "{{ ansible_user_dir }}/.local/bin/fzf"
+#     state: link

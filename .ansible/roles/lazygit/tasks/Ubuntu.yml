@@ -50,44 +50,15 @@
         mode: "0644"
         force: true
 
-    - name: "Ensure clean extraction destination"
-      ansible.builtin.file:
-        path: "/tmp/lazygit"
-        state: absent
-      become: true
-
     - name: "Extract tar file"
       ansible.builtin.unarchive:
         src: "/tmp/{{ lazygit_file }}.tar.gz"
-        dest: /tmp
-
-    - name: "Remove any current installations"
-      ansible.builtin.file:
-        path: /usr/local/bin/lazygit
-        state: absent
-      become: true
-
-    - name: "Install"
-      ansible.builtin.copy:
-        remote_src: true
-        src: /tmp/lazygit
-        dest: /usr/local/bin/
-        owner: "{{ ansible_user_id }}"
-        group: "{{ ansible_user_id }}"
+        dest: "{{ ansible_user_dir }}/.local/bin"
         force: true
         mode: "0755"
-      become: true
 
     - name: Cleanup downloaded tar
       ansible.builtin.file:
         path: "/tmp/{{ lazygit_file }}.tar.gz"
         state: absent
       become: true
-
-    - name: Remove extracted directory
-      ansible.builtin.file:
-        path: /tmp/lazygit
-        state: absent
-      become: true
-
-

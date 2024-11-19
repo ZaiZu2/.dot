@@ -1,0 +1,4 @@
+- name: Install
+  community.general.homebrew:
+    name: zk
+    state: present
