@@ -3,10 +3,10 @@
   vars:
     go_version: "1.23.3"
     all:
+    - package_manager
     - python
     - rust
     - go
-    - package_manager
     - git
     - zsh
     - fzf

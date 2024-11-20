@@ -2,7 +2,8 @@ export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_BIN_HOME="$HOME/.local/bin"
 export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_CACHE_HOME="$HOME/.cache"
-export PATH="/bin:/usr/bin:/usr/local/bin:$HOME/.local/bin:$PATH"
+export PATH="$HOME/.local/bin:/bin:/usr/bin:/usr/local/bin:$PATH"
+export PATH="/usr/local/go:$HOME/.cargo/bin:$PATH"
 
 alias tmux="tmux -f $XDG_CONFIG_HOME/tmux/tmux.conf"
 alias ls='ls --color'
@@ -68,6 +69,4 @@ source <(fzf --zsh)
 eval "$(oh-my-posh init zsh --config $XDG_CONFIG_HOME/oh-my-posh.toml)"
 eval "$(fnm env --use-on-cd --shell zsh)"
 
-if [ -f .zsh_custom ]; then
-  source .zsh_custom
-fi
+[ -f .zsh_custom ] && source .zsh_custom

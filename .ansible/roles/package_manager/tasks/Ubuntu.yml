@@ -1,4 +1,4 @@
-- name: "Update APT"
+- name: Update APT
   ansible.builtin.apt:
     update_cache: true
     upgrade: full
@@ -7,7 +7,7 @@
   become: true
   ignore_errors: true
 
-- name: "Install APT packages"
+- name: Install APT packages
   ansible.builtin.apt:
     name:
       - cmake
@@ -19,4 +19,12 @@
       - ripgrep
       - xclip
     state: present
+  become: true
+
+# https://help.ubuntu.com/community/EnvironmentVariables#System-wide_environment_variables
+- name: Create /etc/environment
+  ansible.builtin.file:
+    path: "/etc/environment"
+    mode: "0744"
+    state: touch
   become: true

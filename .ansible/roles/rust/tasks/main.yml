@@ -12,7 +12,7 @@
   register: cargo_exists
   ignore_errors: yes
 
-- name: Install
+- name: Download installer
   when: cargo_exists is failed
   block:
   - name: Download Installer
@@ -25,7 +25,25 @@
   - name: Install
     shell: /tmp/sh.rustup.rs -y
 
+    # https://stackoverflow.com/questions/56560173/ansible-how-to-add-modify-path-variable-in-centos
+  # - name: 'Check if exists on $PATH'
+  #   ansible.builtin.lineinfile:
+  #     path: "{{ ansible_user_dir }}/.cargo/bin"
+  #     line: 'PATH="{{ ansible_user_dir }}/.cargo/bin"'
+  #     insertafter: EOF
+  #   when: lookup('file', '/etc/environment') is not search('^\s*PATH\s*=')
+  #
+  # - name: 'Add to $PATH'
+  #   ansible.builtin.lineinfile:
+  #     path: /etc/environment
+  #     regexp: 'PATH=(["])((?!.*?{{ ansible_user_dir }}/.cargo/bin).*?)(["])$'
+  #     line: 'PATH=\1\2:{{ ansible_user_dir }}/.cargo/bin\3'
+  #     backrefs: yes
+  #     mode: "0644"
+
   - name: Set default compiler
+    environment:
+      PATH: "{{ lookup('env', 'PATH') }}:/{{ ansible_user_dir }}/.cargo/bin"
     ansible.builtin.shell: |
       rustup override set stable
       rustup update stable
