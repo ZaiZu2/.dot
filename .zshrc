@@ -1,13 +1,9 @@
-export XDG_CONFIG_HOME="$HOME/.config"
-export XDG_BIN_HOME="$HOME/.local/bin"
-export XDG_DATA_HOME="$HOME/.local/share"
-export XDG_CACHE_HOME="$HOME/.cache"
-export PATH="$HOME/.local/bin:/bin:/usr/bin:/usr/local/bin:$PATH"
-export PATH="/usr/local/go:$HOME/.cargo/bin:$PATH"
+export CARGO_HOME=$XDG_DATA_DIR/cargo
+export RUSTUP_HOME=$XDG_DATA_DIR/rustup
 
 alias tmux="tmux -f $XDG_CONFIG_HOME/tmux/tmux.conf"
 alias ls='ls --color'
-alias df='git --git-dir=$HOME/.dotfiles.git/ --work-tree=$HOME'
+alias df='git --git-dir=$HOME/.git --work-tree=$HOME'
 df config --local status.showUntrackedFiles no
 
 # Add in zsh plugins
