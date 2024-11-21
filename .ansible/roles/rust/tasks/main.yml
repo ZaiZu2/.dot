@@ -24,9 +24,9 @@
 
   - name: Install
     environment:
-      CARGO_HOME: "{{ ansible_user_dir }}/.local/share/cargo"
-      RUSTUP_HOME: "{{ ansible_user_dir }}/.local/share/rustup"
-    shell: /tmp/sh.rustup.rs -y
+      CARGO_HOME: "{{ CARGO_HOME }}"
+      RUSTUP_HOME: "{{ RUSTUP_HOME }}"
+    shell: /tmp/sh.rustup.rs -y --no-modify-path
 
     # https://stackoverflow.com/questions/56560173/ansible-how-to-add-modify-path-variable-in-centos
   # - name: 'Check if exists on $PATH'
@@ -46,7 +46,9 @@
 
   - name: Set default compiler
     environment:
-      PATH: "{{ lookup('env', 'PATH') }}:{{ ansible_user_dir }}/.local/share/cargo"
+      PATH: "{{ lookup('env', 'PATH') }}:{{ CARGO_HOME }}/bin"
+      CARGO_HOME: "{{ CARGO_HOME }}"
+      RUSTUP_HOME: "{{ RUSTUP_HOME }}"
     ansible.builtin.shell: |
       rustup override set stable
       rustup update stable

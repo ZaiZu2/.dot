@@ -25,10 +25,7 @@
     mode: "0744"
     state: directory
 
-# - name: "System | Set hosts"
-#   ansible.builtin.template:
-#     dest: "/etc/hosts"
-#     src: hosts.j2
-#     mode: "0644"
-#   become: true
-#   when: not ansible_host_environment_is_wsl
+- name: Set temporary facts
+  ansible.builtin.set_fact:
+    CARGO_HOME: "{{ ansible_user_dir }}/.local/share/cargo"
+    RUSTUP_HOME: "{{ ansible_user_dir }}/.local/share/rustup"
