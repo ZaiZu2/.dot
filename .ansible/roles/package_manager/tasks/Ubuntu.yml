@@ -20,12 +20,3 @@
       - xclip
     state: present
   become: true
-
-# https://help.ubuntu.com/community/EnvironmentVariables#System-wide_environment_variables
-- name: Create /etc/environment
-  ansible.builtin.file:
-    path: "/etc/environment"
-    mode: "0744"
-    state: touch
-  become: true
-

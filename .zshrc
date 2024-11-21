@@ -1,6 +1,3 @@
-export CARGO_HOME=$XDG_DATA_DIR/cargo
-export RUSTUP_HOME=$XDG_DATA_DIR/rustup
-
 alias tmux="tmux -f $XDG_CONFIG_HOME/tmux/tmux.conf"
 alias ls='ls --color'
 alias df='git --git-dir=$HOME/.git --work-tree=$HOME'

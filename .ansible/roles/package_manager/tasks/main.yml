@@ -7,25 +7,3 @@
   ansible.builtin.include_tasks: "{{ ansible_distribution }}.yml"
   when: distribution_config.stat.exists
 
-- name: Create $XDG_BIN_HOME
-  ansible.builtin.file:
-    path: "{{ ansible_user_dir }}/.local/bin"
-    mode: "0744"
-    state: directory
-
-- name: Create $XDG_DATA_HOME
-  ansible.builtin.file:
-    path: "{{ ansible_user_dir }}/.local/share"
-    mode: "0744"
-    state: directory
-
-- name: Create $XDG_CONFIG_HOME
-  ansible.builtin.file:
-    path: "{{ ansible_user_dir }}/.config"
-    mode: "0744"
-    state: directory
-
-- name: Set temporary facts
-  ansible.builtin.set_fact:
-    CARGO_HOME: "{{ ansible_user_dir }}/.local/share/cargo"
-    RUSTUP_HOME: "{{ ansible_user_dir }}/.local/share/rustup"

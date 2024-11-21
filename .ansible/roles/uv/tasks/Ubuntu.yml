@@ -1,2 +1,2 @@
 - name: Install
-  ansible.builtin.shell: "curl -LsSf https://astral.sh/uv/install.sh | sh -s -- --no-modify-path"
+  ansible.builtin.shell: "curl -LsSf https://astral.sh/uv/install.sh | UV_NO_MODIFY_PATH=1 sh -s"

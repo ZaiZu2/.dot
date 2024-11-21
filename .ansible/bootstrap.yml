@@ -3,6 +3,7 @@
   vars:
     go_version: "1.23.3"
     all:
+    - general
     - package_manager
     - python
     - rust
