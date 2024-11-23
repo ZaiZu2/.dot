@@ -5,7 +5,7 @@
 - name: Install Homebrew
   ansible.builtin.shell: "curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh | NONINTERACTIVE=1 bash -s"
   become: true
-  become_user: {{ ansible_user_id }}
+  become_user: "{{ ansible_user_id }}"
   when: homebrew_check.rc != 0
   notify:
     - Update Homebrew packages

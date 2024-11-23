@@ -38,7 +38,7 @@ return {
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[s]earch [k]eymaps' })
 
       vim.keymap.set('n', '<leader>sf', function()
-        pickers.prettyFilesPicker { picker = 'find_files', hidden = true, no_ignore = true }
+        pickers.prettyFilesPicker { picker = 'find_files', options = { hidden = true, no_ignore = true } }
       end, { desc = '[s]earch [f]iles' })
 
       vim.keymap.set('n', '<leader>sw', function()
@@ -72,7 +72,7 @@ return {
       end, { desc = '[s]earch [/] in Open Files' })
 
       vim.keymap.set('n', '<leader>sn', function()
-        pickers.prettyFilesPicker { picker = 'find_files', cwd = vim.fn.stdpath 'config' }
+        pickers.prettyFilesPicker { picker = 'find_files', options = { cwd = vim.fn.stdpath 'config' } }
       end, { desc = '[s]earch [n]eovim files' })
     end,
   },

@@ -62,12 +62,6 @@ return {
         },
       }
 
-      require('mini.notify').setup()
-
-      -- require('mini.starter').setup()
-
-      -- require('mini.sessions').setup { autoread = true }
-
       local miniIcons = require 'mini.icons'
       miniIcons.setup()
       miniIcons.mock_nvim_web_devicons()

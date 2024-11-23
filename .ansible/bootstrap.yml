@@ -1,4 +1,4 @@
-- name: Bootstrap development environment
+- name: Bootstrap environment
   hosts: localhost
   vars:
     go_version: "1.23.3"

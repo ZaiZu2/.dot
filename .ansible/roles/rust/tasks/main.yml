@@ -1,54 +1,60 @@
-- name: "Checking for Distribution Config: {{ ansible_distribution }}"
-  ansible.builtin.stat:
-    path: "{{ role_path }}/tasks/{{ ansible_distribution }}.yml"
-  register: distribution_config
+- block:
+  - name: "Checking for Distribution Config: {{ ansible_distribution }}"
+    ansible.builtin.stat:
+      path: "{{ role_path }}/tasks/{{ ansible_distribution }}.yml"
+    register: distribution_config
 
-- name: "Run Tasks: {{ ansible_distribution }}"
-  ansible.builtin.include_tasks: "{{ ansible_distribution }}.yml"
-  when: distribution_config.stat.exists
+  - name: "Run Tasks: {{ ansible_distribution }}"
+    ansible.builtin.include_tasks: "{{ ansible_distribution }}.yml"
+    when: distribution_config.stat.exists
 
-- name: Check if exists
-  shell: command -v cargo
-  register: cargo_exists
-  ignore_errors: yes
+  - name: Check if exists
+    shell: command -v cargo
+    register: cargo_exists
+    ignore_errors: yes
 
-- name: Download installer
-  when: cargo_exists is failed
-  block:
-  - name: Download Installer
-    ansible.builtin.get_url:
-      url: https://sh.rustup.rs
-      dest: /tmp/sh.rustup.rs
-      mode: '0755'
-      force: 'yes'
+  - name: Download installer
+    when: cargo_exists is failed
+    block:
+    - name: Download Installer
+      ansible.builtin.get_url:
+        url: https://sh.rustup.rs
+        dest: /tmp/sh.rustup.rs
+        mode: '0755'
+        force: 'yes'
 
-  - name: Install
-    environment:
-      CARGO_HOME: "{{ CARGO_HOME }}"
-      RUSTUP_HOME: "{{ RUSTUP_HOME }}"
-    shell: /tmp/sh.rustup.rs -y --no-modify-path
+    - name: Install
+      environment:
+        CARGO_HOME: "{{ CARGO_HOME }}"
+        RUSTUP_HOME: "{{ RUSTUP_HOME }}"
+      shell: /tmp/sh.rustup.rs -y --no-modify-path
 
-    # https://stackoverflow.com/questions/56560173/ansible-how-to-add-modify-path-variable-in-centos
-  # - name: 'Check if exists on $PATH'
-  #   ansible.builtin.lineinfile:
-  #     path: "{{ ansible_user_dir }}/.cargo/bin"
-  #     line: 'PATH="{{ ansible_user_dir }}/.cargo/bin"'
-  #     insertafter: EOF
-  #   when: lookup('file', '/etc/environment') is not search('^\s*PATH\s*=')
-  #
-  # - name: 'Add to $PATH'
-  #   ansible.builtin.lineinfile:
-  #     path: /etc/environment
-  #     regexp: 'PATH=(["])((?!.*?{{ ansible_user_dir }}/.cargo/bin).*?)(["])$'
-  #     line: 'PATH=\1\2:{{ ansible_user_dir }}/.cargo/bin\3'
-  #     backrefs: yes
-  #     mode: "0644"
+      # https://stackoverflow.com/questions/56560173/ansible-how-to-add-modify-path-variable-in-centos
+    # - name: 'Check if exists on $PATH'
+    #   ansible.builtin.lineinfile:
+    #     path: "{{ ansible_user_dir }}/.cargo/bin"
+    #     line: 'PATH="{{ ansible_user_dir }}/.cargo/bin"'
+    #     insertafter: EOF
+    #   when: lookup('file', '/etc/environment') is not search('^\s*PATH\s*=')
+    #
+    # - name: 'Add to $PATH'
+    #   ansible.builtin.lineinfile:
+    #     path: /etc/environment
+    #     regexp: 'PATH=(["])((?!.*?{{ ansible_user_dir }}/.cargo/bin).*?)(["])$'
+    #     line: 'PATH=\1\2:{{ ansible_user_dir }}/.cargo/bin\3'
+    #     backrefs: yes
+    #     mode: "0644"
 
-  - name: Set default compiler
-    environment:
-      PATH: "{{ lookup('env', 'PATH') }}:{{ CARGO_HOME }}/bin"
-      CARGO_HOME: "{{ CARGO_HOME }}"
-      RUSTUP_HOME: "{{ RUSTUP_HOME }}"
-    ansible.builtin.shell: |
-      rustup override set stable
-      rustup update stable
+    - name: Set default compiler
+      environment:
+        PATH: "{{ lookup('env', 'PATH') }}:{{ CARGO_HOME }}/bin"
+        CARGO_HOME: "{{ CARGO_HOME }}"
+        RUSTUP_HOME: "{{ RUSTUP_HOME }}"
+      ansible.builtin.shell: |
+        rustup override set stable
+        rustup update stable
+
+  rescue:
+  - name: Log erorr
+    ansible.builtin.debug:
+      msg: "Skipping {{ role_name }} due to unexpected error"

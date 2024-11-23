@@ -182,6 +182,7 @@ local selectPlugins = function()
       'vim-tmux-navigator',
       'which-key',
       'neoscroll',
+      'zk',
     }
   end
 
