@@ -1,4 +1,4 @@
 - name: Install
   community.general.homebrew:
-    name: gh
+    name: bat
     state: present

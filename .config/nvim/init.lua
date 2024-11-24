@@ -183,6 +183,7 @@ local selectPlugins = function()
       'which-key',
       'neoscroll',
       'zk',
+      'render-markdown'
     }
   end
 

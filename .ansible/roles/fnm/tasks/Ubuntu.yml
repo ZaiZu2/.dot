@@ -1,5 +1,5 @@
 - name: Check if fnm is installed
-  ansible.builtin.command: command -v fnm
+  ansible.builtin.shell: command -v fnm
   register: fnm_check
   ignore_errors: true
 

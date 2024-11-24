@@ -19,23 +19,20 @@ return {
       },
     },
     config = function(_, opts)
-      require('zk').setup(opts)
+      local zk = require 'zk'
+      local commands = require 'zk.commands'
+      zk.setup(opts)
 
+      -- Create a new daily note
+      vim.keymap.set('n', '<leader>zd', function()
+        zk.new { dir = vim.loop.os_getenv 'ZK_NOTEBOOK_DIR' .. '/daily' }
+      end, { desc = 'open [d]aily note' })
       -- Create a new note after asking for its title.
-      vim.api.nvim_set_keymap('n', '<leader>zn', "<Cmd>ZkNew { title = vim.fn.input('Title: ') }<CR>", { desc = '[n]ew note' })
+      vim.keymap.set('n', '<leader>zn', "<Cmd>ZkNew { title = vim.fn.input('Title: ') }<CR>", { desc = '[n]ew note' })
       -- Open notes.
-      vim.api.nvim_set_keymap('n', '<leader>zo', "<Cmd>ZkNotes { sort = { 'modified' } }<CR>", { desc = '[o]pen notes' })
+      vim.keymap.set('n', '<leader>zo', "<Cmd>ZkNotes { sort = { 'modified' } }<CR>", { desc = '[o]pen notes' })
       -- Open notes associated with the selected tags.
-      vim.api.nvim_set_keymap('n', '<leader>zt', '<Cmd>ZkTags<CR>', { desc = 'search through [t]ags' })
-      -- Search for the notes matching a given query.
-      vim.api.nvim_set_keymap(
-        'n',
-        '<leader>zf',
-        "<Cmd>ZkNotes { sort = { 'modified' }, match = { vim.fn.input('Search: ') } }<CR>",
-        { desc = 'search through contents' }
-      )
-      -- Search for the notes matching the current visual selection.
-      vim.api.nvim_set_keymap('v', '<leader>zf', ":'<,'>ZkMatch<CR>", {desc='search with selection'})
+      vim.keymap.set('n', '<leader>zt', '<Cmd>ZkTags<CR>', { desc = 'search through [t]ags' })
     end,
   },
 }

@@ -1,0 +1,13 @@
+- name: Install
+  ansible.builtin.apt:
+    name: bat
+    state: present
+  become: true
+
+- name: Create symlink
+  ansible.builtin.file:
+    src: "/usr/bin/batcat"
+    dest: "/usr/bin/bat"
+    state: link
+  become: true
+
