@@ -1,6 +1,7 @@
 - name: Check if Homebrew is installed
   ansible.builtin.command: command -v brew
   register: homebrew_check
+  ignore_errors: true
 
 - name: Install Homebrew
   ansible.builtin.shell: "curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh | NONINTERACTIVE=1 bash -s"
