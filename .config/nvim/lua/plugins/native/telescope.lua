@@ -13,6 +13,7 @@ return {
         end,
       },
       'nvim-telescope/telescope-ui-select.nvim',
+      'echasnovski/mini.nvim',
     },
     config = function()
       -- :Telescope help_tags
