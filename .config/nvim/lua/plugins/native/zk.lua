@@ -29,10 +29,14 @@ return {
       local conf = require('telescope.config').values
       local actions = require 'telescope.actions'
       local action_state = require 'telescope.actions.state'
+      local picker_opts = require('telescope.themes').get_dropdown {
+        previewer = false,
+        prompt_title = 'Note type',
+      }
 
       local pick_new_note = function()
         pickers
-          .new({}, {
+          .new(picker_opts, {
             finder = finders.new_table { results = { 'daily', 'knowledge', 'absa' } },
             sorter = conf.generic_sorter {},
             attach_mappings = function(bufnr, map)
