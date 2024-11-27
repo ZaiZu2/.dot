@@ -5,9 +5,9 @@ return {
     event = 'InsertEnter',
     config = function()
       require('copilot').setup {
-        enabled = true,
-        auto_trigger = true,
         suggestion = {
+          enabled = true,
+          auto_trigger = true,
           keymap = {
             accept = '<M-y>',
             accept_line = '<M-l>',
@@ -21,7 +21,6 @@ return {
   },
   {
     'CopilotC-Nvim/CopilotChat.nvim',
-    branch = 'canary', -- Use the canary branch if you want to test the latest features but it might be unstable
     dependencies = {
       { 'nvim-telescope/telescope.nvim' }, -- Use telescope for help actions
       { 'nvim-lua/plenary.nvim' },
@@ -51,8 +50,8 @@ return {
         Wording = 'Please improve the grammar and wording of the following text.',
         Concise = 'Please rewrite the following text to make it more concise.',
       },
-      auto_follow_cursor = true, -- Don't follow the cursor after getting response
-      insert_at_end = true,
+      -- auto_follow_cursor = true, -- Don't follow the cursor after getting response
+      -- insert_at_end = true,
       show_help = true,
     },
     config = function(_, opts)
@@ -60,29 +59,22 @@ return {
       local select = require 'CopilotChat.select'
       -- Use unnamed register for the selection
       opts.selection = select.unnamed
-
       -- Override the git prompts message
       opts.prompts.Commit = {
         prompt = 'Write commit message for the change with commitizen convention',
         selection = select.gitdiff,
       }
-      opts.prompts.CommitStaged = {
-        prompt = 'Write commit message for the change with commitizen convention',
-        selection = function(source)
-          return select.gitdiff(source, true)
-        end,
-      }
 
       chat.setup(opts)
-
-      vim.api.nvim_create_user_command('CopilotChatVisual', function(args)
-        chat.ask(args.args, { selection = select.visual })
-      end, { nargs = '*', range = true })
+      -- Fallback to buffer source if selection does not exist
+      local set_default_selection = function(source)
+        return select.visual(source) or select.buffer(source)
+      end
 
       -- Inline chat with Copilot
-      vim.api.nvim_create_user_command('CopilotChatFloat', function(args)
-        chat.ask(args.args, {
-          selection = select.visual,
+      local open_floating_chat = function()
+        chat.open {
+          selection = set_default_selection,
           window = {
             layout = 'float',
             relative = 'editor',
@@ -90,13 +82,12 @@ return {
             width = 0.9,
             height = 0.9,
           },
-        })
-      end, { nargs = '*', range = true })
+        }
+      end
 
-      -- Restore CopilotChatBuffer
-      vim.api.nvim_create_user_command('CopilotChatBuffer', function(args)
-        chat.ask(args.args, { selection = select.buffer })
-      end, { nargs = '*', range = true })
+      local open_vertical_chat = function()
+        chat.ask(nil, { selection = set_default_selection })
+      end
 
       -- Custom buffer for CopilotChat
       vim.api.nvim_create_autocmd('BufEnter', {
@@ -110,77 +101,17 @@ return {
           if ft == 'copilot-chat' then
             vim.bo.filetype = 'markdown'
           end
+
+          vim.keymap.set({ 'x', 'n' }, 'gS', '<CMD>CopilotChatStop<CR>', { desc = 'Open in vertical split' })
         end,
       })
+
+      vim.keymap.set({ 'x', 'n' }, '<leader>cv', open_vertical_chat, { desc = 'Open in vertical split' })
+      vim.keymap.set({ 'x', 'n' }, '<leader>cx', open_floating_chat, { desc = 'Inline chat' })
+      vim.keymap.set('n', '<leader>c?', '<CMD>CopilotChatModels<CR>', { desc = 'Select Models' })
+      vim.keymap.set('x', '<leader>cp', function()
+        require('CopilotChat.integrations.telescope').pick(require('CopilotChat.actions').prompt_actions { selection = require('CopilotChat.select').visual })
+      end, { desc = 'Prompt actions' })
     end,
-    keys = {
-      {
-        '<leader>cv',
-        ':CopilotChatVisual',
-        mode = { 'x', 'n' },
-        desc = 'Open in vertical split',
-      },
-      {
-        '<leader>cx',
-        ':CopilotChatFloat<cr>',
-        mode = { 'x', 'n' },
-        desc = 'Inline chat',
-      },
-      {
-        '<leader>cq',
-        function()
-          local input = vim.fn.input 'Quick Chat: '
-          if input ~= '' then
-            vim.cmd('CopilotChatBuffer ' .. input)
-          end
-        end,
-        desc = 'Quick chat',
-      },
-      { '<leader>cl', '<cmd>CopilotChatReset<cr>', desc = 'Clear buffer and chat history' }, -- Toggle Copilot Chat Vsplit
-      { '<leader>cv', '<cmd>CopilotChatToggle<cr>', desc = 'Toggle' },
-      { '<leader>c?', '<cmd>CopilotChatModels<cr>', desc = 'Select Models' },
-      { -- Show help actions with telescope
-        '<leader>ch',
-        function()
-          local actions = require 'CopilotChat.actions'
-          require('CopilotChat.integrations.telescope').pick(actions.help_actions())
-        end,
-        desc = 'Help actions',
-      },
-      { -- Show prompts actions with telescope
-        '<leader>cp',
-        ":lua require('CopilotChat.integrations.telescope').pick(require('CopilotChat.actions').prompt_actions({selection = require('CopilotChat.select').visual}))<CR>",
-        mode = 'x',
-        desc = 'Prompt actions',
-      },
-      -- Custom input for CopilotChat
-      -- {
-      --   '<leader>ci',
-      --   function()
-      --     local input = vim.fn.input 'Ask Copilot: '
-      --     if input ~= '' then
-      --       vim.cmd('CopilotChat ' .. input)
-      --     end
-      --   end,
-      --   desc = 'Ask input',
-      -- },
-      -- Generate commit message based on the git diff
-      -- {
-      --   '<leader>cm',
-      --   '<cmd>CopilotChatCommit<cr>',
-      --   desc = 'Generate commit message for all changes',
-      -- },
-      -- {
-      --   '<leader>cM',
-      --   '<cmd>CopilotChatCommitStaged<cr>',
-      --   desc = 'Generate commit message for staged changes',
-      -- },
-      -- Quick chat with Copilot
-      -- Debug
-      -- { '<leader>cd', '<cmd>CopilotChatDebugInfo<cr>', desc = 'Debug Info' },
-      -- Fix the issue with diagnostic
-      -- { '<leader>cf', '<cmd>CopilotChatFixDiagnostic<cr>', desc = 'Fix Diagnostic' },
-      -- Clear buffer and chat history
-    },
   },
 }

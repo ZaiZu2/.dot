@@ -1,6 +1,7 @@
 return {
   {
     'zk-org/zk-nvim',
+    event = 'VeryLazy',
     opts = {
       picker = 'telescope',
       lsp = {
