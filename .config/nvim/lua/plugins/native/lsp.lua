@@ -12,14 +12,18 @@ return {
       { 'folke/neodev.nvim', opts = {} },
     },
     config = function()
-      -- Soecify all language tools to be installed automatically
+      -- Specify all language tools to be installed automatically
       local tools = {}
-      local linters = {}
-      local formatters = { 'stylua', 'ruff' }
+      local linters = { 'ruff', 'shellcheck', 'hadolint' }
+      local formatters = { 'stylua', 'ruff', 'shfmt' }
       local daps = { 'debugpy' }
       local lsp_servers = { -- :help lspconfig-all
         ts_ls = {},
-        pyright = {},
+        basedpyright = {
+          analysis = {
+            diagnosticMode = 'openFilesOnly',
+          },
+        },
         lua_ls = {
           settings = {
             Lua = {
@@ -31,6 +35,9 @@ return {
             },
           },
         },
+        bashls = {},
+        dockerls = {},
+        docker_compose_language_service = {},
         taplo = {
           formatting = {
             indent_string = '  ',
