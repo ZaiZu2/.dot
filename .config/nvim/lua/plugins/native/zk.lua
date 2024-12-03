@@ -53,10 +53,10 @@ return {
           :find()
       end
 
-      -- Create a new daily note
+      vim.keymap.set('n', '<leader>zb', '<Cmd>ZkBacklinks<CR>', { desc = 'Open [b]acklinks' })
       vim.keymap.set('n', '<leader>zd', function()
         zk.new { dir = ZK_PATH .. '/daily' }
-      end, { desc = 'open [d]aily note' })
+      end, { desc = 'Open [d]aily note' })
       vim.keymap.set('n', '<leader>zn', pick_new_note, { desc = '[n]ew note' })
       vim.keymap.set('n', '<leader>zo', "<Cmd>ZkNotes { sort = { 'modified' } }<CR>", { desc = '[o]pen notes' })
       vim.keymap.set('n', '<leader>zt', '<Cmd>ZkTags<CR>', { desc = 'search through [t]ags' })

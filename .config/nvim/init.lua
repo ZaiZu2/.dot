@@ -32,8 +32,7 @@ vim.opt.showmode = false
 vim.opt.clipboard = 'unnamedplus' -- :help 'clipboard'
 vim.opt.breakindent = true
 vim.opt.undofile = true
--- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
-vim.opt.ignorecase = true
+vim.opt.ignorecase = true -- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
 vim.opt.smartcase = true
 vim.opt.signcolumn = 'yes' -- Keep signcolumn on by default
 vim.opt.updatetime = 250
@@ -61,77 +60,18 @@ vim.keymap.set('n', '<leader>gN', ':tabclose<CR>', { desc = 'Close the current t
 vim.keymap.set('n', '<C-_>', '<C-w><h>', { desc = 'Split window horizontally' })
 vim.keymap.set('n', '<C-|>', '<C-w><v>', { desc = 'Split window vertically' })
 
+vim.keymap.set('v', '<leader>e', ':lua<CR>', { desc = 'Execute selected [l]ua code' })
+
+local utils = require 'utils'
+vim.keymap.set('n', '<leader>sr', utils.findAndReplace, { desc = '[s]earch and [r]eplace' })
+vim.keymap.set('n', '<leader>sR', utils.findAndReplaceGlobally, { desc = '[s]earch and [R]eplace globally' })
+
 vim.diagnostic.config {
   virtual_text = {
     prefix = '■ ',
   },
   float = { border = 'rounded' },
 }
-
--- vim.api.nvim_create_autocmd({ 'TextChanged', 'InsertLeave' }, {
---   desc = 'Autosave files on any changes',
---   group = vim.api.nvim_create_augroup('auto-save', { clear = true }),
---   callback = function(ctx)
---     local debouce_time = 1000
---     local init_autosave, autosave_locked = pcall(vim.api.nvim_buf_get_var, ctx.buf, 'autosave_locked')
---
---     if (not init_autosave or not autosave_locked) and vim.bo.buftype == '' then
---       vim.cmd 'silent w'
---       vim.notify('Saved at ' .. os.date '%H:%M:%S')
---
---       vim.api.nvim_buf_set_var(ctx.buf, 'autosave_locked', true)
---       vim.defer_fn(function()
---         if vim.api.nvim_buf_is_valid(ctx.buf) then
---           vim.api.nvim_buf_set_var(ctx.buf, 'autosave_locked', false)
---         end
---       end, debouce_time)
---     end
---   end,
--- })
-vim.api.nvim_create_autocmd({ 'TextChanged', 'InsertLeave' }, {
-  desc = 'Autosave files on any changes',
-  group = vim.api.nvim_create_augroup('auto-save', { clear = true }),
-  callback = function(ctx)
-    if not vim.bo.buftype == '' or not vim.bo.modified or vim.fn.findfile(ctx.file, '.') == '' then
-      return
-    end
-
-    vim.cmd 'silent w'
-  end,
-})
-
--- Highlight when yanking (copying) text
--- :help lua-guide-autocommands
--- :help vim.highlight.on_yank()
-vim.api.nvim_create_autocmd('TextYankPost', {
-  desc = 'Highlight when yanking (copying) text',
-  group = vim.api.nvim_create_augroup('highlight-yank', { clear = true }),
-  callback = function()
-    vim.highlight.on_yank()
-  end,
-})
-
-local findAndReplace = function()
-  local cword = vim.fn.expand '<cword>'
-  local cmd_string = ':%s/' .. cword .. '//g<Left><Left>'
-  return cmd_string
-  -- vim.cmd 'normal! :'
-  -- vim.api.nvim_feedkeys(cmd_string, 'm', true)
-end
-vim.keymap.set('n', '<leader>sr', findAndReplace, { desc = '[s]earch and [r]eplace' })
-
-local findAndReplaceGlobally = function()
-  if vim.fn.getwininfo(vim.fn.win_getid())[1].quickfix ~= 1 then
-    print 'This function can only be used in a quickfix buffer.'
-    return
-  end
-
-  local cword = vim.fn.expand '<cword>'
-  local cmd_string = string.format('<cmd>cdo %%s/%s/', cword)
-  vim.cmd 'normal! :'
-  vim.api.nvim_feedkeys(cmd_string, 't', true)
-end
-vim.keymap.set('n', '<leader>sR', findAndReplaceGlobally, { desc = '[s]earch and [R]eplace globally' })
 
 -- Install plugin manager - lazy.nvim
 -- :help lazy.nvim.txt
@@ -183,7 +123,7 @@ local selectPlugins = function()
       'which-key',
       'neoscroll',
       'zk',
-      'render-markdown'
+      'render-markdown',
     }
   end
 
@@ -202,7 +142,7 @@ require('lazy').setup(selectPlugins(), {})
 if vim.g.vscode then
   require 'vscode_bindings'
 end
-
+require 'autocmd'
 require 'health'
 
 -- vim: ts=2 sts=2 sw=2 et
