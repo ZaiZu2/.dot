@@ -12,7 +12,7 @@ return {
       { 'folke/neodev.nvim', opts = {} },
     },
     config = function()
-      -- Specify all language tools to be installed automatically
+      -- Soecify all language tools to be installed automatically
       local tools = {}
       local linters = { 'ruff', 'shellcheck', 'hadolint' }
       local formatters = { 'stylua', 'ruff', 'shfmt' }
@@ -21,7 +21,9 @@ return {
         ts_ls = {},
         basedpyright = {
           analysis = {
+            autoSearchPaths = true,
             diagnosticMode = 'openFilesOnly',
+            useLibraryCodeForTypes = true,
           },
         },
         lua_ls = {

@@ -5,8 +5,11 @@ return {
     config = function()
       local lint = require 'lint'
       lint.linters_by_ft = {
-        -- markdown = { 'markdownlint' },
+        markdown = { 'markdownlint' },
         python = { 'ruff' },
+        shell = { 'shellcheck' },
+        bash = { 'shellcheck' },
+        dockerfile = { 'hadolint' },
       }
 
       -- However, note that this will enable a set of default linters,
@@ -62,11 +65,11 @@ return {
     opts = {
       notify_on_error = false,
       format_on_save = function(bufnr)
-        local disable_filetypes = { c = true, cpp = true }
-        return {
-          timeout_ms = 500,
-          lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
-        }
+        -- local disable_filetypes = { c = true, cpp = true }
+        -- return {
+        --   timeout_ms = 500,
+        --   lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
+        -- }
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
