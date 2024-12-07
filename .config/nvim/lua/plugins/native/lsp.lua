@@ -7,12 +7,10 @@ return {
       'WhoIsSethDaniel/mason-tool-installer.nvim', -- Automatic installation of formatters/linters/DAPs
 
       { 'j-hui/fidget.nvim', opts = {} }, -- Useful status updates for LSP.
-      -- `neodev` configures Lua LSP for your Neovim config, runtime and plugins
-      -- used for completion, annotations and signatures of Neovim apis
-      { 'folke/neodev.nvim', opts = {} },
+      { 'folke/lazydev.nvim' },
     },
     config = function()
-      -- Soecify all language tools to be installed automatically
+      -- Specify all language tools to be installed automatically
       local tools = {}
       local linters = { 'ruff', 'shellcheck', 'hadolint' }
       local formatters = { 'stylua', 'ruff', 'shfmt' }
@@ -29,6 +27,9 @@ return {
         lua_ls = {
           settings = {
             Lua = {
+              diagnostics = {
+                globals = { 'vim' },
+              },
               completion = {
                 callSnippet = 'Replace',
               },

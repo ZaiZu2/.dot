@@ -24,6 +24,9 @@ vim.g.have_nerd_font = true
 
 -- :help vim.opt
 -- :help option-list
+
+vim.opt.shiftwidth = 2
+vim.opt.expandtab = true
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.cursorline = true
@@ -60,11 +63,14 @@ vim.keymap.set('n', '<leader>gN', ':tabclose<CR>', { desc = 'Close the current t
 vim.keymap.set('n', '<C-_>', '<C-w><h>', { desc = 'Split window horizontally' })
 vim.keymap.set('n', '<C-|>', '<C-w><v>', { desc = 'Split window vertically' })
 
-vim.keymap.set('v', '<leader>e', ':lua<CR>', { desc = 'Execute selected [l]ua code' })
+vim.keymap.set('v', '<leader>x', ':lua<CR>', { desc = 'E[x]ecute selected Lua code' })
+vim.keymap.set('n', '<leader>x', ':.lua<CR>', { desc = 'E[x]ecute Lua line' })
+vim.keymap.set('n', '<leader>X', '<cmd>source %<CR>', { desc = 'Execute current file' })
 
 local utils = require 'utils'
-vim.keymap.set('n', '<leader>sr', utils.findAndReplace, { desc = '[s]earch and [r]eplace' })
-vim.keymap.set('n', '<leader>sR', utils.findAndReplaceGlobally, { desc = '[s]earch and [R]eplace globally' })
+vim.keymap.set('n', '<leader>sr', utils.find_and_replace, { desc = '[s]earch and [r]eplace' })
+vim.keymap.set('n', '<leader>sR', utils.find_and_replace_globally, { desc = '[s]earch and [R]eplace globally' })
+vim.keymap.set({'n', 'v'}, '<leader>k', utils.print_value, { desc = 'Inspect runtime Lua symbol' })
 
 vim.diagnostic.config {
   virtual_text = {

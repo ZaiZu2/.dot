@@ -44,7 +44,6 @@ return {
               actions.select_default:replace(function()
                 actions.close(bufnr)
                 local selection = action_state.get_selected_entry()
-                print(vim.inspect(selection))
                 zk.new { dir = selection[1], edit = true }
               end)
               return true
