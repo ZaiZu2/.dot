@@ -65,7 +65,7 @@ vim.keymap.set('n', '<C-|>', '<C-w><v>', { desc = 'Split window vertically' })
 
 vim.keymap.set('v', '<leader>x', ':lua<CR>', { desc = 'E[x]ecute selected Lua code' })
 vim.keymap.set('n', '<leader>x', ':.lua<CR>', { desc = 'E[x]ecute Lua line' })
-vim.keymap.set('n', '<leader>X', '<cmd>source %<CR>', { desc = 'Execute current file' })
+vim.keymap.set('n', '<leader>X', '<cmd>source %<CR>', { desc = 'E[X]ecute current file' })
 
 local utils = require 'utils'
 vim.keymap.set('n', '<leader>sr', utils.find_and_replace, { desc = '[s]earch and [r]eplace' })
@@ -150,5 +150,5 @@ if vim.g.vscode then
 end
 require 'autocmd'
 require 'health'
-
+require 'comment'
 -- vim: ts=2 sts=2 sw=2 et

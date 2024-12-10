@@ -20,7 +20,7 @@ end
 --- Convenience function for printing objects
 --- @param obj any
 --- @param name string?
-function pprint(obj, name)
+function M.pprint(obj, name)
   if name ~= nil then
     vim.notify(name .. ' = ' .. vim.inspect(obj))
   else

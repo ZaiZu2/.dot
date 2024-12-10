@@ -37,7 +37,7 @@ return {
           -- height = <value>,
           -- row = <value>,
           -- col = <value>,
-          winblend = 3,
+          winblend = 0,
           -- zindex = <value>,
           title_pos = 'center', -- 'left' | 'center' | 'right', position of the title of the floating window
         },
