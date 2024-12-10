@@ -11,17 +11,28 @@ return {
     },
     config = function()
       -- Specify all language tools to be installed automatically
-      local tools = {}
       local linters = { 'ruff', 'shellcheck', 'hadolint' }
       local formatters = { 'stylua', 'ruff', 'shfmt' }
       local daps = { 'debugpy' }
       local lsp_servers = { -- :help lspconfig-all
         ts_ls = {},
         basedpyright = {
-          analysis = {
-            autoSearchPaths = true,
-            diagnosticMode = 'openFilesOnly',
-            useLibraryCodeForTypes = true,
+          settings = {
+            basedpyright = {
+              disableOrganizeImports = true, -- Using Ruff
+              disableTaggedHints = true,
+              analysis = {
+                diagnosticSeverityOverrides = {
+                  -- https://github.com/microsoft/pyright/blob/main/docs/configuration.md#type-check-diagnostics-settings
+                  reportUndefinedVariable = 'none',
+                },
+                typeCheckingMode = 'standard',
+                autoSearchPaths = true,
+                diagnosticMode = 'openFilesOnly',
+                useLibraryCodeForTypes = true,
+                ignore = { '*' }, -- Using Ruff
+              },
+            },
           },
         },
         lua_ls = {
@@ -47,11 +58,11 @@ return {
           },
         }, -- toml
       }
+      local tools = {}
       vim.list_extend(tools, linters)
       vim.list_extend(tools, formatters)
       vim.list_extend(tools, daps)
       vim.list_extend(tools, vim.tbl_keys(lsp_servers))
-
       -- LSP servers and clients are able to communicate to each other what features they support.
       --  By default, Neovim doesn't support everything that is in the LSP specification.
       --  When you add nvim-cmp, luasnip, etc. Neovim now has *more* capabilities.
