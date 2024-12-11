@@ -50,13 +50,13 @@ vim.opt.inccommand = 'split' -- Preview substitutions live, as you type!
 vim.opt.scrolloff = 10
 vim.opt.hlsearch = true -- Set highlight on search, but clear on pressing <Esc> in normal mode
 
--- :help vim.keymap.set()
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>') -- Deactive search highlights
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [d]iagnostic message' })
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next [d]iagnostic message' })
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic [e]rror messages' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [q]uickfix list' })
+vim.keymap.set('n', '<leader>m', ':messages<CR>', { desc = 'Open diagnostic [q]uickfix list' })
 
 vim.keymap.set('n', '<leader>gn', ':tabnew<CR>', { desc = '[n]ew tab' })
 vim.keymap.set('n', '<leader>gN', ':tabclose<CR>', { desc = 'Close the current tab' })
@@ -68,9 +68,9 @@ vim.keymap.set('n', '<leader>x', ':.lua<CR>', { desc = 'E[x]ecute Lua line' })
 vim.keymap.set('n', '<leader>X', '<cmd>source %<CR>', { desc = 'E[X]ecute current file' })
 
 local utils = require 'utils'
-vim.keymap.set('n', '<leader>sr', utils.find_and_replace, { desc = '[s]earch and [r]eplace' })
-vim.keymap.set('n', '<leader>sR', utils.find_and_replace_globally, { desc = '[s]earch and [R]eplace globally' })
-vim.keymap.set({'n', 'v'}, '<leader>k', utils.print_value, { desc = 'Inspect runtime Lua symbol' })
+vim.keymap.set({ 'n', 'v' }, '<leader>sr', utils.find_and_replace, { desc = '[s]earch and [r]eplace' })
+vim.keymap.set({ 'n', 'v' }, '<leader>sR', utils.find_and_replace_globally, { desc = '[s]earch and [R]eplace globally' })
+vim.keymap.set({ 'n', 'v' }, '<leader>k', utils.print_value, { desc = 'Inspect runtime Lua symbol' })
 
 vim.diagnostic.config {
   virtual_text = {
@@ -79,9 +79,7 @@ vim.diagnostic.config {
   float = { border = 'rounded' },
 }
 
--- Install plugin manager - lazy.nvim
 -- :help lazy.nvim.txt
--- :Lazy / :Lazy update
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not vim.loop.fs_stat(lazypath) then
   local lazyrepo = 'https://github.com/folke/lazy.nvim.git'
@@ -114,6 +112,7 @@ local selectPlugins = function()
       'lsp',
       'treesitter',
       'lint',
+      'format',
       'cmp',
       'autopairs',
       'indent_line',

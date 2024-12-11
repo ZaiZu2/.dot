@@ -11,8 +11,8 @@ return {
     },
     config = function()
       -- Specify all language tools to be installed automatically
-      local linters = { 'ruff', 'shellcheck', 'hadolint' }
-      local formatters = { 'stylua', 'ruff', 'shfmt' }
+      local linters = { 'shellcheck', 'hadolint' }
+      local formatters = { 'stylua', 'shfmt' }
       local daps = { 'debugpy' }
       local lsp_servers = { -- :help lspconfig-all
         ts_ls = {},
@@ -32,6 +32,13 @@ return {
                 useLibraryCodeForTypes = true,
                 ignore = { '*' }, -- Using Ruff
               },
+            },
+          },
+        },
+        ruff = {
+          init_options = {
+            settings = {
+              args = {'server'},
             },
           },
         },
