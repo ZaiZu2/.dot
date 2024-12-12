@@ -3,6 +3,75 @@ local p = utils.pprint
 
 local column_width = 80
 
+--- Take in a string and split it into lines of maximum `line_width`.
+--- Respects word boundaries, and split the string only on whitespaces.
+--- @param comment string
+--- @param line_width integer
+--- @return table
+local function wrap_string(comment, line_width)
+  local wrapped_lines = {}
+
+  --- @type integer|nil
+  local com_split_end = 1
+  --- @type integer|nil
+  local com_split_start = 0
+
+  local is_final_substr = false
+  -- Iterate over `comment`, cutting chunks out of it and building lines out of it
+  while not is_final_substr do
+    comment = string.sub(comment, com_split_start + com_split_end, -1)
+    -- print '------------------------------'
+    -- p(comment, 'comment')
+    -- Skip any whitespaces before the text
+    _, com_split_start = string.find(comment, '^%s*')
+    if com_split_start == nil then
+      com_split_start = 1
+    else
+      com_split_start = com_split_start + 1
+    end
+
+    -- Find limits of a new line, accounting for comment length available left
+    local line_start = com_split_start
+    local line_end
+    if line_start + line_width > #comment then
+      line_end = #comment
+      is_final_substr = true
+    else
+      line_end = line_start + line_width
+    end
+    -- vim.notify(
+    --   'sub_start = '
+    --     .. vim.inspect(line_start)
+    --     .. ', sub_end = '
+    --     .. vim.inspect(line_end)
+    --     .. ', str_end = '
+    --     .. vim.inspect(com_split_end)
+    --     .. ', str_start  = '
+    --     .. vim.inspect(com_split_start)
+    -- )
+
+    -- Substring a new line
+    local substring = string.sub(comment, line_start, line_end)
+    if not is_final_substr then
+      -- Find if the new line is not splitting a word in a middle
+      -- If it does, find the closest whitespace to the left
+      com_split_end, _ = string.find(substring, '%s*%S*$')
+      if com_split_end == nil then -- Text occupies a full line width
+        com_split_end = line_width
+      -- TODO: Line might consist of only whitespaces (?), this is not handled here
+      else
+        com_split_end = com_split_end - 1
+      end
+      substring = string.sub(substring, 1, com_split_end)
+    end
+
+    -- p(substring, 'substring')
+    table.insert(wrapped_lines, substring)
+  end
+  -- p(wrapped_lines, 'new_comments')
+  return wrapped_lines
+end
+
 local function run()
   local bufnr = vim.api.nvim_get_current_buf()
   local cur_pos = vim.api.nvim_win_get_cursor(0)
@@ -11,6 +80,7 @@ local function run()
   tr.get_parser(bufnr):parse()
 
   local init_node = tr.get_node { bufnr = bufnr, pos = cur_pos }
+
   if init_node == nil or init_node:type() ~= 'comment' then
     vim.notify 'Not a comment'
     return
@@ -71,80 +141,34 @@ local function run()
     table.insert(comments, comment)
   end
   local com_string = table.concat(comments, ' ')
-  p(com_char, 'com_char')
-  p(com_prefix, 'com_prefix')
-  p(dog, 'dog')
-  p(com_string, 'com_string')
-
-  local sub_start = 1
-  local sub_end
+  print '-------------------------------------------------------------------------'
+  -- p(com_char, 'com_char')
+  -- p(com_prefix, 'com_prefix')
+  -- p(dog, 'dog')
+  -- p(com_string, 'com_string')
 
   -- Set comment length based on the current indentation
   local com_char_length = column_width - col_start - #(com_prefix .. ' ')
-  if com_char_length > #com_string then
-    sub_end = #com_string
-  else
-    sub_end = com_char_length
-  end
-
-  local new_comments = {}
-  --- @type integer|nil
-  local last_whitespace_pos = 0
-  --- @type integer|nil
-  local first_char_pos = sub_start
-  local whitespaces = ''
-  while true do
-    --  Create a substring
-    sub_start = sub_start + last_whitespace_pos + #whitespaces - 1
-    if sub_start + com_char_length > #com_string then
-      sub_end = #com_string
-    else
-      sub_end = sub_start + com_char_length
-    end
-    local substring = string.sub(com_string, sub_start, sub_end)
-    print '\n'
-    p(substring, 'substring')
-
-    -- Skip matching whitespaces and break out of the loop for the final substring
-    if sub_end == #com_string then
-      table.insert(new_comments, substring)
-      break
-    end
-
-    -- Find the final whitespace in the substring
-    last_whitespace_pos, _, whitespaces = string.find(substring, '(%s*)%S*$')
-    if whitespaces == nil then
-      last_whitespace_pos = com_char_length
-      whitespaces = ''
-    end
-    _, first_char_pos, _ = string.find(substring, '^%s*(%S)')
-    assert(first_char_pos) -- FIXME: Not true, comment might be whitespace only string
-
-    p(sub_start, 'sub_start')
-    p(sub_end, 'sub_end')
-    p(whitespaces, 'whitespaces')
-    p(first_char_pos, 'first_char_pos')
-    p(last_whitespace_pos, 'last_whitespace_pos')
-
-    -- Adjust substring to remove whitespaces and ensure split between words
-    local new_comment = string.sub(substring, first_char_pos, last_whitespace_pos - 1)
-    p(new_comment, 'new_comment')
-    table.insert(new_comments, new_comment)
-  end
-  p(new_comments, 'new_comments')
-
+  local wrapped_lines = wrap_string(com_string, com_char_length)
   --
   local indent_string = string.rep(' ', col_start)
-  for i, comment in ipairs(new_comments) do
-    new_comments[i] = string.format('%s%s %s', indent_string, com_prefix, comment)
+  local buffer_lines = {}
+  for i, line in ipairs(wrapped_lines) do
+    buffer_lines[i] = string.format('%s%s %s', indent_string, com_prefix, line)
   end
-  p(new_comments)
 
   local rstart, _, _, _ = tr.get_node_range(comment_nodes[1])
   local _, _, rend, _ = tr.get_node_range(comment_nodes[#comment_nodes])
-  p(rstart, 'rstart')
-  p(rend, 'rend')
-  vim.api.nvim_buf_set_lines(bufnr, rstart, rend, true, new_comments)
+  local diff = (rend - rstart + 1) - #buffer_lines
+
+  if diff > 0 then
+    for _ = 0, diff do
+      table.insert(buffer_lines, '')
+    end
+  end
+  p(buffer_lines)
+  print('#lines = ' .. #buffer_lines .. ', diff = ' .. diff .. ', ' .. rstart .. ' ' .. rend)
+  vim.api.nvim_buf_set_lines(bufnr, rstart, rend, true, buffer_lines)
 end
 
 vim.keymap.set('n', '<leader>F', run, { desc = '[F]ormat comment string' })
