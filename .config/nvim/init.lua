@@ -149,5 +149,6 @@ if vim.g.vscode then
 end
 require 'autocmd'
 require 'health'
-require 'comment'
+local format_comment = require 'comment'
+vim.keymap.set('n', '<leader>F', format_comment, { desc = '[F]ormat comment string' })
 -- vim: ts=2 sts=2 sw=2 et
