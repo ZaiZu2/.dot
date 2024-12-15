@@ -23,7 +23,7 @@ return {
       -- under `nvim/fmts/`. Each formatter can have a global config set up in the config table below.
       local fmt_configs = {
         stylua = {
-          arg = '--config', -- CLI arg for injecting fmt config
+          arg = '--config-path', -- CLI arg for injecting fmt config
           conf_files = { '.stylua.toml' }, -- All files which might be used for local fmt config
           filename = '.stylua.toml', -- Name of the default global fmt config file
         },
