@@ -1,8 +1,12 @@
 -- TODO: Make column_width injectable/derivable from formatter settings (?)
 -- TODO: Add support for justification to TODO markers
 -- TODO: Recognize strings comments and allow for their formatting (python)
--- TODO: Recognize multiline comments and allow their formatting
--- TODO: Falls into endless loop if a comment consist of a single long-ass string
+-- FIXME: Lua comments act weirdly:
+-- E.g. this:
+-- Comment with unusual spacing between lines
+-- 
+--  
+-- This is an example with blank lines in between
 local utils = require 'utils'
 local p = utils.pprint
 
@@ -59,8 +63,8 @@ local function find_adjacent_nodes(initial_node, bufnr)
         end
 
         local prev_start, _, prev_end, _ = tr.get_node_range(prev_node)
-        local is_whitespace_only = tr.get_node_text(prev_node, bufnr):match '^%s$'
-        if prev_node:type() ~= initial_type or cur_start - prev_end > 1 or is_whitespace_only then
+        local prev_text = tr.get_node_text(prev_node, bufnr)
+        if prev_node:type() ~= initial_type or cur_start - prev_end > 1 or is_whitespace_only(prev_text) then
             break
         end
         cur_start = prev_start
@@ -77,8 +81,8 @@ local function find_adjacent_nodes(initial_node, bufnr)
         end
 
         local next_start, _, next_end, _ = tr.get_node_range(next_node)
-        local is_whitespace_only = tr.get_node_text(next_node, bufnr):match '^%s$'
-        if next_node:type() ~= initial_type or next_start - cur_end > 1 or is_whitespace_only then
+        local next_text = tr.get_node_text(next_node, bufnr)
+        if next_node:type() ~= initial_type or next_start - cur_end > 1 or is_whitespace_only(next_text) then
             break
         end
         cur_end = next_end
@@ -128,6 +132,7 @@ local function wrap_string(comment, line_width)
     -- Iterate over `comment`, cutting chunks out of it and building lines out of it
     while not is_final_substr do
         comment = string.sub(comment, com_split_start + com_split_end, -1)
+        -- Skip over leading whitspaces first
         _, com_split_start = string.find(comment, '^%s*')
         if com_split_start == nil then
             com_split_start = 1
@@ -149,7 +154,7 @@ local function wrap_string(comment, line_width)
         local substring = string.sub(comment, line_start, line_end)
         if not is_final_substr then
             -- Find if the new line is not splitting a word in a middle
-            -- If it does, find the closest whitespace to the left
+            -- If it does, find the closest whitespace to the left of that word
             com_split_end, _ = string.find(substring, '%s*%S*$')
             if com_split_end == nil then -- Text occupies a full line width
                 com_split_end = line_width
@@ -191,6 +196,20 @@ local function parse_multiline(com_text)
     error(('Failed to match multiline %s comment - `%s`'):format(vim.bo.filetype, com_text))
 end
 
+---Split input string on newline characters and trim any leading/trailing whitespaces in lines
+---@param com_body string
+---@return table
+local function split_multiline(com_body)
+    com_body = com_body .. '\n' -- Needed for capturing last line
+
+    local com_lines = {}
+    for line in com_body:gmatch '(.-)\n' do -- Match groups separated by \n (split string)
+        local trimmed_line = string.match(line, '^%s*(.-)%s*$')
+        table.insert(com_lines, trimmed_line)
+    end
+    return com_lines
+end
+
 -- TODO: Skip for now, make the grammar based approach work first
 ---Parse a comment string to identify whether it's single-line
 ---@param com_text string Comment raw string
@@ -219,11 +238,13 @@ end
 ---@return string comment_symbol Opening character/s denoting a comment
 local function parse_singleline(com_text)
     local single_symbols = get_comment_symbol 'single'
+    -- p { single_symbols = single_symbols}
     if single_symbols ~= nil then
         -- Some languages have multiple symbols denoting a single-line comment
         for _, symbol in ipairs(single_symbols) do
             local prefix_rgx = '^%s*' .. escape(symbol) -- Match opening symbol
-            local body_rgx = '%s*(.*)%s*$' -- Match comment content, but strip all outer whitespaces
+            local body_rgx = '%s*(.-)%s*$' -- Match comment content, but strip all outer whitespaces
+            -- p { com_text = com_text, symbol = symbol,  }
             local com_body = string.match(com_text, prefix_rgx .. body_rgx)
             if com_body ~= nil then
                 return com_body, symbol
@@ -285,11 +306,7 @@ local function format_comment()
     if success then
         com_type = 'multi'
 
-        com_body = com_body .. '\n' -- Needed for capturing last line
-        com_lines = {}
-        for line in com_body:gmatch '(.-)\n' do -- Match groups separated by \n (split string)
-            table.insert(com_lines, line)
-        end
+        com_lines = split_multiline(com_body)
         -- Find and isolate a paragraph
         local rel_cur_y = cur_y - init_row_start + 1
         left, right = find_subarray(com_lines, rel_cur_y)
@@ -330,19 +347,39 @@ local function format_comment()
     elseif com_type == 'multi' then
         string_length = line_width - init_col_start
         wrapped_lines = wrap_string(com_text, string_length)
-        local indent = string.rep(' ', init_col_start)
+
+        local merged_lines = {}
+        -- Remove old paragraph lines
         for i, line in ipairs(com_lines) do
+            if i < left or i > right then
+                table.insert(merged_lines, line)
+            end
+        end
+        -- Inject formatted paragraph lines under correct index
+        for i = #wrapped_lines, 1, -1 do
+            table.insert(merged_lines, left, wrapped_lines[i])
+        end
+
+        -- Build buffer lines
+        local indent = string.rep(' ', init_col_start)
+        for i, line in ipairs(merged_lines) do
             local buffer_line, space
-            space = is_whitespace_only(line) and '' or ' ' -- Ternary exp alternative
-            if i == 1 then
+            space = is_whitespace_only(line) and '' or ' ' -- Ternary expr alternative
+            if #merged_lines == 1 then -- If comment spans only 1 line
+                buffer_line = indent .. com_symbol[1] .. space .. line .. space .. com_symbol[2]
+            elseif i == 1 then -- If first line
                 buffer_line = indent .. com_symbol[1] .. space .. line
-            elseif i == #com_lines then
+            elseif i == #merged_lines then -- If last line
                 buffer_line = indent .. line .. space .. com_symbol[2]
+            else -- If any 'normal' line inside
+                buffer_line = indent .. line
             end
             table.insert(buffer_lines, buffer_line)
-            -- TODO: Figure out how to merge lines from `paragraph_lines` into `com_lines` as a `buffer_lines`
-            -- assuming the number of lines might change between paragraph_lines and `com_lines`
         end
+        -- Replace buffer lines
+        local rstart, rend = init_row_start, init_row_end
+        vim.api.nvim_buf_set_lines(bufnr, rstart, rend + 1, true, buffer_lines)
+        vim.api.nvim_win_set_cursor(cur_win, { rstart + 1, cur_x })
     end
 end
 

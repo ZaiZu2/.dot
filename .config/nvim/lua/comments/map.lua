@@ -3,6 +3,10 @@ local comment_syntax = {
         single = { '//' },
         multi = { '/*', '*/' },
     },
+    lua = {
+        single = { '--' },
+        multi = { [[--[[]], ']]' },
+    },
     python = {
         single = { '#' },
         multi = nil,
