@@ -56,7 +56,7 @@ vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [d]
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next [d]iagnostic message' })
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic [e]rror messages' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [q]uickfix list' })
-vim.keymap.set('n', '<leader>m', ':messages<CR>', { desc = 'Open diagnostic [q]uickfix list' })
+vim.keymap.set('n', '<leader>m', ':messages<CR>', { desc = 'Open [m]essages' })
 
 vim.keymap.set('n', '<leader>gn', ':tabnew<CR>', { desc = '[n]ew tab' })
 vim.keymap.set('n', '<leader>gN', ':tabclose<CR>', { desc = 'Close the current tab' })
@@ -67,7 +67,8 @@ vim.keymap.set('v', '<leader>x', ':lua<CR>', { desc = 'E[x]ecute selected Lua co
 vim.keymap.set('n', '<leader>x', ':.lua<CR>', { desc = 'E[x]ecute Lua line' })
 vim.keymap.set('n', '<leader>X', '<cmd>source %<CR>', { desc = 'E[X]ecute current file' })
 vim.keymap.set('n', '<leader>r', function()
-    require('lazy.core.loader').reload 'wrap'
+    require('lazy.core.loader').reload 'wrap.nvim' -- reload all lua libraries within the plugin
+    vim.keymap.set('n', '<leader>F', require('wrap').wrap_comment, { desc = '[F]ormat comment string' })
 end, { desc = '[r]eload `wrap` plugin' })
 
 local utils = require 'utils'
