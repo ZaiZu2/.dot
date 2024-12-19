@@ -3,16 +3,16 @@
 vim.g.custom = {}
 local init_file = vim.fn.getcwd() .. '/nvim.lua'
 if vim.fn.filereadable(init_file) == 1 then
-  local ok, custom = pcall(dofile, init_file)
-  if ok then
-    if type(custom) == 'table' then
-      vim.g.custom = custom
+    local ok, custom = pcall(dofile, init_file)
+    if ok then
+        if type(custom) == 'table' then
+            vim.g.custom = custom
+        else
+            vim.notify('nvim.lua must return a table' .. custom, vim.log.levels.ERROR)
+        end
     else
-      vim.notify('nvim.lua must return a table' .. custom, vim.log.levels.ERROR)
+        vim.notify('Error loading `nvim.lua`: ' .. custom, vim.log.levels.ERROR)
     end
-  else
-    vim.notify('Error loading `nvim.lua`: ' .. custom, vim.log.levels.ERROR)
-  end
 end
 
 -- :help lua-guide
@@ -66,89 +66,98 @@ vim.keymap.set('n', '<C-|>', '<C-w><v>', { desc = 'Split window vertically' })
 vim.keymap.set('v', '<leader>x', ':lua<CR>', { desc = 'E[x]ecute selected Lua code' })
 vim.keymap.set('n', '<leader>x', ':.lua<CR>', { desc = 'E[x]ecute Lua line' })
 vim.keymap.set('n', '<leader>X', '<cmd>source %<CR>', { desc = 'E[X]ecute current file' })
+vim.keymap.set('n', '<leader>r', function()
+    require('lazy.core.loader').reload 'wrap'
+end, { desc = '[r]eload `wrap` plugin' })
 
 local utils = require 'utils'
 vim.keymap.set({ 'n', 'v' }, '<leader>sr', utils.find_and_replace, { desc = '[s]earch and [r]eplace' })
-vim.keymap.set({ 'n', 'v' }, '<leader>sR', utils.find_and_replace_globally, { desc = '[s]earch and [R]eplace globally' })
+vim.keymap.set(
+    { 'n', 'v' },
+    '<leader>sR',
+    utils.find_and_replace_globally,
+    { desc = '[s]earch and [R]eplace globally' }
+)
 vim.keymap.set({ 'n', 'v' }, '<leader>k', utils.print_value, { desc = 'Inspect runtime Lua symbol' })
 
 vim.diagnostic.config {
-  virtual_text = {
-    prefix = '■ ',
-  },
-  float = { border = 'rounded' },
+    virtual_text = {
+        prefix = '■ ',
+    },
+    float = { border = 'rounded' },
 }
 
 -- :help lazy.nvim.txt
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not vim.loop.fs_stat(lazypath) then
-  local lazyrepo = 'https://github.com/folke/lazy.nvim.git'
-  vim.fn.system { 'git', 'clone', '--filter=blob:none', '--branch=stable', lazyrepo, lazypath }
+    local lazyrepo = 'https://github.com/folke/lazy.nvim.git'
+    vim.fn.system { 'git', 'clone', '--filter=blob:none', '--branch=stable', lazyrepo, lazypath }
 end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 
 local selectPlugins = function()
-  local plugins = {}
+    local plugins = {}
 
-  -- load global plugins
-  for _, module_name in ipairs { 'plugins.various', 'plugins.mini' } do
-    local module = require(module_name)
-    for _, plugin in ipairs(module) do
-      table.insert(plugins, plugin)
+    -- load global plugins
+    for _, module_name in ipairs { 'plugins.various', 'plugins.mini' } do
+        local module = require(module_name)
+        for _, plugin in ipairs(module) do
+            table.insert(plugins, plugin)
+        end
     end
-  end
 
-  local module_names = {}
-  local path
-  if vim.g.vscode then
-    -- vscode-specific plugins
-    path = 'plugins.vscode.'
-    module_names = {}
-  else
-    -- native-nvim specific plugins
-    path = 'plugins.native.'
-    module_names = {
-      'theme',
-      'lsp',
-      'treesitter',
-      'lint',
-      'format',
-      'cmp',
-      'autopairs',
-      'indent_line',
-      'debug',
-      'neotest',
-      'gitsigns',
-      'neotree',
-      'toggleterm',
-      'copilot',
-      'telescope',
-      'neotree',
-      'vim-tmux-navigator',
-      'which-key',
-      'neoscroll',
-      'zk',
-      'render-markdown',
-    }
-  end
-
-  for _, module_name in ipairs(module_names) do
-    local module_path = path .. module_name
-    for _, plugin in ipairs(require(module_path)) do
-      table.insert(plugins, plugin)
+    local module_names = {}
+    local path
+    if vim.g.vscode then
+        -- vscode-specific plugins
+        path = 'plugins.vscode.'
+        module_names = {}
+    else
+        -- native-nvim specific plugins
+        path = 'plugins.native.'
+        module_names = {
+            'theme',
+            'lsp',
+            'treesitter',
+            'lint',
+            'format',
+            'cmp',
+            'autopairs',
+            'indent_line',
+            'debug',
+            'neotest',
+            'gitsigns',
+            'neotree',
+            'toggleterm',
+            'copilot',
+            'telescope',
+            'neotree',
+            'vim-tmux-navigator',
+            'which-key',
+            'neoscroll',
+            'zk',
+            'render-markdown',
+            'wrap',
+        }
     end
-  end
 
-  return plugins
+    for _, module_name in ipairs(module_names) do
+        local module_path = path .. module_name
+        for _, plugin in ipairs(require(module_path)) do
+            table.insert(plugins, plugin)
+        end
+    end
+
+    return plugins
 end
 
 require('lazy').setup(selectPlugins(), {})
 
 if vim.g.vscode then
-  require 'vscode_bindings'
+    require 'vscode_bindings'
 end
 require 'autocmd'
 require 'health'
-local format_comment = require 'comments.wrap'
--- vim.keymap.set('n', '<leader>F', format_comment, { desc = '[F]ormat comment string' })
+local wrap = require 'wrap'
+vim.keymap.set('n', '<leader>F', wrap.wrap_comment, { desc = '[F]ormat comment string' })
 -- vim: ts=2 sts=2 sw=2 et

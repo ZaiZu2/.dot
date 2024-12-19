@@ -24,8 +24,8 @@ return {
       local fmt_configs = {
         stylua = {
           arg = '--config-path', -- CLI arg for injecting fmt config
-          conf_files = { '.stylua.toml' }, -- All files which might be used for local fmt config
-          filename = '.stylua.toml', -- Name of the default global fmt config file
+          conf_files = { 'stylua.toml' }, -- All files which might be used for local fmt config
+          filename = 'stylua.toml', -- Name of the default global fmt config file
         },
         ruff_format = {
           arg = '--config',
