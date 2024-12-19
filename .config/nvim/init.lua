@@ -96,63 +96,63 @@ if not vim.loop.fs_stat(lazypath) then
 end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 
-local selectPlugins = function()
-    local plugins = {}
+-- local selectPlugins = function()
+--     local plugins = {}
+--
+--     -- load global plugins
+--     for _, module_name in ipairs { 'plugins.various', 'plugins.mini' } do
+--         local module = require(module_name)
+--         for _, plugin in ipairs(module) do
+--             table.insert(plugins, plugin)
+--         end
+--     end
+--
+--     local module_names = {}
+--     local path
+--     if vim.g.vscode then
+--         -- vscode-specific plugins
+--         path = 'plugins.vscode.'
+--         module_names = {}
+--     else
+--         -- native-nvim specific plugins
+--         path = 'plugins.native.'
+--         module_names = {
+--             'theme',
+--             'lsp',
+--             'treesitter',
+--             'lint',
+--             'format',
+--             'cmp',
+--             'autopairs',
+--             'indent_line',
+--             'debug',
+--             'neotest',
+--             'gitsigns',
+--             'neotree',
+--             'toggleterm',
+--             'copilot',
+--             'telescope',
+--             'neotree',
+--             'vim-tmux-navigator',
+--             'which-key',
+--             'neoscroll',
+--             'zk',
+--             'render-markdown',
+--             'wrap',
+--         }
+--     end
+--
+--     for _, module_name in ipairs(module_names) do
+--         local module_path = path .. module_name
+--         for _, plugin in ipairs(require(module_path)) do
+--             table.insert(plugins, plugin)
+--         end
+--     end
+--
+--     return plugins
+-- end
 
-    -- load global plugins
-    for _, module_name in ipairs { 'plugins.various', 'plugins.mini' } do
-        local module = require(module_name)
-        for _, plugin in ipairs(module) do
-            table.insert(plugins, plugin)
-        end
-    end
-
-    local module_names = {}
-    local path
-    if vim.g.vscode then
-        -- vscode-specific plugins
-        path = 'plugins.vscode.'
-        module_names = {}
-    else
-        -- native-nvim specific plugins
-        path = 'plugins.native.'
-        module_names = {
-            'theme',
-            'lsp',
-            'treesitter',
-            'lint',
-            'format',
-            'cmp',
-            'autopairs',
-            'indent_line',
-            'debug',
-            'neotest',
-            'gitsigns',
-            'neotree',
-            'toggleterm',
-            'copilot',
-            'telescope',
-            'neotree',
-            'vim-tmux-navigator',
-            'which-key',
-            'neoscroll',
-            'zk',
-            'render-markdown',
-            'wrap',
-        }
-    end
-
-    for _, module_name in ipairs(module_names) do
-        local module_path = path .. module_name
-        for _, plugin in ipairs(require(module_path)) do
-            table.insert(plugins, plugin)
-        end
-    end
-
-    return plugins
-end
-
-require('lazy').setup(selectPlugins(), {})
+require('lazy').setup('plugins', {})
 
 if vim.g.vscode then
     require 'vscode_bindings'

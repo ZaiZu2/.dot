@@ -116,7 +116,7 @@ return {
           end
 
           local telescope = require 'telescope.builtin'
-          local pickers = require 'plugins.native.pickers'
+          local pickers = require 'pickers'
           map(';d', telescope.lsp_definitions, '[d]efinition')
           map(';D', vim.lsp.buf.declaration, '[D]eclaration')
           map(';r', telescope.lsp_references, '[r]eferences')
