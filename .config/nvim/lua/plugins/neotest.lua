@@ -9,7 +9,7 @@ return {
     },
     config = function()
       local neo_python_conf = {
-        dap = { justMyCode = true },
+        dap = { justMyCode = false },
       }
       if vim.g.custom.neotest_python ~= nil then
         neo_python_conf = vim.tbl_extend('force', neo_python_conf, vim.g.custom.neotest_python)

@@ -45,10 +45,10 @@ setopt hist_save_no_dups
 setopt hist_ignore_dups
 setopt hist_find_no_dups
 
-# bindkey '^p' history-search-backward
-# bindkey '^n' history-search-forward
-# bindkey '^p' up-line-or-search
-# bindkey '^n' down-line-or-search
+bindkey '^p' up-line-or-search
+bindkey "${terminfo[kcuu1]}" up-line-or-search # Arrow Up '^[[A'
+bindkey '^n' down-line-or-search
+bindkey "${terminfo[kcud1]}" down-line-or-search # Arrow Down '^[[B'
 
 # Completion styling
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
