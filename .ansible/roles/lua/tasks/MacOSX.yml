@@ -1,0 +1,6 @@
+- name: Install
+  community.general.homebrew:
+    name:
+    - lua@{{ lua_version }}
+    - luarocks
+    state: present

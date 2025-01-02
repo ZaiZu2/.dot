@@ -5,9 +5,13 @@ df config --local status.showUntrackedFiles no
 
 # Add in zsh plugins
 source "$XDG_DATA_HOME/zinit/zinit.git/zinit.zsh"
+zinit ice wait"1"
 zinit light zsh-users/zsh-syntax-highlighting
+zinit ice wait"1"
 zinit light zsh-users/zsh-autosuggestions
+zinit ice wait"1"
 zinit light Aloxaf/fzf-tab
+zinit ice wait"1"
 zinit snippet OMZP::ssh-agent/ssh-agent.plugin.zsh
 
 autoload bashcompinit && bashcompinit
@@ -46,9 +50,9 @@ setopt hist_ignore_dups
 setopt hist_find_no_dups
 
 bindkey '^p' up-line-or-search
-bindkey "${terminfo[kcuu1]}" up-line-or-search # Arrow Up '^[[A'
+bindkey '^[[A' up-line-or-search # Arrow Up '^[[A'
 bindkey '^n' down-line-or-search
-bindkey "${terminfo[kcud1]}" down-line-or-search # Arrow Down '^[[B'
+bindkey '^[[B' down-line-or-search # Arrow Down '^[[B'
 
 # Completion styling
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'

@@ -2,12 +2,14 @@
   hosts: localhost
   vars:
     go_version: "1.23.3"
+    lua_version: "5.4"
     all:
     - general
     - package_manager
     - python
     - rust
     - go
+    - lua
     - git
     - zsh
     - fzf

@@ -27,7 +27,4 @@
     - unzip
     - ripgrep
     state: present
-
-- name: Update Homebrew packages
-  community.general.homebrew:
     upgrade_all: true
