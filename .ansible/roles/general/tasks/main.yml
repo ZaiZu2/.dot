@@ -21,3 +21,4 @@
     CARGO_HOME: "{{ ansible_user_dir }}/.local/share/cargo"
     RUSTUP_HOME: "{{ ansible_user_dir }}/.local/share/rustup"
     GOPATH: "{{ ansible_user_dir }}/.local/share/go"
+    LUA_PATH: "{{ ansible_user_dir }}/.local/share/lua"

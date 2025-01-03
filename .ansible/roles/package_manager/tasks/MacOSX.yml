@@ -26,5 +26,7 @@
     - libtool
     - unzip
     - ripgrep
+    - build-essential
+    - libreadline-dev
     state: present
     upgrade_all: true

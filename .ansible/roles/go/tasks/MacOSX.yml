@@ -8,7 +8,9 @@
   become: true
   block:
   - name: Delete previous installation
-    command: rm -rf /usr/local/go
+    ansible.builtin.file:
+      path: "{{ GOPATH }}"
+      state: absent
 
   - name: Download binary
     ansible.builtin.get_url:
@@ -19,7 +21,7 @@
   - name: "Extract tar file"
     ansible.builtin.unarchive:
       src: "/tmp/go{{ go_version }}.darwin-arm64.tar.gz"
-      dest: "/usr/local"
+      dest: "{{ GOPATH }}"
       force: true
       mode: "0755"
 

@@ -2,7 +2,7 @@
   hosts: localhost
   vars:
     go_version: "1.23.3"
-    lua_version: "5.4"
+    lua_version: "5.2"
     all:
     - general
     - package_manager
@@ -43,11 +43,15 @@
     set_fact:
       env: "{{ env }}"
     when: env is defined and env in ['server', 'dev']
+    tags:
+      - always
 
   - name: Set roles based on environment
     set_fact:
       roles: "{{ all if env == 'dev' else server }}"
     when: env is defined and env in ['server', 'dev']
+    tags:
+      - always
 
   - name: Run roles
     ansible.builtin.include_role:
@@ -58,3 +62,5 @@
     loop_control:
       loop_var: roles_item
     with_items: "{{ roles }}"
+    tags:
+      - always

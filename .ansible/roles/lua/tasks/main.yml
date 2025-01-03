@@ -1,12 +1,74 @@
 - block:
-  - name: "Checking for Distribution Config: {{ ansible_distribution }}"
-    ansible.builtin.stat:
-      path: "{{ role_path }}/tasks/{{ ansible_distribution }}.yml"
-    register: distribution_config
+  # - name: "Checking for Distribution Config: {{ ansible_distribution }}"
+  #   ansible.builtin.stat:
+  #     path: "{{ role_path }}/tasks/{{ ansible_distribution }}.yml"
+  #   register: distribution_config
+  #
+  # - name: "Run Tasks: {{ ansible_distribution }}"
+  #   ansible.builtin.include_tasks: "{{ ansible_distribution }}.yml"
+  #   when: distribution_config.stat.exists
 
-  - name: "Run Tasks: {{ ansible_distribution }}"
-    ansible.builtin.include_tasks: "{{ ansible_distribution }}.yml"
-    when: distribution_config.stat.exists
+  - name: Check if exists
+    shell: command -v lua
+    register: lua_exists
+    ignore_errors: yes
+
+  - name: Install Lua
+    when: lua_exists is failed
+    become: true
+    block:
+    - name: Download Lua source code
+      ansible.builtin.get_url:
+        url: "https://www.lua.org/ftp/lua-{{ lua_version }}.tar.gz"
+        dest: "/tmp/lua-{{ lua_version }}"
+        mode: '0755'
+
+    - name: "Extract tar file"
+      ansible.builtin.unarchive:
+        src: "/tmp/lua-{{ lua_version }}.tar.gz"
+        dest: "{{ LUA_PATH }}"
+        mode: "0755"
+
+    - name: Delete downloaded tar file
+      ansible.builtin.file:
+        path: "/tmp/lua-{{ lua_version }}.tar.gz"
+        state: absent
+
+    - name: Build Lua
+      ansible.builtin.command:
+        cmd: make
+        chdir: "{{ LUA_PATH }}"
+
+  # - name: Check if exists
+  #   shell: command -v luarocks
+  #   register: luarocks_exists
+  #   ignore_errors: yes
+  #
+  # - name: Install
+  #   when: luarocks_exists is failed
+  #   become: true
+  #   block:
+  #   - name: Download binary
+  #     ansible.builtin.get_url:
+  #       url: "https://luarocks.github.io/luarocks/releases/luarocks-3.11.1.tar.gz"
+  #       dest: "/tmp/luarocks-3.11.1.tar.gz"
+  #       mode: '0755'
+  #
+  #   - name: "Extract tar file"
+  #     ansible.builtin.unarchive:
+  #       src: "/tmp/luarocks-3.11.1.tar.gz"
+  #       dest: "{{ LUA_PATH }}"
+  #       mode: "0755"
+  #
+  #   - name: Build Luarocks
+  #     ansible.builtin.command:
+  #       cmd: make
+  #       chdir: "{{ LUA_PATH }}"
+  #
+  #   - name: Delete downloaded tar file
+  #     ansible.builtin.file:
+  #       path: "/tmp/luarocks-3.11.1.tar.gz"
+  #       state: absent
 
   rescue:
   - name: Log erorr
