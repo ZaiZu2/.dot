@@ -6,10 +6,9 @@ function M.find_and_replace()
         selection = vim.fn.expand '<cword>'
         cmd_string = ':%s/' .. selection .. '//g<Left><Left><Space><BS>'
     elseif vim.fn.mode() == 'v' then
-        local vstart = vim.fn.getpos "'<"
-        local vend = vim.fn.getpos "'>"
-        selection = table.concat(vim.fn.getregion(vstart, vend), '\n')
-        cmd_string = ':<BS><BS><BS><BS><BS>%s/' .. selection .. '//g<Left><Left><Space><BS>'
+        vim.cmd('normal! "Ry')
+        selection = vim.fn.getreg('R')
+        cmd_string = ':%s/' .. selection .. '//g<Left><Left><Space><BS>'
     end
     local escaped_cmd_string = vim.api.nvim_replace_termcodes(cmd_string, true, false, true)
     vim.api.nvim_feedkeys(escaped_cmd_string, 'n', true)

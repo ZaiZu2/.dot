@@ -83,7 +83,7 @@ return {
       local conform = require 'conform'
       conform.setup(opts)
       vim.keymap.set({ 'v', 'n' }, '<leader>f', function()
-        conform.format({ async = false, lsp_fallback = true }, function(err, did_edit)
+        conform.format({ async = false, lsp_fallback = false }, function(err, did_edit)
           -- if did_edit then
           --   vim.notify 'Code formatted'
           -- elseif err then

@@ -68,4 +68,8 @@ alias fzf='fzf --preview "bat --color=always --style=numbers --line-range=:500 {
 eval "$(oh-my-posh init zsh --config $XDG_CONFIG_HOME/oh-my-posh.toml)"
 eval "$(fnm env --use-on-cd --shell zsh)"
 
+alias ll='ls -la'
+alias gs='git status'
+alias gc='git commit'
+
 [ -f .zsh_custom ] && source .zsh_custom

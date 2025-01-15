@@ -29,6 +29,8 @@ return {
 
       require('mini.trailspace').setup()
 
+      require('mini.test').setup()
+
       require('mini.splitjoin').setup()
 
       require('mini.files').setup { -- Module mappings created only inside explorer.
