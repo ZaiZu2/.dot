@@ -117,19 +117,27 @@ return {
 
           local telescope = require 'telescope.builtin'
           local pickers = require 'pickers'
-          map(';d', telescope.lsp_definitions, '[d]efinition')
+          -- map(';d', telescope.lsp_definitions, '[d]efinition')
           map(';D', vim.lsp.buf.declaration, '[D]eclaration')
-          map(';r', telescope.lsp_references, '[r]eferences')
-          map(';i', telescope.lsp_implementations, '[i]mplementation')
-          map(';t', telescope.lsp_type_definitions, '[t]ype definition')
-          map(';s', pickers.prettyDocumentSymbols, '[s]ymbols')
-          map(';p', pickers.prettyWorkspaceSymbols, 'symbols in [p]roject')
+          -- map(';r', telescope.lsp_references, '[r]eferences')
+          -- map(';i', telescope.lsp_implementations, '[i]mplementation')
+          -- map(';t', telescope.lsp_type_definitions, '[t]ype definition')
+          -- map(';s', pickers.prettyDocumentSymbols, '[s]ymbols')
+          -- map(';p', pickers.prettyWorkspaceSymbols, 'symbols in [p]roject')
           map(';R', vim.lsp.buf.rename, '[R]ename')
           -- Execute a code action, usually your cursor needs to be on top of an error
           -- or a suggestion from your LSP for this to activate.
           map(';c', vim.lsp.buf.code_action, '[c]ode action')
           map('K', vim.lsp.buf.hover, 'Show documentation') -- :help K
           vim.keymap.set('i', '<C-k>', vim.lsp.buf.signature_help, { desc = 'Show signature' })
+
+          local fzflua = require 'fzf-lua'
+          map(';d', fzflua.lsp_definitions, '[d]efinition')
+          map(';r', fzflua.lsp_references, '[r]eferences')
+          map(';i', fzflua.lsp_implementations, '[i]mplementation')
+          map(';t', fzflua.lsp_typedefs, '[t]ype definition')
+          map(';s', fzflua.lsp_document_symbols, '[s]ymbols')
+          map(';p', fzflua.lsp_workspace_symbols, 'symbols in [p]roject')
 
           -- The following two autocommands are used to highlight references of the word
           -- :help CursorHold

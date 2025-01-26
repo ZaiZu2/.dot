@@ -2,15 +2,34 @@ M = {}
 
 function M.find_and_replace()
     local cmd_string, selection
-    if vim.fn.mode() == 'n' then
+    local mode = vim.fn.mode()
+    if mode == 'n' then
         selection = vim.fn.expand '<cword>'
         cmd_string = ':%s/' .. selection .. '//g<Left><Left><Space><BS>'
-    elseif vim.fn.mode() == 'v' then
-        vim.cmd('normal! "Ry')
-        selection = vim.fn.getreg('R')
+    elseif vim.list_contains({ 'v', 'V' }, mode) then
+        local region = vim.fn.getregion(
+            vim.fn.getpos 'v',
+            vim.fn.getpos '.',
+            { type = mode }
+        )
+        -- FIX: Somehow concatenating with `\n` breaks `nvim_feedkeys`.
+        -- Removing `\n` here and manually adding it after the Command text
+        -- is populated works. `\n` might not be escaped?
+        selection = table.concat(region, '\n')
+        -- Escape potential forward/back slashes in the selected text
+        selection = vim.fn.escape(selection, '/\\')
+        vim.print({selection})
+        -- Exit Visual mode otherwise `:%s` doesn't work properly
+        vim.api.nvim_feedkeys(
+            vim.api.nvim_replace_termcodes('<Esc>', true, false, true),
+            'n',
+            true
+        )
+        -- Space and Backspace to trigger substitute highlights
         cmd_string = ':%s/' .. selection .. '//g<Left><Left><Space><BS>'
     end
-    local escaped_cmd_string = vim.api.nvim_replace_termcodes(cmd_string, true, false, true)
+    local escaped_cmd_string =
+        vim.api.nvim_replace_termcodes(cmd_string, true, false, true)
     vim.api.nvim_feedkeys(escaped_cmd_string, 'n', true)
 end
 
@@ -20,8 +39,11 @@ function M.find_and_replace_globally()
         return
     end
 
-    local cmd_string = ':cfdo %s/' .. vim.fn.expand '<cword>' .. '//g<Left><Left><Space><BS>'
-    local escaped_cmd_string = vim.api.nvim_replace_termcodes(cmd_string, true, false, true)
+    local cmd_string = ':cfdo %s/'
+        .. vim.fn.expand '<cword>'
+        .. '//g<Left><Left><Space><BS>'
+    local escaped_cmd_string =
+        vim.api.nvim_replace_termcodes(cmd_string, true, false, true)
     vim.api.nvim_feedkeys(escaped_cmd_string, 'n', true)
 end
 
