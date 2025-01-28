@@ -22,7 +22,6 @@ return {
   {
     'CopilotC-Nvim/CopilotChat.nvim',
     dependencies = {
-      { 'nvim-telescope/telescope.nvim' }, -- Use telescope for help actions
       { 'nvim-lua/plenary.nvim' },
       { 'zbirenbaum/copilot.lua' },
     },
@@ -110,7 +109,7 @@ return {
       vim.keymap.set({ 'x', 'n' }, '<leader>cx', open_floating_chat, { desc = 'Inline chat' })
       vim.keymap.set('n', '<leader>c?', '<CMD>CopilotChatModels<CR>', { desc = 'Select Models' })
       vim.keymap.set('x', '<leader>cp', function()
-        require('CopilotChat.integrations.telescope').pick(require('CopilotChat.actions').prompt_actions { selection = require('CopilotChat.select').visual })
+        require('CopilotChat.integrations.fzflua').pick(require('CopilotChat.actions').prompt_actions { selection = require('CopilotChat.select').visual })
       end, { desc = 'Prompt actions' })
     end,
   },
