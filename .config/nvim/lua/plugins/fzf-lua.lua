@@ -37,7 +37,7 @@ return {
             vim.keymap.set('n', '<leader>sd', fzflua.diagnostics_document, { desc = '[s]earch [d]iagnostics' })
             vim.keymap.set('n', '<leader>sp', fzflua.resume, { desc = '[s]earch [p]revious' })
             vim.keymap.set('n', '<leader>s.', fzflua.oldfiles, { desc = '[s]earch Recent Files ("." for repeat)' })
-            vim.keymap.set('n', '<leader>s<leader>s', fzflua.buffers, { desc = 'search existing buffers' })
+            vim.keymap.set('n', '<leader><leader>', fzflua.buffers, { desc = 'search existing buffers' })
             vim.keymap.set('n', '<leader>s?', fzflua.builtin, { desc = '[s]earch by custom picker' })
             vim.keymap.set('n', '<leader>s/', fzflua.lgrep_curbuf, { desc = '[/] Fuzzily search in current buffer' })
 

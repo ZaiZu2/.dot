@@ -109,24 +109,14 @@ return {
         },
       }
       vim.api.nvim_create_autocmd('LspAttach', {
-        group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
+        group = vim.api.nvim_create_augroup('lsp-attach', { clear = true }),
         callback = function(event)
           local map = function(keys, func, desc)
             vim.keymap.set('n', keys, func, { buffer = event.buf, desc = desc })
           end
 
-          local telescope = require 'telescope.builtin'
-          local pickers = require 'pickers'
-          -- map(';d', telescope.lsp_definitions, '[d]efinition')
           map(';D', vim.lsp.buf.declaration, '[D]eclaration')
-          -- map(';r', telescope.lsp_references, '[r]eferences')
-          -- map(';i', telescope.lsp_implementations, '[i]mplementation')
-          -- map(';t', telescope.lsp_type_definitions, '[t]ype definition')
-          -- map(';s', pickers.prettyDocumentSymbols, '[s]ymbols')
-          -- map(';p', pickers.prettyWorkspaceSymbols, 'symbols in [p]roject')
           map(';R', vim.lsp.buf.rename, '[R]ename')
-          -- Execute a code action, usually your cursor needs to be on top of an error
-          -- or a suggestion from your LSP for this to activate.
           map(';c', vim.lsp.buf.code_action, '[c]ode action')
           map('K', vim.lsp.buf.hover, 'Show documentation') -- :help K
           vim.keymap.set('i', '<C-k>', vim.lsp.buf.signature_help, { desc = 'Show signature' })
