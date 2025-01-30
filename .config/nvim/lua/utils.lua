@@ -12,14 +12,12 @@ function M.find_and_replace()
             vim.fn.getpos '.',
             { type = mode }
         )
-        -- FIX: Somehow concatenating with `\n` breaks `nvim_feedkeys`.
+        -- BUG: Somehow concatenating with `\n` breaks `nvim_feedkeys`.
         -- Removing `\n` here and manually adding it after the Command text
         -- is populated works. `\n` might not be escaped?
         selection = table.concat(region, '\n')
-        -- Escape potential forward/back slashes in the selected text
-        selection = vim.fn.escape(selection, '/\\')
-        vim.print({selection})
-        -- Exit Visual mode otherwise `:%s` doesn't work properly
+        -- Escape potential regex symbols
+        selection = vim.fn.escape(selection, '/\\[.*+?^$()[-]')
         vim.api.nvim_feedkeys(
             vim.api.nvim_replace_termcodes('<Esc>', true, false, true),
             'n',

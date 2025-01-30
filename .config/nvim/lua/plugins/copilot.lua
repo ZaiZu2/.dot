@@ -28,9 +28,9 @@ return {
     event = 'VeryLazy',
     build = 'make tiktoken', -- Only on MacOS or Linux
     opts = {
-      question_header = '## User ',
-      answer_header = '## Copilot ',
-      error_header = '## Error ',
+      question_header = '# User ',
+      answer_header = '# Copilot ',
+      error_header = '# Error ',
       prompts = {
         -- Code related prompts
         Explain = 'Please explain how the following code works.',

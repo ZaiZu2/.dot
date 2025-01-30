@@ -117,11 +117,11 @@ return {
 
                     map(';D', vim.lsp.buf.declaration, '[D]eclaration')
                     map(';R', vim.lsp.buf.rename, '[R]ename')
-                    map(';c', vim.lsp.buf.code_action, '[c]ode action')
                     map('K', vim.lsp.buf.hover, 'Show documentation') -- :help K
                     vim.keymap.set('i', '<C-k>', vim.lsp.buf.signature_help, { desc = 'Show signature' })
 
                     local fzflua = require 'fzf-lua'
+                    map(';c', fzflua.lsp_code_actions, '[c]ode action')
                     map(';d', fzflua.lsp_definitions, '[d]efinition')
                     map(';r', fzflua.lsp_references, '[r]eferences')
                     map(';i', fzflua.lsp_implementations, '[i]mplementation')
