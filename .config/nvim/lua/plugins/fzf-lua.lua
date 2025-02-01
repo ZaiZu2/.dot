@@ -5,17 +5,20 @@ return {
         opts = {},
         config = function()
             local fzflua = require 'fzf-lua'
-            -- local fullscreen_opts = {
-            --     fullscreen = true,
-            --     backdrop = 100,
-            --     border = 'none',
-            --     preview = { border = 'none', wrap = true },
-            -- }
-
             fzflua.setup {
-
-                keymap = { true },
-                actions = { true },
+                keymap = {
+                    builtin = {
+                        true,
+                        ['ctrl-d'] = 'preview-page-down',
+                        ['ctrl-u'] = 'preview-page-up',
+                    },
+                    fzf = {
+                        true,
+                        ['ctrl-d'] = 'half-page-down',
+                        ['ctrl-u'] = 'half-page-up',
+                    },
+                },
+                actions = {},
                 files = {
                     -- winopts = fullscreen_opts,
                     formatter = 'path.filename_first',

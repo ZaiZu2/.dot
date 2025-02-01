@@ -1,20 +1,3 @@
--- Read `nvim.lua` from cwd, and save the result to `vim.g.custom`
--- `vim.g.custom` can be used to modify lua initialization
-vim.g.custom = {}
-local init_file = vim.fn.getcwd() .. '/nvim.lua'
-if vim.fn.filereadable(init_file) == 1 then
-    local ok, custom = pcall(dofile, init_file)
-    if ok then
-        if type(custom) == 'table' then
-            vim.g.custom = custom
-        else
-            vim.notify('nvim.lua must return a table' .. custom, vim.log.levels.ERROR)
-        end
-    else
-        vim.notify('Error loading `nvim.lua`: ' .. custom, vim.log.levels.ERROR)
-    end
-end
-
 -- :help lua-guide
 -- https://neovim.io/doc/user/lua-guide.html
 -- :help mapleader
@@ -52,7 +35,7 @@ vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 vim.opt.inccommand = 'split' -- Preview substitutions live, as you type!
 vim.opt.scrolloff = 10
 vim.opt.hlsearch = true -- Set highlight on search, but clear on pressing <Esc> in normal mode
-vim.opt.formatoptions = 'tcqn1jp' -- help 'format-comments'
+vim.opt.formatoptions = 'cqn1jp' -- help 'format-comments'
 
 vim.keymap.set('n', '<leader>Q', ':bp | sp | bn | bd<CR>', { desc = '[Q]uit current buffer' })
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
@@ -86,7 +69,6 @@ vim.keymap.set(
     utils.find_and_replace_globally,
     { desc = '[s]earch and [R]eplace globally' }
 )
-vim.keymap.set({ 'n', 'v' }, '<leader>k', utils.print_value, { desc = 'Inspect runtime Lua symbol' })
 
 vim.diagnostic.config {
     virtual_text = {
