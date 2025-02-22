@@ -2,13 +2,13 @@
   ansible.builtin.git:
     repo: https://github.com/zk-org/zk.git
     dest: ~/.local/share/zk
-  register: zk_clone
+  # register: zk_clone
 
 - name: Build
   ansible.builtin.command:
     cmd: make
     chdir: ~/.local/share/zk
-  when: zk_clone.changed
+  # when: zk_clone.changed
 
 - name: Create symlink
   ansible.builtin.file:

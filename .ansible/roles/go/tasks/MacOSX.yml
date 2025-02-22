@@ -20,9 +20,8 @@
 
   - name: "Extract tar file"
     ansible.builtin.unarchive:
-      src: "/tmp/go{{ go_version }}.darwin-arm64.tar.gz"
-      dest: "{{ GOPATH }}"
-      force: true
+      src: "/tmp/go{{ go_version }}.linux-amd64.tar.gz"
+      dest: "{{ GOPATH | regex_replace('^(.*)/[^/]+$', '\\1') }}" # Strip last path component ('/go')
       mode: "0755"
 
   - name: Delete downloaded tar file
@@ -30,3 +29,8 @@
       path: "/tmp/go{{ go_version }}.darwin-arm64.tar.gz"
       state: absent
 
+  - name: Create symlink
+    ansible.builtin.file:
+      src: "{{ XDG_DATA_HOME }}/go/bin/go"
+      dest: "{{ XDG_BIN_HOME }}/go"
+      state: link

@@ -1,28 +1,36 @@
+- name: Set XDG facts
+  ansible.builtin.set_fact:
+    XDG_CONFIG_HOME: "{{ ansible_user_dir }}/.config"
+    XDG_BIN_HOME: "{{ ansible_user_dir }}/.local/bin"
+    XDG_DATA_HOME: "{{ ansible_user_dir }}/.local/share"
+  tags: always
+
+- name: Set temporary facts
+  ansible.builtin.set_fact:
+    CARGO_HOME: "{{ XDG_DATA_HOME }}/cargo"
+    RUSTUP_HOME: "{{ XDG_DATA_HOME }}/rustup"
+    GOPATH: "{{ XDG_DATA_HOME }}/go"
+    LUA_PATH: "{{ XDG_DATA_HOME }}/lua"
+  tags: always
+
+- name: Create $XDG_CONFIG_HOME
+  ansible.builtin.file:
+    path: "{{ XDG_CONFIG_HOME }}"
+    mode: "0744"
+    state: directory
+  tags: always
+
 - name: Create $XDG_BIN_HOME
   ansible.builtin.file:
-    path: "{{ ansible_user_dir }}/.local/bin"
+    path: "{{ XDG_BIN_HOME }}"
     mode: "0744"
     state: directory
   tags: always
 
 - name: Create $XDG_DATA_HOME
   ansible.builtin.file:
-    path: "{{ ansible_user_dir }}/.local/share"
+    path: "{{ XDG_DATA_HOME }}"
     mode: "0744"
     state: directory
   tags: always
 
-- name: Create $XDG_CONFIG_HOME
-  ansible.builtin.file:
-    path: "{{ ansible_user_dir }}/.config"
-    mode: "0744"
-    state: directory
-  tags: always
-
-- name: Set temporary facts
-  ansible.builtin.set_fact:
-    CARGO_HOME: "{{ ansible_user_dir }}/.local/share/cargo"
-    RUSTUP_HOME: "{{ ansible_user_dir }}/.local/share/rustup"
-    GOPATH: "{{ ansible_user_dir }}/.local/share/go"
-    LUA_PATH: "{{ ansible_user_dir }}/.local/share/lua"
-  tags: always

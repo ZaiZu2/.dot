@@ -1,23 +1,14 @@
-- name: Check for distribution config
-  ansible.builtin.stat:
-   path: "{{ role_path }}/tasks/{{ ansible_distribution }}.yml"
-  register: distribution_config
+- block:
+  - name: Check for distribution config
+    ansible.builtin.stat:
+     path: "{{ role_path }}/tasks/{{ ansible_distribution }}.yml"
+    register: distribution_config
 
-- name: Run Tasks
-  ansible.builtin.include_tasks: "{{ ansible_distribution}}.yml"
-  when: distribution_config.stat.exists
+  - name: Run Tasks
+    ansible.builtin.include_tasks: "{{ ansible_distribution}}.yml"
+    when: distribution_config.stat.exists
 
-- name: Install TPM
-  ansible.builtin.git:
-    repo: https://github.com/tmux-plugins/tpm
-    dest: ~/.tmux/plugins/tpm
-    depth: 1
-
-# TODO: Copy config here instead of using bare git repo
-# - name: "Tmux | Configure tmux"
-#   ansible.builtin.copy:
-#     src: tmux
-#     dest: "{{ ansible_user_dir }}/.config/"
-#     mode: "0644"
-#     directory_mode: "0755"
-#     force: true
+  rescue:
+  - name: Log erorr
+    ansible.builtin.debug:
+      msg: "Skipping {{ role_name }} due to unexpected error"

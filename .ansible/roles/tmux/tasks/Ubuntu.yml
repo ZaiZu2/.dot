@@ -4,5 +4,12 @@
     state: present
   become: true
 
-- name: Install plugins
-  ansible.builtin.shell: "{{ ansible_user_dir }}/.tmux/plugins/tpm/bin/install_plugins"
+- name: Clone TPM
+  ansible.builtin.git:
+    repo: https://github.com/tmux-plugins/tpm
+    dest: "{{ ansible_user_dir }}/.config/tmux/plugins/tpm"
+
+- name: Initialize TPM and plugins
+  ansible.builtin.shell: |
+    "{{ ansible_user_dir }}/.config/tmux/plugins/tpm/tpm"
+    "{{ ansible_user_dir }}/.config/tmux/plugins/tpm/bin/install_plugins"

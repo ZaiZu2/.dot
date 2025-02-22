@@ -5,10 +5,9 @@
 
 - name: Install
   when: go_exists is failed
-  become: true
   block:
   - name: Delete previous installation
-    command: rm -rf /usr/local/go
+    command: "rm -rf {{ GOPATH }}"
 
   - name: Download binary
     ansible.builtin.get_url:
@@ -19,10 +18,16 @@
   - name: "Extract tar file"
     ansible.builtin.unarchive:
       src: "/tmp/go{{ go_version }}.linux-amd64.tar.gz"
-      dest: "/usr/local"
+      dest: "{{ GOPATH | regex_replace('^(.*)/[^/]+$', '\\1') }}" # Strip last path component ('/go')
       mode: "0755"
 
   - name: Delete downloaded tar file
     ansible.builtin.file:
       path: "/tmp/go{{ go_version }}.linux-amd64.tar.gz"
       state: absent
+
+  - name: Create symlink
+    ansible.builtin.file:
+      src: "{{ XDG_DATA_HOME }}/go/bin/go"
+      dest: "{{ XDG_BIN_HOME }}/go"
+      state: link

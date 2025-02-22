@@ -54,7 +54,6 @@
       ansible.builtin.unarchive:
         src: "/tmp/{{ lazygit_file }}.tar.gz"
         dest: "{{ ansible_user_dir }}/.local/bin"
-        force: true
         mode: "0755"
 
     - name: Cleanup downloaded tar

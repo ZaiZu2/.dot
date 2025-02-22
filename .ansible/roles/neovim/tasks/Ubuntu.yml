@@ -21,8 +21,8 @@
   block:
     - name: Download Neovim binary archive
       ansible.builtin.get_url:
-        url: https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz
-        dest: /tmp/nvim-linux64.tar.gz
+        url: https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
+        dest: /tmp/nvim-linux-x86_64.tar.gz
         mode: "0644"
 
     # TODO: Check current/new version
@@ -33,19 +33,19 @@
     #
     - name: Extract to /opt
       ansible.builtin.unarchive:
-        src: /tmp/nvim-linux64.tar.gz
+        src: /tmp/nvim-linux-x86_64.tar.gz
         dest: /opt/
         remote_src: yes
       become: true
 
     - name: Clean up downloaded archive
       ansible.builtin.file:
-        path: /tmp/nvim-linux64.tar.gz
+        path: /tmp/nvim-linux-x86_64.tar.gz
         state: absent
 
 - name: Create symlink
   ansible.builtin.file:
-    src: /opt/nvim-linux64/bin/nvim
+    src: /opt/nvim-linux-x86_64/bin/nvim
     dest: /usr/local/bin/nvim
     state: link
   become: true

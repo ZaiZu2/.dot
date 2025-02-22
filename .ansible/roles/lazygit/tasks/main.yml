@@ -1,8 +1,14 @@
-- name: "Check for distribution config"
-  ansible.builtin.stat:
-   path: "{{ role_path }}/tasks/{{ ansible_distribution }}.yml"
-  register: distribution_config
+- block:
+  - name: "Check for distribution config"
+    ansible.builtin.stat:
+     path: "{{ role_path }}/tasks/{{ ansible_distribution }}.yml"
+    register: distribution_config
 
-- name: "Run Tasks"
-  ansible.builtin.include_tasks: "{{ ansible_distribution}}.yml"
-  when: distribution_config.stat.exists
+  - name: "Run Tasks"
+    ansible.builtin.include_tasks: "{{ ansible_distribution}}.yml"
+    when: distribution_config.stat.exists
+
+  rescue:
+  - name: Log erorr
+    ansible.builtin.debug:
+      msg: "Skipping {{ role_name }} due to unexpected error"
