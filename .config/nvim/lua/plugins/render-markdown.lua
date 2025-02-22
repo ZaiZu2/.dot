@@ -7,15 +7,27 @@ return {
             render_modes = true,
             paragraph = {},
             code = {},
-            checkbox = { enabled = false },
+            checkbox = {
+                enabled = false,
+                unchecked = {
+                    icon = '[ ]',
+                    highlight = 'RenderMarkdownUnchecked',
+                    scope_highlight = nil,
+                },
+                checked = {
+                    icon = '[x]',
+                    highlight = 'RenderMarkdownChecked',
+                    scope_highlight = nil,
+                },
+            },
             pipe_table = {
-                cell = 'trimmed',
+                cell = 'trimmed'
             },
             indent = {
                 enabled = true,
                 per_level = 2,
                 skip_level = 1,
-            },
+            }
         },
     },
 }

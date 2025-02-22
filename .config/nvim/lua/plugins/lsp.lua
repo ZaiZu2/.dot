@@ -30,7 +30,7 @@ return {
                                 autoSearchPaths = true,
                                 diagnosticMode = 'openFilesOnly',
                                 useLibraryCodeForTypes = true,
-                                ignore = { '*' }, -- Using Ruff
+                                -- ignore = { '*' }, -- Using Ruff
                             },
                         },
                     },

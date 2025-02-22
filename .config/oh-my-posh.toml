@@ -67,7 +67,7 @@ final_space = true
       style = 'full'
 
   [[blocks.segments]]
-    template = ' <white>on</> {{ .HEAD }} [{{ if (.Working.Changed)}}${{end}}{{if (.Staging.Changed)}}*{{ end }}{{ if gt .Behind 0 }}{{ end }}{{ if gt .Ahead 0 }}{{ end }}]'
+    template = ' <white>on</> {{ .HEAD }}'
     foreground = 'magenta'
     background = 'transparent'
     type = 'git'
@@ -77,7 +77,7 @@ final_space = true
       branch_icon = ''
       cache_duration = 'none'
       commit_icon = '@'
-      fetch_status = true
+      fetch_status = false
 
 [[blocks]]
   type = 'rprompt'

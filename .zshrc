@@ -71,5 +71,7 @@ eval "$(fnm env --use-on-cd --shell zsh)"
 alias ll='ls -la'
 alias gs='git status'
 alias gc='git commit'
+alias gp='git pull'
+
 
 [ -f .zsh_custom ] && source .zsh_custom

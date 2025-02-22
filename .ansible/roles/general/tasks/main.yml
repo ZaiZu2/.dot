@@ -3,18 +3,21 @@
     path: "{{ ansible_user_dir }}/.local/bin"
     mode: "0744"
     state: directory
+  tags: always
 
 - name: Create $XDG_DATA_HOME
   ansible.builtin.file:
     path: "{{ ansible_user_dir }}/.local/share"
     mode: "0744"
     state: directory
+  tags: always
 
 - name: Create $XDG_CONFIG_HOME
   ansible.builtin.file:
     path: "{{ ansible_user_dir }}/.config"
     mode: "0744"
     state: directory
+  tags: always
 
 - name: Set temporary facts
   ansible.builtin.set_fact:
@@ -22,3 +25,4 @@
     RUSTUP_HOME: "{{ ansible_user_dir }}/.local/share/rustup"
     GOPATH: "{{ ansible_user_dir }}/.local/share/go"
     LUA_PATH: "{{ ansible_user_dir }}/.local/share/lua"
+  tags: always

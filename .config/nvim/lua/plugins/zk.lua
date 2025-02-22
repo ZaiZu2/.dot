@@ -26,7 +26,7 @@ return {
 
             local fzflua = require 'fzf-lua'
             local function pick_new_note()
-                fzflua.fzf_exec({ 'daily', 'knowledge', 'absa' }, {
+                fzflua.fzf_exec({ 'daily', 'knowledge', 'absa', 'dsa' }, {
                     winopts = {
                         height = 0.35,
                         width = 0.35,
