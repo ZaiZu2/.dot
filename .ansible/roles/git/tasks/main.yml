@@ -8,37 +8,6 @@
     ansible.builtin.include_tasks: "{{ ansible_distribution }}.yml"
     when: distribution_config.stat.exists
 
-  - name: "Set init.defaultBranch"
-    community.general.git_config:
-      name: init.defaultBranch
-      scope: global
-      value: main
-
-  - name: "Set pull.ff"
-    community.general.git_config:
-      name: pull.ff
-      scope: global
-      value: only
-
-  - name: "Set user.email"
-    community.general.git_config:
-      name: user.email
-      scope: global
-      value: jakkawecki@gmail.com
-    no_log: true
-
-  - name: "Set user.name"
-    community.general.git_config:
-      name: user.name
-      scope: global
-      value: Jakub Kawecki
-
-  - name: "Set undo alias"
-    community.general.git_config:
-      name: alias.undo
-      scope: global
-      value: "reset HEAD~1 --mixed"
-
   rescue:
   - name: Log erorr
     ansible.builtin.debug:

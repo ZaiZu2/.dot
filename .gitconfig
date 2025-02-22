@@ -1,0 +1,9 @@
+[init]
+	defaultBranch = main
+[pull]
+	ff = only
+[user]
+	email = jakkawecki@gmail.com
+	name = Jakub Kawecki
+[url "git@github.com:"]
+        insteadOf = https://github.com/
