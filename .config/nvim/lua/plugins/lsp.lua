@@ -3,11 +3,11 @@ return {
         'neovim/nvim-lspconfig',
         dependencies = {
             { 'williamboman/mason.nvim', config = true }, -- NOTE: Must be loaded before dependants
-            'williamboman/mason-lspconfig.nvim',
-            'WhoIsSethDaniel/mason-tool-installer.nvim', -- Automatic installation of formatters/linters/DAPs
-
-            { 'j-hui/fidget.nvim', opts = {} }, -- Useful status updates for LSP.
+            { 'williamboman/mason-lspconfig.nvim' },
+            { 'WhoIsSethDaniel/mason-tool-installer.nvim' }, -- Automatic installation of formatters/linters/DAPs
+            { 'j-hui/fidget.nvim' }, -- Useful status updates for LSP.
             { 'folke/lazydev.nvim' },
+            { 'saghen/blink.cmp' },
         },
         config = function()
             -- Specify all language tools to be installed automatically
@@ -70,12 +70,6 @@ return {
             vim.list_extend(tools, formatters)
             vim.list_extend(tools, daps)
             vim.list_extend(tools, vim.tbl_keys(lsp_servers))
-            -- LSP servers and clients are able to communicate to each other what features they support.
-            --  By default, Neovim doesn't support everything that is in the LSP specification.
-            --  When you add nvim-cmp, luasnip, etc. Neovim now has *more* capabilities.
-            --  So, we create new capabilities with nvim cmp, and then broadcast that to the servers.
-            local capabilities = vim.lsp.protocol.make_client_capabilities()
-            capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
             -- Add borders to `hover`, ... windows
             vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, {
@@ -91,23 +85,29 @@ return {
                     border = 'rounded',
                 },
             }
-
             -- `mason-lspconfig` only allows to install LSPs - `mason-tool-installer` can install all tools
             require('mason-tool-installer').setup { ensure_installed = tools }
 
             -- Setup baseline configs for all used LSPs
-            require('mason-lspconfig').setup {
+            require('mason-lspconfig').setup { ---@diagnostic disable-line: missing-fields
+                automatic_installation = false,
                 handlers = {
-                    function(server_name)
-                        local server = lsp_servers[server_name] or {}
+                    -- LSP servers and clients are able to communicate to each other what features they support.
+                    --  By default, Neovim doesn't support everything that is in the LSP specification.
+                    --  When you add nvim-cmp, luasnip, etc. Neovim now has *more* capabilities.
+                    --  So, we create new capabilities with nvim cmp, and then broadcast that to the servers.
+                    function(lsp_name)
                         -- This handles overriding only values explicitly passed
                         -- by the server configuration above. Useful when disabling
                         -- certain features of an LSP (for example, turning off formatting for tsserver)
-                        server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-                        require('lspconfig')[server_name].setup(server)
+                        --
+                        local lsp_config = lsp_servers[lsp_name] or {}
+                        lsp_config.capabilities = require('blink.cmp').get_lsp_capabilities(lsp_config.capabilities)
+                        require('lspconfig')[lsp_name].setup(lsp_config.capabilities)
                     end,
                 },
             }
+
             vim.api.nvim_create_autocmd('LspAttach', {
                 group = vim.api.nvim_create_augroup('lsp-attach', { clear = true }),
                 callback = function(event)
