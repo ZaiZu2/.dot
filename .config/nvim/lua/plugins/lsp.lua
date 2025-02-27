@@ -1,4 +1,15 @@
 return {
+    {
+        'folke/lazydev.nvim',
+        ft = 'lua', -- only load on lua files
+        opts = {
+            library = {
+                -- See the configuration section for more details
+                -- Load luvit types when the `vim.uv` word is found
+                { path = '${3rd}/luv/library', words = { 'vim%.uv' } },
+            },
+        },
+    },
     { -- LSP Configuration & Plugins
         'neovim/nvim-lspconfig',
         dependencies = {
@@ -6,7 +17,6 @@ return {
             { 'williamboman/mason-lspconfig.nvim' },
             { 'WhoIsSethDaniel/mason-tool-installer.nvim' }, -- Automatic installation of formatters/linters/DAPs
             { 'j-hui/fidget.nvim' }, -- Useful status updates for LSP.
-            { 'folke/lazydev.nvim' },
             { 'saghen/blink.cmp' },
         },
         config = function()
@@ -45,6 +55,7 @@ return {
                 lua_ls = {
                     settings = {
                         Lua = {
+                            runtime = { version = 'LuaJIT' },
                             diagnostics = {
                                 globals = { 'vim' },
                             },

@@ -52,3 +52,6 @@ color = '#ffa066'
 [[colors.indexed_colors]]
 index = 17
 color = '#ff5d62'
+
+[window]
+option_as_alt = "OnlyLeft"

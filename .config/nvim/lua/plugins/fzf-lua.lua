@@ -35,6 +35,15 @@ return {
                 },
             }
 
+            -- local actions = require('fzf-lua').actions
+            -- actions = {
+            --     files = {
+            --         ['ctrl-i'] = { actions.toggle_ignore },
+            --         ['ctrl-h'] = { actions.toggle_hidden },
+            --         ['ctrl-f'] = { actions.toggle_follow },
+            --     },
+            -- }
+
             vim.keymap.set('n', '<leader>sh', fzflua.helptags, { desc = '[s]earch [h]elp' })
             vim.keymap.set('n', '<leader>sk', fzflua.keymaps, { desc = '[s]earch [k]eymaps' })
 
@@ -46,7 +55,7 @@ return {
 
             vim.keymap.set('n', '<leader>sd', fzflua.diagnostics_document, { desc = '[s]earch [d]iagnostics' })
             vim.keymap.set('n', '<leader>sp', fzflua.resume, { desc = '[s]earch [p]revious' })
-            vim.keymap.set('n', '<leader>s.', fzflua.oldfiles, { desc = '[s]earch Recent Files ("." for repeat)' })
+            vim.keymap.set('n', '<leader>so', fzflua.oldfiles, { desc = '[s]earch Recent Files ("." for repeat)' })
             vim.keymap.set('n', '<leader><leader>', fzflua.buffers, { desc = 'search existing buffers' })
             vim.keymap.set('n', '<leader>s?', fzflua.builtin, { desc = '[s]earch by custom picker' })
             vim.keymap.set('n', '<leader>s/', fzflua.lgrep_curbuf, { desc = '[/] Fuzzily search in current buffer' })
