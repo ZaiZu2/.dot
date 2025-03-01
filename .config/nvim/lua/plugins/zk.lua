@@ -33,7 +33,7 @@ return {
             ---asking for location of the note, second for what tags should be attached to
             ---the note
             local function create_new_note()
-                local tags = {}
+                local path_tag = {}
                 local note_paths = {}
                 local picked_path = nil
 
@@ -44,7 +44,8 @@ return {
                     end
                 end
 
-                -- Recursively traverse found directories to find all nested directories
+                -- Recursively traverse found 'type' directories to find all nested directories
+                local all_paths = vim.list_extend({}, note_paths)
                 for _, parent_path in ipairs(note_paths) do
                     local nested_paths = vim.fs.find(function(name, _)
                         return name:sub(1, 1) ~= '.'
@@ -57,13 +58,14 @@ return {
                         return string.gsub(path, '^' .. ZK_PATH, ''):sub(2)
                     end, nested_paths)
 
-                    vim.list_extend(note_paths, rel_nested_paths)
+                    vim.list_extend(all_paths, rel_nested_paths)
                 end
 
                 -- Feed it all found locations to the location picker.
                 -- Set up main tag based on the 'type' directory
                 local function pick_note_loc(paths, cb)
                     fzflua.fzf_exec(paths, {
+                        prompt = 'Note location> ',
                         winopts = {
                             height = 0.35,
                             width = 0.35,
@@ -71,9 +73,7 @@ return {
                         actions = {
                             ['default'] = function(selected, _)
                                 picked_path = selected[1]
-                                local path_tag = string.match(picked_path, '^[^/]+')
-                                table.insert(tags, path_tag)
-                                vim.print(tags)
+                                path_tag = string.match(picked_path, '^[^/]+')
                                 cb()
                             end,
                         },
@@ -81,16 +81,14 @@ return {
                 end
 
                 -- Set up tag picker
-                pick_note_loc(note_paths, function()
+                pick_note_loc(all_paths, function()
                     zk.pick_tags({}, { multi_select = true }, function(picked_tags)
                         -- Process selected tags into a string
-                        vim.list_extend(
-                            tags,
-                            vim.tbl_map(function(tag)
-                                return "'" .. tag.name .. "', "
-                            end, picked_tags)
-                        )
-                        local tags_str = '[' .. table.concat(tags, ', ') .. ']'
+                        local tags_str = table.concat(vim.tbl_map(function(tag)
+                            return "'" .. tag.name .. "', "
+                        end, picked_tags))
+                        tags_str = "'" .. path_tag .. "', " .. tags_str
+                        tags_str = '[' .. tags_str .. ']'
 
                         -- Stringified tags are passed as `extra` variables and used in the
                         -- note template
