@@ -23,6 +23,11 @@ return {
                 },
             }
 
+            local fzflua = require 'fzf-lua'
+            vim.keymap.set('n', ',fc', fzflua.dap_commands, { desc = 'List [c]ommands' })
+            vim.keymap.set('n', ',fC', fzflua.dap_configurations, { desc = 'List [C]onfigurations' })
+            vim.keymap.set('n', ',fv', fzflua.dap_variables, { desc = 'List [v]ariables' })
+            vim.keymap.set('n', ',ff', fzflua.dap_frames, { desc = 'List [f]rames' })
             -- 4 main stepping mechanism are represented by 'hjkl' keys
             vim.keymap.set('n', ',s', dap.continue, { desc = 'Continue/start' })
             vim.keymap.set('n', ',j', dap.step_into, { desc = 'Step into (down)' })
@@ -40,6 +45,7 @@ return {
             vim.keymap.set('n', ',B', function()
                 dap.set_breakpoint(vim.fn.input 'Breakpoint condition: ')
             end, { desc = 'Set conditional [B]reakpoint' })
+            vim.keymap.set('n', ',fb', fzflua.dap_breakpoints, { desc = 'List [b]reakpoints' })
 
             vim.keymap.set('n', ',d', dap.down, { desc = 'Move [d]own the stack frame' })
             vim.keymap.set('n', ',u', dap.up, { desc = 'Move [u]p the stack frame' })
