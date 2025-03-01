@@ -22,10 +22,10 @@ return {
         config = function()
             -- Specify all language tools to be installed automatically
             local linters = { 'shellcheck', 'hadolint' }
-            local formatters = { 'stylua', 'shfmt' }
+            local formatters = { 'stylua', 'shfmt', 'mdformat' }
             local daps = { 'debugpy' }
             local lsp_servers = { -- :help lspconfig-all
-                ts_ls = {},
+                -- ts_ls = {},
                 basedpyright = {
                     settings = {
                         basedpyright = {
