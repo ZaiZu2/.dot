@@ -75,7 +75,7 @@ return {
 
             -- :help dap-configuration
             -- :help dap-python
-            require('dap-python').setup 'python'
+            require('dap-python').setup 'python3'
             require('dap-python').test_runner = 'pytest'
             -- Following functionalities provided by `neotest`
             -- vim.keymap.set('n', ',f', require('dap-python').test_method, { desc = 'test [f]unction' })

@@ -102,6 +102,9 @@ return {
             end
 
             vim.keymap.set('n', '<leader>zn', create_new_note, { desc = '[n]ew note with tags' })
+            vim.keymap.set('n', '<leader>zl', function()
+                require('zk.commands').get 'ZkNew' { dir = 'dsa/leetcode', template='leetcode.md' }
+            end, { desc = '[n]ew leetcode note' })
             vim.keymap.set('n', '<leader>zb', '<Cmd>ZkBacklinks<CR>', { desc = 'Open [b]acklinks' })
             vim.keymap.set('n', '<leader>zd', function()
                 zk.new { dir = ZK_PATH .. '/daily' }

@@ -14,7 +14,7 @@ return {
             formatters_by_ft = {
                 lua = { 'stylua' },
                 python = { 'ruff_format' },
-                markdown = { 'mdformat' },
+                markdown = { 'markdownlint-cli2' },
             },
             formatters = {}, -- Must stay initialized to empty
         },
