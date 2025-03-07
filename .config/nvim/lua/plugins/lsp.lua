@@ -67,7 +67,9 @@ return {
                         },
                     },
                 },
-                bashls = {},
+                bashls = {
+                    filetypes = { 'bash', 'sh', 'zsh' },
+                },
                 dockerls = {},
                 docker_compose_language_service = {},
                 taplo = {
@@ -100,24 +102,11 @@ return {
             require('mason-tool-installer').setup { ensure_installed = tools }
 
             -- Setup baseline configs for all used LSPs
-            require('mason-lspconfig').setup { ---@diagnostic disable-line: missing-fields
-                automatic_installation = false,
-                handlers = {
-                    -- LSP servers and clients are able to communicate to each other what features they support.
-                    --  By default, Neovim doesn't support everything that is in the LSP specification.
-                    --  When you add nvim-cmp, luasnip, etc. Neovim now has *more* capabilities.
-                    --  So, we create new capabilities with nvim cmp, and then broadcast that to the servers.
-                    function(lsp_name)
-                        -- This handles overriding only values explicitly passed
-                        -- by the server configuration above. Useful when disabling
-                        -- certain features of an LSP (for example, turning off formatting for tsserver)
-                        --
-                        local lsp_config = lsp_servers[lsp_name] or {}
-                        lsp_config.capabilities = require('blink.cmp').get_lsp_capabilities(lsp_config.capabilities)
-                        require('lspconfig')[lsp_name].setup(lsp_config.capabilities)
-                    end,
-                },
-            }
+            require('mason-lspconfig').setup()
+            for lsp_name, lsp_conf in pairs(lsp_servers) do
+                lsp_conf.capabilities = require('blink.cmp').get_lsp_capabilities(lsp_conf.capabilities)
+                require('lspconfig')[lsp_name].setup(lsp_conf)
+            end
 
             vim.api.nvim_create_autocmd('LspAttach', {
                 group = vim.api.nvim_create_augroup('lsp-attach', { clear = true }),

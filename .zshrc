@@ -5,13 +5,13 @@ df config --local status.showUntrackedFiles no
 
 # Add in zsh plugins
 source "$XDG_DATA_HOME/zinit/zinit.git/zinit.zsh"
-zinit ice wait"1"
+zinit ice wait lucid
 zinit light zsh-users/zsh-syntax-highlighting
-zinit ice wait"1"
+zinit ice wait lucid
 zinit light zsh-users/zsh-autosuggestions
-zinit ice wait"1"
+zinit ice wait lucid
 zinit light Aloxaf/fzf-tab
-zinit ice wait"1"
+zinit ice wait lucid
 zinit snippet OMZP::ssh-agent/ssh-agent.plugin.zsh
 
 autoload bashcompinit && bashcompinit

@@ -22,17 +22,6 @@ final_space = true
   newline = true
 
   [[blocks.segments]]
-    template = '{{ if .SSHSession }}(ssh) {{ end }}'
-    foreground = 'cyan'
-    background = 'transparent'
-    type = 'session'
-    style = 'plain'
-
-    [blocks.segments.properties]
-      cache_duration = 'none'
-      style = 'full'
-
-  [[blocks.segments]]
     template = '({{ .Venv }} {{ .Major }}.{{ .Minor }}) '
     foreground = 'blue'
     background = 'transparent'
@@ -40,9 +29,8 @@ final_space = true
     style = 'plain'
 
     [blocks.segments.properties]
-      cache_duration = 'none'
       home_enabled = true
-      style = 'full'
+      display_mode = 'environment'
 
   [[blocks.segments]]
     template = '<red>{{ if .Root }}(su) {{ end }}</>{{ .UserName }}'
@@ -51,20 +39,12 @@ final_space = true
     type = 'text'
     style = 'plain'
 
-    [blocks.segments.properties]
-      cache_duration = 'none'
-      style = 'full'
-
   [[blocks.segments]]
     template = ' <white>in</> {{ .Path }}'
     foreground = 'p:path'
     background = 'transparent'
     type = 'path'
     style = 'plain'
-
-    [blocks.segments.properties]
-      cache_duration = 'none'
-      style = 'full'
 
   [[blocks.segments]]
     template = ' <white>on</> {{ .HEAD }}'
@@ -90,10 +70,6 @@ final_space = true
     type = 'executiontime'
     style = 'plain'
 
-    [blocks.segments.properties]
-      cache_duration = 'none'
-      threshold = 5000
-
 [[blocks]]
   type = 'prompt'
   alignment = 'left'
@@ -105,6 +81,3 @@ final_space = true
     background = 'transparent'
     type = 'text'
     style = 'plain'
-
-    [blocks.segments.properties]
-      cache_duration = 'none'
