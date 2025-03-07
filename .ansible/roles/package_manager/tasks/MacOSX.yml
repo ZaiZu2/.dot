@@ -28,5 +28,7 @@
     - ripgrep
     - build-essential
     - libreadline-dev
+    - gnu-tar
+    - coreutils
     state: present
     upgrade_all: true
