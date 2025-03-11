@@ -73,5 +73,4 @@ alias gs='git status'
 alias gc='git commit'
 alias gp='git pull'
 
-
 [ -f .zsh_custom ] && source .zsh_custom

@@ -17,3 +17,5 @@ export EDITOR=nvim
 export VISUAL=nvim
 
 command -v brew > /dev/null 2>&1 && brew shellenv | bash -s
+
+[ -f "$HOME/.zshenv_custom" ] && source "$HOME/.zshenv_custom"

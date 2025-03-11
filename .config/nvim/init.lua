@@ -77,6 +77,12 @@ vim.diagnostic.config {
     float = { border = 'rounded' },
 }
 
+vim.filetype.add {
+    extension = {
+        task = 'xml', -- ABSA specific .TASK files
+    },
+}
+
 -- :help lazy.nvim.txt
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 ---@diagnostic disable-next-line: undefined-field
@@ -94,10 +100,6 @@ end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup('plugins', { change_detection = { notify = false } })
-
-if vim.g.vscode then
-    require 'vscode_bindings'
-end
 require 'autocmd'
 require 'health'
 

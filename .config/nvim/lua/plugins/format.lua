@@ -15,6 +15,8 @@ return {
                 lua = { 'stylua' },
                 python = { 'ruff_format' },
                 markdown = { 'markdownlint-cli2' },
+                javascript = { 'prettierd' },
+                typescript = { 'prettier' },
             },
             formatters = {}, -- Must stay initialized to empty
         },
@@ -29,6 +31,11 @@ return {
                     filename = 'stylua.toml', -- Name of the default global fmt config file
                 },
                 ruff_format = {
+                    arg = '--config',
+                    conf_files = { 'ruff.toml', 'pyproject.toml' },
+                    filename = 'ruff.toml',
+                },
+                prettierd = {
                     arg = '--config',
                     conf_files = { 'ruff.toml', 'pyproject.toml' },
                     filename = 'ruff.toml',
