@@ -1,5 +1,3 @@
-alias tmux="tmux -f $XDG_CONFIG_HOME/tmux/tmux.conf"
-alias ls='ls --color'
 alias df='git --git-dir=$HOME/.git --work-tree=$HOME'
 df config --local status.showUntrackedFiles no
 
@@ -19,11 +17,12 @@ autoload -Uz compinit && compinit
 zinit light zsh-users/zsh-completions
 zinit cdreplay -q # Replay all cached completions
 
-which podman > /dev/null && source <(podman completion zsh)
-which gh > /dev/null && source <(gh completion -s zsh) # GitHub completions
-which fnm > /dev/null && eval "$(fnm completions --shell zsh)"
-which uv > /dev/null && eval "$(uv generate-shell-completion zsh)"
-which aws > /dev/null && complete -C 'aws_completer' aws
+command -v podman > /dev/null && source <(podman completion zsh)
+command -v gh > /dev/null && source <(gh completion -s zsh) # GitHub completions
+command -v fnm > /dev/null && eval "$(fnm completions --shell zsh)"
+command -v uv > /dev/null && eval "$(uv generate-shell-completion zsh)"
+command -v fnm > /dev/null && eval "$(fnm env --use-on-cd --shell zsh)"
+command -v aws > /dev/null && complete -C 'aws_completer' aws
 
 # VIM support
 zinit light softmoth/zsh-vim-mode
@@ -66,12 +65,16 @@ source <(fzf --zsh)
 alias fzf='fzf --preview "bat --color=always --style=numbers --line-range=:500 {}"'
 
 eval "$(oh-my-posh init zsh --config $XDG_CONFIG_HOME/oh-my-posh.toml)"
-eval "$(fnm env --use-on-cd --shell zsh)"
 
+alias tmux="tmux -f $XDG_CONFIG_HOME/tmux/tmux.conf"
+alias ls='ls --color'
 alias ll='ls -la'
 alias gs='git status'
 alias gc='git commit'
 alias gp='git pull'
+alias gf='git fetch'
+alias gl='git log --oneline --decorate --graph'
 alias nconf='cd $XDG_CONFIG_HOME/nvim'
+alias dev='cd $HOME/dev'
 
 [ -f "$HOME/.zsh_custom" ] && source "$HOME/.zsh_custom"
