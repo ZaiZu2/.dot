@@ -30,17 +30,22 @@ return {
                     settings = {
                         basedpyright = {
                             disableOrganizeImports = true, -- Using Ruff
-                            disableTaggedHints = true,
+                            disableTaggedHints = false,
                             analysis = {
                                 diagnosticSeverityOverrides = {
                                     -- https://github.com/microsoft/pyright/blob/main/docs/configuration.md#type-check-diagnostics-settings
                                     reportUndefinedVariable = 'none',
                                 },
                                 typeCheckingMode = 'standard',
+                                autoImportCompletions = true,
                                 autoSearchPaths = true,
                                 diagnosticMode = 'openFilesOnly',
-                                useLibraryCodeForTypes = true,
-                                -- ignore = { '*' }, -- Using Ruff
+                                useLibraryCodeForTypes = false,
+                                inlayHints = {
+                                    variableTypes = true,
+                                    callArgumentNames = true,
+
+                                }
                             },
                         },
                     },

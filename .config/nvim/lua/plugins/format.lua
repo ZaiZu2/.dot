@@ -2,46 +2,26 @@ return {
     { -- Autoformat
         'stevearc/conform.nvim',
         lazy = false,
-        opts = {
-            notify_on_error = false,
-            format_on_save = function(bufnr)
-                -- local disable_filetypes = { c = true, cpp = true }
-                -- return {
-                --   timeout_ms = 500,
-                --   lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
-                -- }
-            end,
-            formatters_by_ft = {
-                lua = { 'stylua' },
-                python = { 'ruff_format' },
-                markdown = { 'markdownlint-cli2' },
-                javascript = { 'prettierd' },
-                typescript = { 'prettier' },
-            },
-            formatters = {}, -- Must stay initialized to empty
-        },
-        config = function(_, opts)
+        config = function(_, _)
+            -- TODO: Why is nvim config not added to `package.path`????
+            package.path = package.path .. ";" .. vim.fn.stdpath("config") .. "/fmts/?.lua"
+            local fmtr_configs = require 'configs'
+            local opts = {
+                notify_on_error = false,
+                format_on_save = function(bufnr)
+                    -- local disable_filetypes = { c = true, cpp = true }
+                    -- return {
+                    --   timeout_ms = 500,
+                    --   lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
+                    -- }
+                end,
+                formatters_by_ft = fmtr_configs.ft_configs,
+                formatters = {}, -- Must stay initialized to empty
+            }
+
             -- Following code prioritizes local formatter configs. It traverses upwards searching for a local config.
             -- In case no config files are found, it default to a global config file specified in Neovim configuration
             -- under `nvim/fmts/`. Each formatter can have a global config set up in the config table below.
-            local fmt_configs = {
-                stylua = {
-                    arg = '--config-path', -- CLI arg for injecting fmt config
-                    conf_files = { 'stylua.toml' }, -- All files which might be used for local fmt config
-                    filename = 'stylua.toml', -- Name of the default global fmt config file
-                },
-                ruff_format = {
-                    arg = '--config',
-                    conf_files = { 'ruff.toml', 'pyproject.toml' },
-                    filename = 'ruff.toml',
-                },
-                prettierd = {
-                    arg = '--config',
-                    conf_files = { 'ruff.toml', 'pyproject.toml' },
-                    filename = 'ruff.toml',
-                },
-            }
-
             local fmt_names = {}
             local fmt_path = vim.fn.stdpath 'config' .. '/fmts/'
             -- Collect all used formatters
@@ -68,7 +48,7 @@ return {
             -- Extend Conform.nvim config with `prepend_args`,
             -- effectively injecting config into formatters CLI command
             for _, fmt_name in ipairs(fmt_names) do
-                local fmt_conf = fmt_configs[fmt_name]
+                local fmt_conf = fmtr_configs.fmtr_configs[fmt_name]
                 if fmt_conf ~= nil then
                     opts.formatters[fmt_name] = {
                         inherit = true,

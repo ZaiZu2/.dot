@@ -117,6 +117,9 @@ return {
             vim.keymap.set('n', '<leader>zan', function()
                 zk.new { notebook_path = ZK_ABSA_DIR, extra = { tags = "['absa', ]" } }
             end, { desc = '[n]ew absa note' })
+            vim.keymap.set('n', '<leader>zao', function()
+                zk.edit { notebook_path = ZK_ABSA_DIR }
+            end, { desc = '[o]pen absa note' })
 
             vim.keymap.set('n', '<leader>zb', '<Cmd>ZkBacklinks<CR>', { desc = 'Open [b]acklinks' })
             vim.keymap.set('n', '<leader>zo', "<Cmd>ZkNotes { sort = { 'modified' } }<CR>", { desc = '[o]pen notes' })
