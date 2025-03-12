@@ -72,5 +72,6 @@ alias ll='ls -la'
 alias gs='git status'
 alias gc='git commit'
 alias gp='git pull'
+alias nconf='cd $XDG_CONFIG_HOME/nvim'
 
 [ -f "$HOME/.zsh_custom" ] && source "$HOME/.zsh_custom"

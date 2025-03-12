@@ -3,9 +3,7 @@ return {
         'stevearc/conform.nvim',
         lazy = false,
         config = function(_, _)
-            -- TODO: Why is nvim config not added to `package.path`????
-            package.path = package.path .. ";" .. vim.fn.stdpath("config") .. "/fmts/?.lua"
-            local fmtr_configs = require 'configs'
+            local fmtr_configs = require 'fmt_configs'
             local opts = {
                 notify_on_error = false,
                 format_on_save = function(bufnr)
@@ -19,9 +17,11 @@ return {
                 formatters = {}, -- Must stay initialized to empty
             }
 
-            -- Following code prioritizes local formatter configs. It traverses upwards searching for a local config.
-            -- In case no config files are found, it default to a global config file specified in Neovim configuration
-            -- under `nvim/fmts/`. Each formatter can have a global config set up in the config table below.
+            -- Following code prioritizes local formatter configs. It traverses upwards
+            -- searching for a local config. In case no config files are found, it
+            -- defaults to a global config file specified in Neovim configuration under
+            -- `nvim/fmts/`. Each formatter can have a global config set up in
+            -- `fmt_configs.lua`
             local fmt_names = {}
             local fmt_path = vim.fn.stdpath 'config' .. '/fmts/'
             -- Collect all used formatters

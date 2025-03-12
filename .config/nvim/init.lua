@@ -36,6 +36,7 @@ vim.opt.inccommand = 'split' -- Preview substitutions live, as you type!
 vim.opt.scrolloff = 10
 vim.opt.hlsearch = true -- Set highlight on search, but clear on pressing <Esc> in normal mode
 vim.opt.formatoptions = 'cqn1jp' -- help 'format-comments'
+vim.opt.diffopt = { 'internal', 'filler', 'closeoff', 'indent-heuristic', 'linematch:60', 'algorithm:histogram' }
 
 vim.keymap.set('n', '<leader>Q', ':bp | sp | bn | bd<CR>', { desc = '[Q]uit current buffer' })
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
@@ -46,17 +47,12 @@ vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagn
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [q]uickfix list' })
 vim.keymap.set('n', '<leader>m', ':messages<CR>', { desc = 'Open [m]essages' })
 
-vim.keymap.set('n', '<leader>gn', ':tabnew<CR>', { desc = '[n]ew tab' })
-vim.keymap.set('n', '<leader>gN', ':tabclose<CR>', { desc = 'Close the current tab' })
 vim.keymap.set('n', '<C-_>', '<C-w><h>', { desc = 'Split window horizontally' })
 vim.keymap.set('n', '<C-|>', '<C-w><v>', { desc = 'Split window vertically' })
 
 vim.keymap.set('v', '<leader>x', ':lua<CR>', { desc = 'E[x]ecute selected Lua code' })
 vim.keymap.set('n', '<leader>x', ':.lua<CR>', { desc = 'E[x]ecute Lua line' })
 vim.keymap.set('n', '<leader>X', '<cmd>source %<CR>', { desc = 'E[X]ecute current file' })
-vim.keymap.set('n', '<leader>r', function()
-    require('lazy.core.loader').reload 'wrap.nvim' -- reload all lua libraries within the plugin
-end, { desc = '[r]eload `wrap` plugin' })
 vim.keymap.set('n', ',tn', function()
     require('mini.test').run()
 end, { desc = 'mini.[t]est current file' })
