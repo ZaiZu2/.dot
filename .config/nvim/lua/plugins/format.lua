@@ -5,6 +5,7 @@ return {
         config = function(_, _)
             local fmtr_configs = require 'fmt_configs'
             local opts = {
+                formatters_by_ft = fmtr_configs.ft_configs,
                 notify_on_error = false,
                 format_on_save = function(bufnr)
                     -- local disable_filetypes = { c = true, cpp = true }
@@ -13,7 +14,7 @@ return {
                     --   lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
                     -- }
                 end,
-                formatters_by_ft = fmtr_configs.ft_configs,
+                lsp_format = 'fallback',
                 formatters = {}, -- Must stay initialized to empty
             }
 
@@ -76,11 +77,9 @@ return {
             local conform = require 'conform'
             conform.setup(opts)
             vim.keymap.set({ 'v', 'n' }, '<leader>f', function()
-                conform.format({ async = false, lsp_fallback = false }, function(err, did_edit)
+                conform.format({ lsp_format = 'fallback' }, function(err, did_edit)
                     -- if did_edit then
                     --     vim.notify 'Code formatted'
-                    -- elseif err then
-                    --     vim.notify('Error happened while formatting: ' .. vim.inspect(err))
                     -- end
                 end)
             end, { desc = '[f]ormat buffer' })

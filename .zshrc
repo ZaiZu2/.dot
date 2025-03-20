@@ -66,6 +66,10 @@ alias fzf='fzf --preview "bat --color=always --style=numbers --line-range=:500 {
 
 eval "$(oh-my-posh init zsh --config $XDG_CONFIG_HOME/oh-my-posh.toml)"
 
+alias conf='cd $XDG_CONFIG_HOME'
+alias nconf='cd $XDG_CONFIG_HOME/nvim'
+alias dev='cd $HOME/dev'
+
 alias tmux="tmux -f $XDG_CONFIG_HOME/tmux/tmux.conf"
 alias ls='ls --color'
 alias ll='ls -la'
@@ -74,7 +78,5 @@ alias gc='git commit'
 alias gp='git pull'
 alias gf='git fetch'
 alias gl='git log --oneline --decorate --graph'
-alias nconf='cd $XDG_CONFIG_HOME/nvim'
-alias dev='cd $HOME/dev'
 
 [ -f "$HOME/.zsh_custom" ] && source "$HOME/.zsh_custom"
