@@ -1,0 +1,7 @@
+---@type vim.lsp.Config
+return {
+    cmd = { 'jedi-language-server' },
+    filetypes = { 'python' },
+    root_markers = { '.git' },
+    settings = {},
+}

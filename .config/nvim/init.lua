@@ -8,7 +8,7 @@ vim.g.have_nerd_font = true
 -- :help vim.opt
 -- :help option-list
 
--- vim.opt.fillchars = {vert = '▕'}
+vim.opt.fillchars = { vert = '▕' }
 vim.opt.textwidth = 90
 vim.opt.shiftwidth = 2
 vim.opt.expandtab = true
@@ -70,7 +70,6 @@ vim.diagnostic.config {
     virtual_text = {
         prefix = '■ ',
     },
-    float = { border = 'rounded' },
 }
 
 vim.filetype.add {
@@ -78,6 +77,7 @@ vim.filetype.add {
         task = 'xml', -- ABSA specific .TASK files
     },
 }
+vim.lsp.enable { 'ruff', 'lua_ls', 'bashls', 'taplo', 'ts_ls', 'basedpyright', 'jedi_language_server', 'dockerls' }
 
 -- :help lazy.nvim.txt
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'

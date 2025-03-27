@@ -74,8 +74,10 @@ alias tmux="tmux -f $XDG_CONFIG_HOME/tmux/tmux.conf"
 alias ls='ls --color'
 alias ll='ls -la'
 alias gs='git status'
+alias gS='git switch'
 alias gc='git commit'
 alias gp='git pull'
+alias gP='git push'
 alias gf='git fetch'
 alias gl='git log --oneline --decorate --graph'
 

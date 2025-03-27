@@ -6,6 +6,9 @@ return {
         javascript = { 'prettier', 'prettierd' },
         html = { 'prettierd', 'prettierd' },
         typescript = { 'prettier' },
+        bash = { 'shmft' },
+        zsh = { 'shmft' },
+        sh = { 'shmft' },
     },
     fmtr_configs = {
         stylua = {

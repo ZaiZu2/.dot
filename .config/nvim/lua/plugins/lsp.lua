@@ -22,80 +22,69 @@ return {
         config = function()
             -- Specify all language tools to be installed automatically
             local linters = { 'shellcheck', 'hadolint' }
-            local formatters = { 'stylua', 'shfmt', 'markdownlint-cli2' }
+            local formatters = { 'stylua', 'shfmt', 'markdownlint-cli2', 'prettier'}
             local daps = { 'debugpy' }
             local lsp_servers = { -- :help lspconfig-all
                 -- ts_ls = {},
-                basedpyright = {
-                    settings = {
-                        basedpyright = {
-                            disableOrganizeImports = true, -- Using Ruff
-                            disableTaggedHints = false,
-                            analysis = {
-                                diagnosticSeverityOverrides = {
-                                    -- https://github.com/microsoft/pyright/blob/main/docs/configuration.md#type-check-diagnostics-settings
-                                    reportUndefinedVariable = 'none',
-                                },
-                                typeCheckingMode = 'standard',
-                                autoImportCompletions = true,
-                                autoSearchPaths = true,
-                                diagnosticMode = 'openFilesOnly',
-                                useLibraryCodeForTypes = false,
-                                inlayHints = {
-                                    variableTypes = true,
-                                    callArgumentNames = true,
-
-                                }
-                            },
-                        },
-                    },
-                },
-                ruff = {
-                    init_options = {
-                        settings = {
-                            args = { 'server' },
-                        },
-                    },
-                },
-                lua_ls = {
-                    settings = {
-                        Lua = {
-                            runtime = { version = 'LuaJIT' },
-                            diagnostics = {
-                                globals = { 'vim' },
-                            },
-                            completion = {
-                                callSnippet = 'Replace',
-                            },
-                            -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
-                            -- diagnostics = { disable = { 'missing-fields' } },
-                        },
-                    },
-                },
-                bashls = {
-                    filetypes = { 'bash', 'sh', 'zsh' },
-                },
-                dockerls = {},
+                -- jedi_language_server = {},
+                -- basedpyright = {
+                --     -- settings = {
+                --     --     basedpyright = {
+                --     --         disableOrganizeImports = true, -- Using Ruff
+                --     --         disableTaggedHints = false,
+                --     --         analysis = {
+                --     --             diagnosticSeverityOverrides = {
+                --     --                 -- https://github.com/microsoft/pyright/blob/main/docs/configuration.md#type-check-diagnostics-settings
+                --     --                 reportUndefinedVariable = 'none',
+                --     --             },
+                --     --             typeCheckingMode = 'standard',
+                --     --             autoImportCompletions = true,
+                --     --             -- autoSearchPaths = true,
+                --     --             diagnosticMode = 'openFilesOnly',
+                --     --             useLibraryCodeForTypes = false,
+                --     --             -- inlayHints = {
+                --     --             --     variableTypes = true,
+                --     --             --     callArgumentNames = true,
+                --     --             --
+                --     --             -- }
+                --     --         },
+                --     --     },
+                --     -- },
+                -- },
+                -- ruff = {
+                --     init_options = {
+                --         settings = {
+                --             args = { 'server' },
+                --         },
+                --     },
+                -- },
+                -- lua_ls = {
+                --     settings = {
+                --         Lua = {
+                --             runtime = { version = 'LuaJIT' },
+                --             diagnostics = {
+                --                 globals = { 'vim' },
+                --             },
+                --             completion = {
+                --                 callSnippet = 'Replace',
+                --             },
+                --             -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
+                --             -- diagnostics = { disable = { 'missing-fields' } },
+                --         },
+                --     },
+                -- },
+                -- bashls = {
+                --     filetypes = { 'bash', 'sh', 'zsh' },
+                -- },
+                -- dockerls = {},
                 docker_compose_language_service = {},
-                taplo = {
-                    formatting = {
-                        indent_string = '  ',
-                    },
-                }, -- toml
+                -- taplo = {}, -- toml
             }
             local tools = {}
             vim.list_extend(tools, linters)
             vim.list_extend(tools, formatters)
             vim.list_extend(tools, daps)
             vim.list_extend(tools, vim.tbl_keys(lsp_servers))
-
-            -- Add borders to `hover`, ... windows
-            vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, {
-                border = 'rounded',
-            })
-            vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(vim.lsp.handlers.signature_help, {
-                border = 'rounded',
-            })
 
             -- :Mason
             require('mason').setup {
