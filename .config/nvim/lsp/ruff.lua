@@ -1,6 +1,6 @@
 ---@type vim.lsp.Config
 return {
-    cmd = { 'ruff' },
+    cmd = { 'ruff', 'server' },
     filetypes = { 'python' },
     root_markers = { '.git' },
     settings = {

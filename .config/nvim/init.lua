@@ -77,7 +77,18 @@ vim.filetype.add {
         task = 'xml', -- ABSA specific .TASK files
     },
 }
-vim.lsp.enable { 'ruff', 'lua_ls', 'bashls', 'taplo', 'ts_ls', 'basedpyright', 'jedi_language_server', 'dockerls' }
+vim.lsp.enable {
+    'ruff',
+    'lua_ls',
+    'bashls',
+    'taplo',
+    'ts_ls',
+    'basedpyright',
+    'jedi_language_server',
+    'dockerls',
+    'jinja_lsp',
+    'html',
+}
 
 -- :help lazy.nvim.txt
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'

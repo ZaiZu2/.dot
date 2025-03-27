@@ -1,7 +1,7 @@
 ---@type vim.lsp.Config
 return {
-    cmd = { 'taplo', 'lsp', 'stdio' },
-    filetypes = { 'toml' },
+    cmd = { 'jinja-lsp' },
+    filetypes = { 'jinja' },
     root_markers = { '.git' },
     settings = {},
 }
