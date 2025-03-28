@@ -3,7 +3,24 @@ return {
         'mfussenegger/nvim-dap',
         event = 'VeryLazy',
         dependencies = {
-            'rcarriga/nvim-dap-ui',
+            {
+                'igorlfs/nvim-dap-view',
+                opts = {
+                    winbar = {
+                        show = true,
+                        -- You can add a "console" section to merge the terminal with the other views
+                        sections = { 'watches', 'exceptions', 'breakpoints', 'threads', 'repl' },
+                        default_section = 'repl',
+                    },
+                    windows = {
+                        height = 12,
+                        terminal = {
+                            position = 'right',
+                            hide = {},
+                        },
+                    },
+                },
+            },
             'nvim-neotest/nvim-nio', -- Required dependency for nvim-dap-ui
             'theHamsta/nvim-dap-virtual-text',
             'williamboman/mason.nvim',
@@ -13,7 +30,8 @@ return {
         },
         config = function()
             local dap = require 'dap'
-            local dapui = require 'dapui'
+            local dap_view = require 'dap-view'
+            local widgets = require 'dap.ui.widgets'
 
             require('mason-nvim-dap').setup {
                 automatic_installation = true,
@@ -38,7 +56,7 @@ return {
             vim.keymap.set('n', ',S', function()
                 dap.disconnect { terminateDebuggee = true }
                 dap.close()
-                dapui.close()
+                dap_view.close()
             end, { desc = '[S]top debugger' })
 
             vim.keymap.set('n', ',b', dap.toggle_breakpoint, { desc = 'Toggle [b]reakpoint' })
@@ -60,18 +78,27 @@ return {
                 end,
             }
 
-            -- :help nvim-dap-ui
-            dapui.setup()
             -- Toggle to see last session result. Without this, you can't see session output in case of unhandled exception.
-            vim.keymap.set('n', ',U', dapui.toggle, { desc = 'toggle [U]I' })
+            vim.keymap.set('n', ',U', dap_view.toggle, { desc = 'toggle [U]I' })
             vim.keymap.set('n', ',K', function()
-                require('dapui').eval()
-            end, { desc = 'Inspect variable' })
+                require('dap.ui.widgets').hover(nil, { border = 'rounded' })
+            end, { desc = 'Hover expression' })
+            vim.keymap.set('n', ',v', function()
+                widgets.centered_float(widgets.scopes, { border = 'rounded' })
+            end, { desc = 'Inspect [v]ariables' })
 
-            dap.listeners.after.event_initialized['dapui_config'] = dapui.open
-            dap.listeners.before.event_terminated['dapui_config'] = dapui.close
-            dap.listeners.before.event_exited['dapui_config'] = dapui.close
-            dap.listeners.before.event_terminated['dapui_config'] = dapui.close
+            dap.listeners.before.attach['dap-view-config'] = function()
+                dap_view.open()
+            end
+            dap.listeners.before.launch['dap-view-config'] = function()
+                dap_view.open()
+            end
+            dap.listeners.before.event_terminated['dap-view-config'] = function()
+                dap_view.close()
+            end
+            dap.listeners.before.event_exited['dap-view-config'] = function()
+                dap_view.close()
+            end
 
             -- :help dap-configuration
             -- :help dap-python

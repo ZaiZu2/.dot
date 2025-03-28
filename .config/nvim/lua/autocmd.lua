@@ -21,6 +21,16 @@ vim.api.nvim_create_autocmd('TextYankPost', {
     end,
 })
 
+-- Trigger linting on these events
+local lint_augroup = vim.api.nvim_create_augroup('lint', { clear = true })
+vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWritePost', 'InsertLeave' }, {
+    group = lint_augroup,
+    callback = function()
+        require('lint').try_lint()
+    end,
+})
+
+-- Set up LSP support
 vim.api.nvim_create_autocmd('LspAttach', {
     group = vim.api.nvim_create_augroup('lsp-attach', { clear = true }),
     callback = function(event)

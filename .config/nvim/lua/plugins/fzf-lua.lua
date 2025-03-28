@@ -5,7 +5,7 @@ return {
         opts = {},
         config = function()
             local fzflua = require 'fzf-lua'
-            local actions = require('fzf-lua').actions
+            local actions = fzflua.actions
             fzflua.setup {
                 keymap = {
                     builtin = {
@@ -29,6 +29,7 @@ return {
                         ['ctrl-u'] = 'unix-line-discard',
                         ['ctrl-f'] = 'half-page-down',
                         ['ctrl-b'] = 'half-page-up',
+                        ['ctrl-q'] = 'select-all+accept',
                         ['ctrl-a'] = 'toggle-all',
                         ['alt-g'] = 'first',
                         ['alt-G'] = 'last',
@@ -69,6 +70,8 @@ return {
                     cwd = vim.fn.stdpath 'config',
                 }
             end, { desc = '[s]earch [n]eovim files' })
+
+            fzflua.register_ui_select()
         end,
     },
 }

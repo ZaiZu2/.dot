@@ -18,7 +18,7 @@ return {
         },
         config = function()
             -- Specify all language tools to be installed automatically
-            local linters = { 'shellcheck', 'hadolint' }
+            local linters = { 'shellcheck', 'hadolint', 'markdownlint-cli2' }
             local formatters = { 'stylua', 'shfmt', 'markdownlint-cli2', 'prettier' }
             local daps = { 'debugpy' }
             local tools = {}
@@ -33,4 +33,3 @@ return {
         end,
     },
 }
-            -- :Mason
