@@ -10,6 +10,7 @@ return {
                 zsh = { 'shellcheck' },
                 dockerfile = { 'hadolint' },
                 markdown = { 'markdownlint-cli2' },
+                yaml = { 'yamllint' },
             }
         end,
     },
