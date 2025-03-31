@@ -3,9 +3,9 @@ return {
         'nvim-neotest/neotest',
         event = 'VeryLazy',
         dependencies = {
-            'nvim-neotest/neotest-python',
             'nvim-lua/plenary.nvim',
-            'nvim-treesitter/nvim-treesitter',
+            'nvim-neotest/nvim-nio',
+            'nvim-neotest/neotest-python',
         },
         config = function()
             local neo_python_conf = {

@@ -13,18 +13,45 @@ return {
     { -- LSP Configuration & Plugins
         'williamboman/mason.nvim',
         dependencies = {
-            { 'WhoIsSethDaniel/mason-tool-installer.nvim' }, -- Automatic installation of formatters/linters/DAPs
-            { 'j-hui/fidget.nvim' },
+            'williamboman/mason-lspconfig.nvim', -- Provides mapping of lspconfig (LSP) names to Mason names
+            'jay-babu/mason-nvim-dap.nvim', -- Provides mapping of nvim-dap (DAP) names to Mason names
+            'WhoIsSethDaniel/mason-tool-installer.nvim', -- Automatic installation of LSPs/formatters/linters/DAPs
+            'j-hui/fidget.nvim',
         },
         config = function()
-            -- Specify all language tools to be installed automatically
-            local linters = { 'shellcheck', 'hadolint', 'markdownlint-cli2', 'yamllint' }
-            local formatters = { 'stylua', 'shfmt', 'markdownlint-cli2', 'prettier' }
-            local daps = { 'debugpy' }
+            -- Recognize LSP config files and enable corresponding LSPs
+            local lsp_path = vim.fn.stdpath 'config' .. '/lsp/'
+            local lsps = {} ---@type string[]
+            for file_path in vim.fs.dir(lsp_path, {}) do
+                table.insert(lsps, vim.fs.basename(file_path):match '^[^%.]+')
+            end
+            vim.lsp.enable(lsps)
+
+            local config = require 'config'
+            -- Parse all used linters from the config
+            local linters = {}
+            for _, ft_linters in pairs(config.linters.ft) do
+                for _, linter in ipairs(ft_linters) do
+                    if not vim.list_contains(linters, linter) then
+                        table.insert(linters, linter)
+                    end
+                end
+            end
+            -- Parse all used formatters from the config
+            local formatters = {}
+            for _, ft_fmts in pairs(config.linters.ft) do
+                for _, fmt in ipairs(ft_fmts) do
+                    if not vim.list_contains(formatters, fmt) then
+                        table.insert(formatters, fmt)
+                    end
+                end
+            end
+
             local tools = {}
             vim.list_extend(tools, linters)
             vim.list_extend(tools, formatters)
-            vim.list_extend(tools, daps)
+            vim.list_extend(tools, config.daps)
+            vim.list_extend(tools, lsps)
 
             require('mason').setup {
                 -- ui = { border = 'rounded' }

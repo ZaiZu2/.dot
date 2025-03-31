@@ -21,10 +21,7 @@ return {
                     },
                 },
             },
-            'nvim-neotest/nvim-nio', -- Required dependency for nvim-dap-ui
             'theHamsta/nvim-dap-virtual-text',
-            'williamboman/mason.nvim',
-            'jay-babu/mason-nvim-dap.nvim',
             -- Add your own debuggers here
             'mfussenegger/nvim-dap-python',
         },
@@ -33,21 +30,13 @@ return {
             local dap_view = require 'dap-view'
             local widgets = require 'dap.ui.widgets'
 
-            require('mason-nvim-dap').setup {
-                automatic_installation = true,
-                handlers = {},
-                ensure_installed = {
-                    'debugpy',
-                },
-            }
-
             local fzflua = require 'fzf-lua'
             vim.keymap.set('n', ',fc', fzflua.dap_commands, { desc = 'List [c]ommands' })
             vim.keymap.set('n', ',fC', fzflua.dap_configurations, { desc = 'List [C]onfigurations' })
             vim.keymap.set('n', ',fv', fzflua.dap_variables, { desc = 'List [v]ariables' })
             vim.keymap.set('n', ',ff', fzflua.dap_frames, { desc = 'List [f]rames' })
             -- 4 main stepping mechanism are represented by 'hjkl' keys
-            vim.keymap.set('n', ',s', dap.continue, { desc = 'Continue/start' })
+            vim.keymap.set('n', ',s', dap.continue, { desc = 'Continue/[s]tart' })
             vim.keymap.set('n', ',j', dap.step_into, { desc = 'Step into (down)' })
             vim.keymap.set('n', ',k', dap.step_out, { desc = 'Step out (up)' })
             vim.keymap.set('n', ',l', dap.step_over, { desc = 'Step over (right)' })

@@ -1,12 +1,6 @@
--- :help lua-guide
--- https://neovim.io/doc/user/lua-guide.html
--- :help mapleader
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 vim.g.have_nerd_font = true
-
--- :help vim.opt
--- :help option-list
 
 vim.opt.fillchars = { vert = '▕' }
 vim.opt.textwidth = 90
@@ -28,8 +22,6 @@ vim.opt.updatetime = 250
 vim.opt.timeoutlen = 1000
 vim.opt.splitright = true
 vim.opt.splitbelow = true
--- :help 'list'
--- :help 'listchars'
 vim.opt.list = true
 vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 vim.opt.inccommand = 'split' -- Preview substitutions live, as you type!
@@ -76,18 +68,6 @@ vim.filetype.add {
     extension = {
         task = 'xml', -- ABSA specific .TASK files
     },
-}
-vim.lsp.enable {
-    'ruff',
-    'lua_ls',
-    'bashls',
-    'taplo',
-    'ts_ls',
-    'basedpyright',
-    'jedi_language_server',
-    'dockerls',
-    'jinja_lsp',
-    'html',
 }
 
 -- :help lazy.nvim.txt
