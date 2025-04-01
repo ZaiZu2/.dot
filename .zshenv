@@ -12,7 +12,7 @@ PATH="$GOPATH/bin:$RUSTUP_HOME/bin:$PATH"
 export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
 
 export ZK_NOTEBOOK_DIR="$HOME/Notes"
-export BAT_THEME="$XDG_CONFIG_HOME/bat/themes/kanagawa.tmTheme"
+export BAT_THEME="kanagawa"
 
 export EDITOR=nvim
 export VISUAL=nvim

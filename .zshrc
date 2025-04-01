@@ -62,7 +62,7 @@ zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 setopt globdots # Allow matching hidden files with wildcards
 
 source <(fzf --zsh)
-alias fzf='fzf --preview "bat --color=always --style=numbers --line-range=:500 {}"'
+alias fzf='fzf --preview "bat --theme=kanagawa --color=always --style=numbers --line-range=:500 {}"'
 
 eval "$(oh-my-posh init zsh --config $XDG_CONFIG_HOME/oh-my-posh.toml)"
 
