@@ -69,9 +69,11 @@ return {
                 end
                 conform.setup(opts)
                 conform.format({ lsp_format = 'fallback' }, function(err, did_edit)
-                    -- if did_edit then
-                    --     vim.notify 'Code formatted'
-                    -- end
+                    if did_edit then
+                        vim.notify 'Code formatted'
+                    else
+                        vim.notify('Failed to format code - ' .. err)
+                    end
                 end)
             end, { desc = '[f]ormat buffer' })
         end,

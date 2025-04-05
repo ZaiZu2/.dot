@@ -20,17 +20,17 @@ return {
         },
         config = function()
             -- Recognize LSP config files and enable corresponding LSPs
-            local lsp_path = vim.fn.stdpath 'config' .. '/lsp/'
+            local lsp_path = vim.fn.stdpath 'config' .. '/lsp'
+            -- package.path = package.path .. lsp_path .. '/?.lua;'
             local lsps = {} ---@type string[]
             for file_name in vim.fs.dir(lsp_path, {}) do
                 local lsp_name = vim.fs.basename(file_name):match '^[^%.]+'
-                local lsp_conf = require('lsp.' .. lsp_name)
+                local lsp_conf = require(lsp_name)
                 -- Ignore commented-out LSP files (empty modules)
                 if lsp_conf ~= true then
                     table.insert(lsps, lsp_name)
                 end
             end
-            vim.print(lsps)
             vim.lsp.enable(lsps)
 
             local config = require 'config'

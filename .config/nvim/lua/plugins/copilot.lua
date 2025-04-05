@@ -28,6 +28,7 @@ return {
         event = 'VeryLazy',
         build = 'make tiktoken', -- Only on MacOS or Linux
         opts = {
+            model = 'gpt-4o-mini',
             question_header = '# User ',
             answer_header = '# Copilot ',
             error_header = '# Error ',

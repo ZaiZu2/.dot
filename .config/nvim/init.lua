@@ -66,9 +66,12 @@ vim.diagnostic.config {
 
 vim.filetype.add {
     extension = {
-        task = 'xml', -- ABSA specific .TASK files
+        task = 'xml', -- ABSA specific .task files
+        asql  = 'sql', -- ABSA specific .sql files
     },
 }
+
+package.path = package.path .. ';' .. vim.fn.stdpath 'config' .. '/lsp/?.lua'
 
 -- :help lazy.nvim.txt
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
