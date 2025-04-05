@@ -11,12 +11,5 @@ PATH="$XDG_BIN_HOME:/bin:/usr/bin:/usr/local/bin:$PATH"
 PATH="$GOPATH/bin:$RUSTUP_HOME/bin:$PATH"
 export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
 
-export ZK_NOTEBOOK_DIR="$HOME/Notes"
-export BAT_THEME="kanagawa"
-
-export EDITOR=nvim
-export VISUAL=nvim
-
-command -v brew > /dev/null 2>&1 && eval "$(brew shellenv)"
-
+# Machine-specific, optional .zshenv
 [ -f "$HOME/.zshenv_custom" ] && source "$HOME/.zshenv_custom"

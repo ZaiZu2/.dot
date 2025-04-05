@@ -41,6 +41,7 @@ return {
             end
 
             local conform = require 'conform'
+            local last_conf_message = ''
             vim.keymap.set({ 'v', 'n' }, '<leader>f', function()
                 -- Extend Conform.nvim config with `prepend_args`,
                 -- effectively injecting config into formatters CLI command
@@ -54,13 +55,12 @@ return {
                                 -- Check if there is no formatter config file available locally in project dir
                                 local is_local, local_conf_path = find_files_upwards(ctx.dirname, fmt_conf.conf_files)
                                 if is_local then
-                                    vim.notify(string.format('Using local config - %s)', local_conf_path))
+                                    last_conf_message = string.format('using local config - %s)', local_conf_path)
                                     return {}
                                 -- Fallback to global config
                                 else
-                                    vim.notify(
-                                        string.format('Using global config - %s)', fmt_path .. fmt_conf.filename)
-                                    )
+                                    last_conf_message =
+                                        string.format('using global config - %s)', fmt_path .. fmt_conf.filename)
                                     return { fmt_conf.arg, fmt_path .. fmt_conf.filename }
                                 end
                             end,
@@ -70,9 +70,9 @@ return {
                 conform.setup(opts)
                 conform.format({ lsp_format = 'fallback' }, function(err, did_edit)
                     if did_edit then
-                        vim.notify 'Code formatted'
+                        vim.notify('File formatted ' .. last_conf_message)
                     else
-                        vim.notify('Failed to format code - ' .. err)
+                        vim.notify('Failed to format file - ' .. tostring(err))
                     end
                 end)
             end, { desc = '[f]ormat buffer' })
