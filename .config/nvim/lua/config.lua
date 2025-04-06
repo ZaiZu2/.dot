@@ -34,6 +34,23 @@ return {
                 conf_files = { 'ruff.toml', 'pyproject.toml' },
                 filename = 'ruff.toml',
             },
+            ['markdownlint-cli2'] = {
+                arg = '--config',
+                conf_files = {
+                    '.markdownlint-cli2.jsonc',
+                    '.markdownlint-cli2.yaml',
+                    '.markdownlint-cli2.cjs',
+                    '.markdownlint-cli2.mjs',
+                    '.markdownlint.jsonc',
+                    '.markdownlint.json',
+                    '.markdownlint.yaml',
+                    '.markdownlint.yml',
+                    '.markdownlint.cjs',
+                    '.markdownlint.mjs',
+                    'package.json',
+                },
+                filename = '.markdownlint.yaml',
+            },
             prettierd = {
                 arg = '--config',
                 conf_files = {
