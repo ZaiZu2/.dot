@@ -1,6 +1,9 @@
 alias df='git --git-dir=$HOME/.git --work-tree=$HOME'
 df config --local status.showUntrackedFiles no
 
+autoload -Uz compinit && compinit -u
+autoload bashcompinit && bashcompinit
+
 # Add in zsh plugins
 source "$XDG_DATA_HOME/zinit/zinit.git/zinit.zsh"
 zinit ice wait lucid
@@ -12,8 +15,6 @@ zinit light Aloxaf/fzf-tab
 zinit ice wait lucid
 zinit snippet OMZP::ssh-agent/ssh-agent.plugin.zsh
 
-autoload bashcompinit && bashcompinit
-autoload -Uz compinit && compinit
 zinit light zsh-users/zsh-completions
 zinit cdreplay -q # Replay all cached completions
 
@@ -81,4 +82,4 @@ alias gP='git push'
 alias gf='git fetch'
 alias gl='git log --oneline --decorate --graph'
 
-[ -f "$HOME/.zsh_custom" ] && source "$HOME/.zsh_custom"
+[ -f "$HOME/.zsh_absa" ] && source "$HOME/.zsh_absa"

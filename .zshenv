@@ -10,6 +10,3 @@ export GOPATH="$XDG_DATA_HOME/go"
 PATH="$XDG_BIN_HOME:/bin:/usr/bin:/usr/local/bin:$PATH"
 PATH="$GOPATH/bin:$RUSTUP_HOME/bin:$PATH"
 export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
-
-# Machine-specific, optional .zshenv
-[ -f "$HOME/.zshenv_custom" ] && source "$HOME/.zshenv_custom"
