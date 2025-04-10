@@ -8,6 +8,7 @@ return {
             dockerfile = { 'hadolint' },
             markdown = { 'markdownlint-cli2' },
             yaml = { 'yamllint' },
+            jinja = { 'djlint' },
         },
     },
 
@@ -22,6 +23,7 @@ return {
             bash = { 'shmft' },
             zsh = { 'shmft' },
             sh = { 'shmft' },
+            jinja = { 'djlint' },
         },
         config = {
             stylua = {

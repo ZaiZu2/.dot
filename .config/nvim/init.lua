@@ -68,6 +68,7 @@ vim.filetype.add {
     extension = {
         task = 'xml', -- ABSA specific .task files
         asql  = 'sql', -- ABSA specific .sql files
+        j2 = 'jinja',
     },
 }
 
