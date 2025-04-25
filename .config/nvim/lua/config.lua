@@ -19,11 +19,14 @@ return {
             markdown = { 'markdownlint-cli2' },
             javascript = { 'prettier', 'prettierd' },
             html = { 'prettier', 'prettierd' }, -- { 'prettierd', 'prettierd' },
+            css = { 'prettier', 'prettierd' }, -- { 'prettierd', 'prettierd' },
             typescript = { 'prettierd', 'prettier' },
             bash = { 'shmft' },
             zsh = { 'shmft' },
             sh = { 'shmft' },
             jinja = { 'djlint' },
+            yaml = { 'prettier', 'prettierd' }, -- { 'prettierd', 'prettierd' },
+            yml = { 'prettier', 'prettierd' }, -- { 'prettierd', 'prettierd' },
         },
         config = {
             stylua = {

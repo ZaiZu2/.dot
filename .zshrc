@@ -81,5 +81,6 @@ alias gp='git pull'
 alias gP='git push'
 alias gf='git fetch'
 alias gl='git log --oneline --decorate --graph'
+alias act='source .venv/bin/activate'
 
 [ -f "$HOME/.zsh_absa" ] && source "$HOME/.zsh_absa"
