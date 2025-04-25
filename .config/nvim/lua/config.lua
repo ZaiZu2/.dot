@@ -1,5 +1,40 @@
 return {
-    daps = { 'debugpy' },
+    daps = {
+        python = {
+            name = 'debugpy',
+            config = {
+                -- https://github.com/microsoft/debugpy/wiki/Debug-configuration-settings
+                {
+                    name = 'Debug own code',
+                    program = '${file}',
+                    type = 'python',
+                    request = 'launch',
+                    justMyCode = true,
+                    showReturnValue = true,
+                },
+                {
+                    name = 'Debug with external code',
+                    program = '${file}',
+                    type = 'python',
+                    request = 'launch',
+                    justMyCode = false,
+                    showReturnValue = true,
+                },
+                {
+                    name = 'Debug all configs',
+                    program = '${file}',
+                    type = 'python',
+                    request = 'launch',
+                    justMyCode = false,
+                    showReturnValue = true,
+                    django = true,
+                    gevent = true,
+                    pyramid = true,
+                    jinja = true,
+                },
+            },
+        },
+    },
     linters = {
         ft = {
             shell = { 'shellcheck' },
@@ -17,21 +52,21 @@ return {
             lua = { 'stylua' },
             python = { 'ruff_format' },
             markdown = { 'markdownlint-cli2' },
-            javascript = { 'prettier', 'prettierd' },
-            html = { 'prettier', 'prettierd' }, -- { 'prettierd', 'prettierd' },
-            css = { 'prettier', 'prettierd' }, -- { 'prettierd', 'prettierd' },
-            typescript = { 'prettierd', 'prettier' },
             bash = { 'shmft' },
             zsh = { 'shmft' },
             sh = { 'shmft' },
             jinja = { 'djlint' },
-            yaml = { 'prettier', 'prettierd' }, -- { 'prettierd', 'prettierd' },
-            yml = { 'prettier', 'prettierd' }, -- { 'prettierd', 'prettierd' },
+            javascript = { 'prettier' },
+            typescript = { 'prettier' },
+            html = { 'prettier' },
+            css = { 'prettier' },
+            yaml = { 'prettier' },
+            yml = { 'prettier' },
         },
         config = {
             stylua = {
                 arg = '--config-path', -- CLI arg for injecting fmt config
-                conf_files = { 'stylua.toml' }, -- All files which might be used for local fmt config
+                conf_files = { 'stylua.toml', '.stylua.toml' }, -- All files which might be used for local fmt config
                 filename = 'stylua.toml', -- Name of the default global fmt config file
             },
             ruff_format = {

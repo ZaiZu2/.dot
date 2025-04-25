@@ -18,8 +18,8 @@ zinit snippet OMZP::ssh-agent/ssh-agent.plugin.zsh
 zinit light zsh-users/zsh-completions
 zinit cdreplay -q # Replay all cached completions
 
-command -v podman > /dev/null && source <(podman completion zsh)
-command -v gh > /dev/null && source <(gh completion -s zsh) # GitHub completions
+command -v podman > /dev/null && eval "$(podman completion zsh)"
+command -v gh > /dev/null && eval "$(gh completion -s zsh)"
 command -v fnm > /dev/null && eval "$(fnm completions --shell zsh)"
 command -v uv > /dev/null && eval "$(uv generate-shell-completion zsh)"
 command -v fnm > /dev/null && eval "$(fnm env --use-on-cd --shell zsh)"
@@ -62,7 +62,7 @@ zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 
 setopt globdots # Allow matching hidden files with wildcards
 
-source <(fzf --zsh)
+eval "$(zf --zsh)"
 alias fzf='fzf --preview "bat --theme=kanagawa --color=always --style=numbers --line-range=:500 {}"'
 
 eval "$(oh-my-posh init zsh --config $XDG_CONFIG_HOME/oh-my-posh.toml)"
@@ -71,7 +71,7 @@ alias conf='cd $XDG_CONFIG_HOME'
 alias nconf='cd $XDG_CONFIG_HOME/nvim'
 alias dev='cd $HOME/dev'
 
-alias tmux="tmux -f $XDG_CONFIG_HOME/tmux/tmux.conf"
+alias tmux='tmux -f "$XDG_CONFIG_HOME/tmux/tmux.conf"'
 alias ls='ls --color'
 alias ll='ls -la'
 alias gs='git status'

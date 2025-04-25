@@ -52,11 +52,15 @@ return {
                     end
                 end
             end
+            -- Parse all used DAPs from the config
+            local daps = vim.tbl_map(function(debugger)
+                return debugger.name
+            end, config.daps)
 
             local tools = {}
             vim.list_extend(tools, linters)
             vim.list_extend(tools, formatters)
-            vim.list_extend(tools, config.daps)
+            vim.list_extend(tools, daps)
             vim.list_extend(tools, lsps)
 
             require('mason').setup {

@@ -97,38 +97,11 @@ return {
             -- vim.keymap.set('n', ',f', require('dap-python').test_method, { desc = 'test [f]unction' })
             -- vim.keymap.set('n', ',m', require('dap-python').debug_selection, { desc = 'test selection' })
 
-            local debugpy_config = {
-                -- https://github.com/microsoft/debugpy/wiki/Debug-configuration-settings
-                {
-                    name = 'Debug own code',
-                    program = '${file}',
-                    type = 'python',
-                    request = 'launch',
-                    justMyCode = true,
-                    showReturnValue = true,
-                },
-                {
-                    name = 'Debug with external code',
-                    program = '${file}',
-                    type = 'python',
-                    request = 'launch',
-                    justMyCode = false,
-                    showReturnValue = true,
-                },
-                {
-                    name = 'Debug all configs',
-                    program = '${file}',
-                    type = 'python',
-                    request = 'launch',
-                    justMyCode = false,
-                    showReturnValue = true,
-                    django = true,
-                    gevent = true,
-                    pyramid = true,
-                    jinja = true,
-                },
-            }
-            vim.list_extend(dap.configurations.python, debugpy_config)
+            for lang, debugger in pairs(require('config').daps) do
+                for _, setting in ipairs(debugger.config) do
+                    table.insert(dap.configurations[lang], 1, setting)
+                end
+            end
         end,
     },
 }
