@@ -62,7 +62,7 @@ zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 
 setopt globdots # Allow matching hidden files with wildcards
 
-eval "$(zf --zsh)"
+eval "$(fzf --zsh)"
 alias fzf='fzf --preview "bat --theme=kanagawa --color=always --style=numbers --line-range=:500 {}"'
 
 eval "$(oh-my-posh init zsh --config $XDG_CONFIG_HOME/oh-my-posh.toml)"
@@ -70,6 +70,7 @@ eval "$(oh-my-posh init zsh --config $XDG_CONFIG_HOME/oh-my-posh.toml)"
 alias conf='cd $XDG_CONFIG_HOME'
 alias nconf='cd $XDG_CONFIG_HOME/nvim'
 alias dev='cd $HOME/dev'
+alias notes='cd $ZK_NOTEBOOK_DIR'
 
 alias tmux='tmux -f "$XDG_CONFIG_HOME/tmux/tmux.conf"'
 alias ls='ls --color'
