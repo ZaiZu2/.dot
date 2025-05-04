@@ -1,11 +1,6 @@
 [scrolling]
 multiplier = 1
 
-[keyboard]
-bindings = [
-  { key = "Enter", mods = "Control", action = "ToggleViMode" },
-]
-
 [font]
 size = 16
 

@@ -12,8 +12,8 @@ return {
             -- See the full "keymap" documentation for information on defining your own keymap.
             keymap = {
                 preset = 'default',
-                ['M-u'] = { 'scroll_documentation_up' },
-                ['M-d'] = { 'scroll_documentation_down' },
+                -- ['M-u'] = { 'scroll_documentation_up' },
+                -- ['M-d'] = { 'scroll_documentation_down' },
             },
             completion = {
                 menu = {
