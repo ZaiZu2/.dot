@@ -70,6 +70,11 @@ return {
                     cwd = vim.fn.stdpath 'config',
                 }
             end, { desc = '[s]earch [n]eovim files' })
+            vim.keymap.set('n', '<leader>sc', function()
+                fzflua.files {
+                    cwd = os.getenv 'XDG_CONFIG_HOME',
+                }
+            end, { desc = '[s]earch [c]onfig files' })
 
             fzflua.register_ui_select()
         end,
