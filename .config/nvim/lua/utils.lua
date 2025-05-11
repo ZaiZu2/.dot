@@ -33,4 +33,22 @@ function M.find_and_replace_globally()
     vim.api.nvim_feedkeys(escaped_cmd_string, 'n', true)
 end
 
+--- Recurse up the filesystem, searching for any of the specified files
+--- BUG: Should search each directory for the files, then traverse up, not try to find each
+--- file by traversing up
+--- @param start_dir string
+--- @param filenames string[]
+--- @return boolean, string|nil
+function M.find_files_upwards(start_dir, filenames)
+    local has, found_files = false, nil
+    for i in pairs(filenames) do
+        found_files = vim.fs.find(filenames[i], { upward = true, type = 'file', path = start_dir })
+        if found_files[1] ~= nil then
+            has = true
+            break
+        end
+    end
+    return has, found_files[1]
+end
+
 return M

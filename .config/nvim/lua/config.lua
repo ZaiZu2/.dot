@@ -44,9 +44,63 @@ return {
             markdown = { 'markdownlint-cli2' },
             yaml = { 'yamllint' },
             jinja = { 'djlint' },
+            python = { 'basedpyright' },
+        },
+        -- https://github.com/mfussenegger/nvim-lint?tab=readme-ov-file#custom-linters
+        custom = {
+            basedpyright = function()
+                local project_dir = vim.fs.root(0, {
+                    'pyrightconfig.json',
+                    'pyproject.toml',
+                    'setup.cfg',
+                    'setup.py',
+                    '.git',
+                }) or vim.fn.getcwd(0)
+
+                return {
+                    cmd = 'basedpyright',
+                    stdin = false,
+                    append_fname = true,
+                    args = { '--outputjson', '--project', project_dir },
+                    stream = 'both',
+                    ignore_exitcode = true,
+                    env = nil,
+                    parser = function(output, bufnr, linter_cwd)
+                        local success, output_obj = pcall(vim.json.decode, output)
+                        if not success then
+                            vim.print('Unexpected JSON response from Basedpyright linter', vim.log.levels.ERROR)
+                            vim.print(output)
+                            return
+                        end
+
+                        local nvim_severity = vim.diagnostic.severity
+                        local severity_map = {
+                            warning = nvim_severity.WARN,
+                            error = nvim_severity.ERROR,
+                            info = nvim_severity.INFO,
+                        }
+
+                        local diagnostics = {}
+                        for _, pyright_diag in ipairs(output_obj.generalDiagnostics) do
+                            local nvim_diag = {
+                                bufnr = bufnr,
+                                lnum = pyright_diag.range.start.line,
+                                end_lnum = pyright_diag.range['end'].line,
+                                col = pyright_diag.range.start.character,
+                                end_col = pyright_diag.range['end'].character,
+                                severity = severity_map[pyright_diag.severity],
+                                message = pyright_diag.message,
+                                source = 'basedpyright',
+                                code = pyright_diag.rule,
+                            }
+                            table.insert(diagnostics, nvim_diag)
+                        end
+                        return diagnostics
+                    end,
+                }
+            end,
         },
     },
-
     formatters = {
         ft = {
             lua = { 'stylua' },

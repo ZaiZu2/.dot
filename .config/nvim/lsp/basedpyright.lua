@@ -2,27 +2,43 @@
 return {
     cmd = { 'basedpyright-langserver', '--stdio' },
     filetypes = { 'python' },
-    root_markers = { '.git' },
+    root_markers = { '.git', 'pyproject.toml' },
     settings = {
         basedpyright = {
-            disableOrganizeImports = true, -- Using Ruff
-            disableTaggedHints = false,
             analysis = {
+                autoImportCompletions = true,
+                autoSearchPaths = true,
+                diagnosticMode = 'openFilesOnly', -- or "workspace"
                 diagnosticSeverityOverrides = {
                     -- https://github.com/microsoft/pyright/blob/main/docs/configuration.md#type-check-diagnostics-settings
-                    reportUndefinedVariable = 'none',
+                    -- reportUndefinedVariable = 'none',
                 },
-                typeCheckingMode = 'standard',
-                autoImportCompletions = true,
-                -- autoSearchPaths = true,
-                diagnosticMode = 'openFilesOnly',
+                exclude = {},
+                extraPaths = {},
+                ignore = {},
+                include = {},
+                inlayHints = {
+                    callArgumentNames = true,
+                    functionReturnTypes = true,
+                    genericTypes = false,
+                    variableTypes = true,
+                },
+                logLevel = 'Information', -- "Error" | "Warning" | "Information" | "Trace"
+                -- stubPath = 'typings',
+                typeCheckingMode = 'off', -- or "off", "basic", "strict"
+                typeshedPaths = {},
                 useLibraryCodeForTypes = false,
-                -- inlayHints = {
-                --     variableTypes = true,
-                --     callArgumentNames = true,
-                --
-                -- }
+                useTypingExtensions = false,
             },
+            disableLanguageServices = false,
+            disableOrganizeImports = false,
+            disablePullDiagnostics = false,
+            disableTaggedHints = false,
+            importStrategy = 'fromEnvironment', -- or "node", "python"
+        },
+        python = {
+            pythonPath = 'python',
+            venvPath = '',
         },
     },
 }

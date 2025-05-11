@@ -24,22 +24,7 @@ return {
                 fmt_names = vim.tbl_extend('keep', fmt_names, _fmt_names)
             end
 
-            --- Recurse up the filesystem, searching for one of the specified files
-            --- @param local_dir string
-            --- @param conf_filenames string[]
-            --- @return boolean, string|nil
-            local function find_files_upwards(local_dir, conf_filenames)
-                local has, found_files = false, nil
-                for i in pairs(conf_filenames) do
-                    found_files = vim.fs.find(conf_filenames[i], { upward = true, type = 'file', path = local_dir })
-                    if found_files[1] ~= nil then
-                        has = true
-                        break
-                    end
-                end
-                return has, found_files[1]
-            end
-
+            local utils = require 'utils'
             local conform = require 'conform'
             local last_conf_message = ''
             vim.keymap.set({ 'v', 'n' }, '<leader>f', function()
@@ -53,7 +38,8 @@ return {
                             inherit = true,
                             prepend_args = function(_, ctx)
                                 -- Check if there is no formatter config file available locally in project dir
-                                local is_local, local_conf_path = find_files_upwards(ctx.dirname, fmt_conf.conf_files)
+                                local is_local, local_conf_path =
+                                    utils.find_files_upwards(ctx.dirname, fmt_conf.conf_files)
                                 if is_local then
                                     last_conf_message = string.format('using local config - %s)', local_conf_path)
                                     return {}
