@@ -3,20 +3,43 @@ is_installed_tmux() {
 }
 
 install_linux() {
-  sudo apt install tmux
+  sudo apt install tmux || {
+    fail "Failed to install TMUX"
+    return
+  }
+
 }
 
 install_darwin() {
-  brew install tmux
+  brew install tmux || {
+    fail "Failed to install TMUX"
+    return
+  }
+
 }
 
 install_tmux() {
+  blue "Installing TMUX"
   if [ "$OS" = 'darwin' ]; then
-    install_linux
+    install_darwin || return
   elif [ "$OS" = 'linux' ]; then
-    install_darwin
+    install_linux || return
   fi
-  git clone "https://github.com/tmux-plugins/tpm" "$XDG_CONFIG_HOME/tmux/plugins/tpm"
-  "$XDG_CONFIG_HOME/tmux/plugins/tpm"
-  "$XDG_CONFIG_HOME/tmux/plugins/tpm/bin/install_plugins"
+
+  # Install TPM
+  local tpm_repo="$XDG_CONFIG_HOME/tmux/plugins/tpm"
+  local tpm_url="https://github.com/tmux-plugins/tpm"
+  if [ -d "$tpm_repo" ]; then
+    blue "Pulling latest TPM changes from $tpm_repo"
+    git -C "$tpm_repo" fetch || warn "Failed to pull the latest $tpm_repo"
+    git -C "$tpm_repo" reset --hard origin/master
+  else
+    blue "Cloning TPM repo $tpm_url to $tpm_repo"
+    git clone --depth 1 "$tpm_url" "$tpm_repo" || {
+      fail "Failed to clone $tpm_url"
+      return
+    }
+  fi
+  blue "Installing TPM plugins"
+  bash "$tpm_repo/bin/install_plugins"
 }
