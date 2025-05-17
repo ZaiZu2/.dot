@@ -5,16 +5,25 @@ is_installed_nvim() {
 install_linux() {
   local nvim="nvim-${OS}-${ARCH}"
   curl -fsSL -o "/tmp/$nvim.tar.gz" \
-    "https://github.com/neovim/neovim/releases/latest/download/$nvim.tar.gz" ||
-    fail 'Failed to download nvim' && return 1
-  sudo tar -C "$XDG_DATA_HOME" -xzf "/tmp/$nvim.tar.gz" || fail 'Failed to decompress tar archive' && return 1
+    "https://github.com/neovim/neovim/releases/latest/download/$nvim.tar.gz" || {
+    fail 'Failed to download nvim'
+    return
+  }
+  sudo tar -C "$XDG_DATA_HOME" -xzf "/tmp/$nvim.tar.gz" || {
+    fail 'Failed to extract archive'
+    return
+  }
   chmod 755 "$XDG_DATA_HOME/$nvim/bin/nvim"
-  rm "/tmp/$nvim.tar.gz"
+  sudo rm -f "/tmp/$nvim.tar.gz" 2>/dev/null
+  blue "Symlinking GO binary"
   sudo ln -sf "$XDG_DATA_HOME/$nvim/bin/nvim" "/usr/local/bin/nvim"
 }
 
 install_darwin() {
-  brew install nvim || return 1
+  brew install nvim || {
+    fail 'Failed to install NVIM'
+    return
+  }
 }
 
 install_nvim() {

@@ -10,15 +10,18 @@ build_url() {
 }
 
 install_go() {
-  green "Deleting GOROOT dir - $GOROOT"
+  blue "Deleting GOROOT dir - $GOROOT"
   sudo rm -rf "$GOROOT"
-  green "Downloading V$GO_VERSION from $go_url"
   local go_url="$(build_url)"
-  curl -fsSL -o /tmp/go.tar.gz "$go_url" || fail "Failed to download GO binary" || return
+  blue "Downloading V$GO_VERSION from $go_url"
+  curl -fsSL -o /tmp/go.tar.gz "$go_url" || {
+    fail "Failed to download GO binary"
+    return
+  }
   tar -C "$XDG_DATA_HOME" -xzf "/tmp/go.tar.gz"
-  green "Extracting to $XDG_DATA_HOME/go"
+  blue "Extracting to $XDG_DATA_HOME/go"
   rm /tmp/go.tar.gz
 
-  green "Symlinking GO binary"
+  blue "Symlinking GO binary"
   ln -sf "$GOROOT/bin/go" "$XDG_BIN_HOME/go"
 }

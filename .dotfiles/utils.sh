@@ -1,3 +1,23 @@
+get_shell() {
+  if [ -n "$BASH_VERSION" ]; then
+    echo bash
+  elif [ -n "$ZSH_VERSION" ]; then
+    echo zsh
+  else
+    red "Could not recognize shell"
+    exit 1
+  fi
+}
+
+get_script_dir() {
+  shell="$(get_shell)"
+  if [ "$shell" = 'bash' ]; then
+    dirname "$(realpath "${BASH_SOURCE[0]}")"
+  elif [ "$shell" = 'zsh' ]; then
+    dirname "$(realpath "${(%):-%x}"))"
+  fi
+}
+
 green() {
   if [ $# -ge 2 ]; then
     label=$(echo "$1" | tr '[:lower:]' '[:upper:]')
@@ -33,33 +53,6 @@ yellow() {
     echo -e "\033[1;33m$1\033[0m"
   fi
 }
-
-# green() {
-#   if [ $# -ge 2 ]; then
-#     label=$(echo "$1" | tr '[:lower:]' '[:upper:]')
-#     echo -e "\033[1;32m[$label]\033[1;34m ${*:2}\033[0m"
-#   else
-#     echo -e "\033[1;32m[INFO]\033[1;34m $1\033[0m"
-#   fi
-# }
-#
-# red() {
-#   if [ $# -ge 2 ]; then
-#     label=$(echo "$1" | tr '[:lower:]' '[:upper:]')
-#     echo -e "\033[1;31m[$label]\033[1;34m ${*:2}\033[0m"
-#   else
-#     echo -e "\033[1;31m[ERROR]\033[1;34m $1\033[0m"
-#   fi
-# }
-#
-# yellow() {
-#   if [ $# -ge 2 ]; then
-#     label=$(echo "$1" | tr '[:lower:]' '[:upper:]')
-#     echo -e "\033[1;33m[$label]\033[1;34m ${*:2}\033[0m"
-#   else
-#     echo -e "\033[1;33m[WARN]\033[1;34m $1\033[0m"
-#   fi
-# }
 
 check_fn() {
   for fn in "${@:2}"; do

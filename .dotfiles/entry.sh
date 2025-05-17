@@ -1,26 +1,5 @@
 #!/bin/bash
 
-get_shell() {
-  if [ -n "$BASH_VERSION" ]; then
-    echo bash
-  elif [ -n "$ZSH_VERSION" ]; then
-    echo zsh
-  else
-    red "Could not recognize shell"
-    exit 1
-  fi
-}
-
-get_script_dir() {
-  shell="$(get_shell)"
-  if [ "$shell" = 'bash' ]; then
-    dirname "$(realpath "${BASH_SOURCE[0]}")"
-  elif [ "$shell" = 'zsh' ]; then
-    dirname "$(realpath "${(%):-%x}"))"
-  fi
-}
-SCRIPT_DIR="$(get_script_dir)"
-
 source "utils.sh"
 source "constants.sh"
 source "tool.sh"
