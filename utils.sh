@@ -25,28 +25,31 @@ get_script_dir() {
     dirname "$(realpath "${(%):-%x}"))"
   fi
 }
+
 check_fn() {
-  for fn in "${@:2}"; do
+  for fn in "$@"; do
     if ! declare -f "$fn" >/dev/null; then
-      red "$1" "Function '$fn' does not exist"
+      red "Function '$fn' does not exist"
       return 1
     fi
   done
 }
 
 create_tool_template() {
-  local tool_name=$1
-  local tool_path=$(realpath "$SCRIPT_DIR/tools/$tool_name.sh")
+  local tool=$1
+  local cap_tool="$(cap "$tool")"
+  local tool_path=$(realpath "$SCRIPT_DIR/tools/$tool.sh")
+
   if [ -f "$tool_path" ]; then
-    red "$tool_name" "Template not created - tool already exists"
+    multi "$BLUE" "$cap_tool" "$RED" " already exists, template not created"
     return 1
   fi
 
   touch "$tool_path"
   # Tabs with `-EOF` allow to indent here-doc without injecting indentation into file
-  cat >"./tools/${tool_name}.sh" <<-EOF
-		is_installed_${tool_name}() {
-		  command -v ${tool_name} >/dev/null 2>&1;
+  cat >"./tools/${tool}.sh" <<-EOF
+		is_installed_${tool}() {
+		  command -v ${tool} >/dev/null 2>&1;
 		}
 
 		install_linux() {
@@ -57,7 +60,7 @@ create_tool_template() {
 
 		}
 
-		install_${tool_name}() {
+		install_${tool}() {
 		  if [ "\$OS" = 'darwin' ]; then
 		    install_darwin || return 1
 		  elif [ "\$OS" = 'linux' ]; then
@@ -66,5 +69,10 @@ create_tool_template() {
 		}
 	EOF
   chmod +x "$tool_path"
-  blue "$tool_name" "Template created at $tool_path"
+  multi "$GREEN" "Template created for " "$BLUE" "$cap_tool" \
+    "$GREEN" " at " "$BLUE" "$tool_path"
+}
+
+cap() {
+  tr '[:lower:]' '[:upper:]' <<<"$1"
 }
