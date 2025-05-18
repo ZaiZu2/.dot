@@ -1,0 +1,9 @@
+window-decoration = false
+font-family = UbuntuSansMono Nerd Font Mono
+theme = Kanagawa Wave
+adjust-cell-width = -10%
+adjust-underline-position = 1
+adjust-underline-thickness = -1
+adjust-strikethrough-position = -2
+adjust-strikethrough-thickness = -1
+selection-invert-fg-bg = true

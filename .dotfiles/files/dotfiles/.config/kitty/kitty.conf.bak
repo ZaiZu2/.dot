@@ -1,0 +1,10 @@
+# BEGIN_KITTY_THEME
+# Kanagawa
+include current-theme.conf
+# END_KITTY_THEME
+
+font_family    UbuntuMono Nerd Font Mono
+# font_size      14.0
+# bold_font      UbuntuMono Nerd Font Mono
+# line_height    1.2
+# letter_spacing 0.1

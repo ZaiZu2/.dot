@@ -1,3 +1,8 @@
+<<<<<<< Updated upstream
+=======
+#!/bin/zsh
+
+>>>>>>> Stashed changes
 export ZK_NOTEBOOK_DIR="$HOME/Notes"
 export BAT_THEME="kanagawa"
 export EDITOR=nvim

@@ -1,3 +1,8 @@
+<<<<<<< Updated upstream
+=======
+#!/bin/zsh
+
+>>>>>>> Stashed changes
 alias df='git --git-dir=$HOME/.git --work-tree=$HOME'
 df config --local status.showUntrackedFiles no
 
