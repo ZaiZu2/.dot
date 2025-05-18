@@ -1,38 +1,94 @@
 #!/bin/bash
 
+source "logging.sh"
 source "utils.sh"
 source "constants.sh"
 source "tool.sh"
 
-parse_args() {
+entrypoint() {
+  setup_shell
+  load_platform || return $?
+
   while [[ $# -gt 0 ]]; do
     case $1 in
-    -e | --exclude)
-      EXCLUDED=$2
-      shift 2
-      ;;
-    -o | --only)
-      ONLY=$2
-      shift 2
-      ;;
-    -f | --force)
-      FORCE='true'
+    symlink)
       shift
+      local force=false
+
+      case $1 in
+      -f | --force)
+        local force=true
+        shift
+        ;;
+      *)
+        red "Unknown option: $1"
+        exit 1
+        ;;
+      esac
+
+      blue "Symlinking files"
+      symlink_dotfiles "$force"
       ;;
-    -s | --skip-pkg-mgr)
-      SKIP_PKG_MGR='true'
+
+    setup)
       shift
+      local excluded=''
+      local only=''
+      local force=false
+      local skip_pkg_mgr=false
+
+      while [[ $# -gt 0 ]]; do
+        case $1 in
+        -e | --exclude)
+          local excluded=$2
+          shift 2
+          ;;
+        -o | --only)
+          local only=$2
+          shift 2
+          ;;
+        -f | --force)
+          local force=true
+          shift
+          ;;
+        -s | --skip-pkg-mgr)
+          local skip_pkg_mgr=true
+          shift
+          ;;
+        *)
+          red "Unknown option: $1"
+          exit 1
+          ;;
+        esac
+      done
+
+      setup "$excluded" "$only" "$force" "$skip_pkg_mgr"
       ;;
+
+    list)
+      blue "Following tools are available:"
+      for file in "$SCRIPT_DIR/tools/"*; do
+        basename -s '.sh' "$file"
+      done
+      exit
+      ;;
+
+    create)
+      shift
+      if [ ! $# -eq 1 ]; then
+        red "Provide the name of a tool as a single parameter"
+        exit 1
+      fi
+      create_tool_template "$1"
+      exit
+      ;;
+
     *)
       red "Unknown option: $1"
-      local did_error=true
-      shift
+      exit 1
       ;;
     esac
   done
-  if [[ "${did_error:-}" == true ]]; then
-    return 1
-  fi
 }
 
 load_platform() {
@@ -80,22 +136,34 @@ open_sudo_session() {
 }
 
 symlink_dotfiles() {
-  ls "$SCRIPT_DIR/files/dotfiles/"
-  for dotfile in "$SCRIPT_DIR/files/dotfiles/."*; do
-    ln -sf "$dotfile" "$HOME/$(basename "$dotfile")"
+  local force=${1-false}
+
+  for dotfile in "$DOTFILES_DIR"/**/*; do
+    [ -d "$dotfile" ] && continue
+
+    local rel_path=${dotfile##"$DOTFILES_DIR/"}
+    target_path="$HOME/$rel_path"
+    if [[ -f "$target_path" && "$force" = false ]]; then
+      multi "$YELLOW" "Skipping " "$BLUE" "$target_path" "$YELLOW" ", file already exists"
+    elif [[ -L "$target_path" && "$force" = false ]]; then
+      multi "$YELLOW" "Skipping " "$BLUE" "$target_path" "$YELLOW" ", symlink already exists"
+    else
+      ln -s "$dotfile" "$target_path"
+    fi
   done
-  blue "Symlinked dotfiles"
 }
 
-main() {
-  parse_args "$@" || return $?
-  load_platform || return $?
+setup() {
+  local excluded="${1-}"
+  local only="${2-}"
+  local force="${3-false}"
+  local skip_pkg_mgr="${4-false}"
 
-  symlink_dotfiles
+  symlink_dotfiles "$force"
   open_sudo_session
   install_font
-  [ "$SKIP_PKG_MGR" = 'true' ] || init_pkg_mgr || return $?
-  install_tools
+  [ "$skip_pkg_mgr" = true ] || init_pkg_mgr || return $?
+  install_tools "$excluded" "$only" "$force"
 }
 
-main "$@"
+entrypoint "$@"
