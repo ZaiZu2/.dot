@@ -59,41 +59,37 @@ process_installation() {
 
   green "┏━━ $tool ━━━" ""
   # Foreground `install_*` function to which background process listens to
-  {
-    "$install_fn"
-  } >"$pipe" 2>&1
+  "$install_fn" >"$pipe" 2>&1
   wait $parser_pid
   build_end
 
-  local final_status=$(( $(<"$CURR_TOOL_STATUS") ))
+  local final_status=$(($(<"$CURR_TOOL_STATUS")))
   rm -f "$pipe" "$CURR_TOOL_STATUS" &>/dev/null
   return $final_status
 }
 
 install_tools() {
+  local excluded="$1"
+  local only="$2"
+  local force="$3"
+
   for file in "$SCRIPT_DIR/tools/"*; do
     source "$file"
-
-    local filename="$(basename "$file")"
-    local tool="${filename%%.sh}"
+    local tool="$(basename -s '.sh' "$file")"
 
     # Iterate over select tools if --only was set
-    if [[ -n "${ONLY:-}" && ",$ONLY," != *",$tool,"* ]]; then
-      continue
-    fi
+    [[ -n "${only:-}" && ",$only," != *",$tool,"* ]] && continue
     # Skip excluded tools
-    if [[ ${EXCLUDED+x} && ",$EXCLUDED," == *",$tool,"* ]]; then
-      continue
-    fi
+    [[ ${excluded+x} && ",$excluded," == *",$tool,"* ]] && continue
 
     local is_installed_fn="is_installed_$tool"
     local install_fn="install_$tool"
     check_fn "$tool" "$is_installed_fn" "$install_fn" || return 1
 
-    if ! "$is_installed_fn" || [ "$FORCE" = 'true' ]; then
+    if ! "$is_installed_fn" || [ "$force" = true ]; then
       process_installation "$tool" "$install_fn"
     else
-      yellow "$tool" " tool is already installed"
+      yellow "$tool" "tool is already installed"
     fi
   done
 }

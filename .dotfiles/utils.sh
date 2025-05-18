@@ -4,56 +4,27 @@ get_shell() {
   elif [ -n "$ZSH_VERSION" ]; then
     echo zsh
   else
-    red "Could not recognize shell"
+    red "Program only supports Zsh and Bash"
     exit 1
   fi
 }
 
+setup_shell() {
+  if [  "$USED_SHELL" = 'bash'  ]; then
+    shopt -s globstar dotglob
+  elif [ "$USED_SHELL" = 'zsh' ]; then
+    setopt dotglob
+  fi
+}
+
 get_script_dir() {
-  shell="$(get_shell)"
+  local shell="$USED_SHELL"
   if [ "$shell" = 'bash' ]; then
     dirname "$(realpath "${BASH_SOURCE[0]}")"
   elif [ "$shell" = 'zsh' ]; then
     dirname "$(realpath "${(%):-%x}"))"
   fi
 }
-
-green() {
-  if [ $# -ge 2 ]; then
-    label=$(echo "$1" | tr '[:lower:]' '[:upper:]')
-    echo -e "\033[1;32m$label\033[1;34m ${*:2}\033[0m"
-  else
-    echo -e "\033[1;32m$1\033[0m"
-  fi
-}
-
-blue() {
-  if [ $# -ge 2 ]; then
-    label=$(echo "$1" | tr '[:lower:]' '[:upper:]')
-    echo -e "\033[1;34m$label\033[1;34m ${*:2}\033[0m"
-  else
-    echo -e "\033[1;34m$1\033[0m"
-  fi
-}
-
-red() {
-  if [ $# -ge 2 ]; then
-    label=$(echo "$1" | tr '[:lower:]' '[:upper:]')
-    echo -e "\033[1;31m$label\033[1;34m ${*:2}\033[0m"
-  else
-    echo -e "\033[1;31m$1\033[0m"
-  fi
-}
-
-yellow() {
-  if [ $# -ge 2 ]; then
-    label=$(echo "$1" | tr '[:lower:]' '[:upper:]')
-    echo -e "\033[1;33m$label\033[1;34m ${*:2}\033[0m"
-  else
-    echo -e "\033[1;33m$1\033[0m"
-  fi
-}
-
 check_fn() {
   for fn in "${@:2}"; do
     if ! declare -f "$fn" >/dev/null; then
@@ -64,8 +35,8 @@ check_fn() {
 }
 
 create_tool_template() {
-  tool_name=$1
-  tool_path=$(realpath "./tools/$tool_name.sh")
+  local tool_name=$1
+  local tool_path=$(realpath "$SCRIPT_DIR/tools/$tool_name.sh")
   if [ -f "$tool_path" ]; then
     red "$tool_name" "Template not created - tool already exists"
     return 1
