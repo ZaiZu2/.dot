@@ -21,7 +21,7 @@ entrypoint() {
         shift
         ;;
       *)
-        red "Unknown option: $1"
+        multi "$RED" "Unknown option: " "$BLUE" "$1"
         exit 1
         ;;
       esac
@@ -56,7 +56,7 @@ entrypoint() {
           shift
           ;;
         *)
-          red "Unknown option: $1"
+          multi "$RED" "Unknown option: " "$BLUE" "$1"
           exit 1
           ;;
         esac
@@ -84,7 +84,7 @@ entrypoint() {
       ;;
 
     *)
-      red "Unknown option: $1"
+      multi "$RED" "Unknown option: " "$BLUE" "$1"
       exit 1
       ;;
     esac

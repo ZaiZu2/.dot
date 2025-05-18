@@ -43,7 +43,8 @@ process_installation() {
 
   CURR_TOOL="$tool"
   CURR_TOOL_STATUS=$(mktemp) && echo 0 >"$CURR_TOOL_STATUS"
-  rm -f "$LOGS_DIR/$CURR_TOOL.log" &>/dev/null
+  mkdir -p "$LOGS_DIR"
+  : >"$LOGS_DIR/$CURR_TOOL.log" # 'Reinitialize' (truncate) existing log file
 
   local pipe=$(mktemp -u) && mkfifo "$pipe"
 
@@ -57,7 +58,7 @@ process_installation() {
   } &
   local parser_pid=$!
 
-  green "┏━━ $tool ━━━" ""
+  green "┏━━ Installing $(cap "$tool") ━━━"
   # Foreground `install_*` function to which background process listens to
   "$install_fn" >"$pipe" 2>&1
   wait $parser_pid
@@ -84,12 +85,12 @@ install_tools() {
 
     local is_installed_fn="is_installed_$tool"
     local install_fn="install_$tool"
-    check_fn "$tool" "$is_installed_fn" "$install_fn" || return 1
+    check_fn "$is_installed_fn" "$install_fn" || return 1
 
     if ! "$is_installed_fn" || [ "$force" = true ]; then
       process_installation "$tool" "$install_fn"
     else
-      yellow "$tool" "tool is already installed"
+      multi "$BLUE" "$(cap "$tool")" "$YELLOW" " is already installed"
     fi
   done
 }
