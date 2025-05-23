@@ -1,6 +1,0 @@
-line-length = 100
-
-[format]
-docstring-code-format = true
-indent-style = "space"
-quote-style = "single"
