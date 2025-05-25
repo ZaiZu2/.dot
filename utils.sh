@@ -54,10 +54,14 @@ create_tool_template() {
 
 		install_linux() {
 
+
 		}
 
 		install_darwin() {
-
+		  brew install ${tool} || {
+		    fail "Failed to install ${tool}"
+		    return 1
+		  }
 		}
 
 		install_${tool}() {

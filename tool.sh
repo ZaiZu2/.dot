@@ -29,11 +29,11 @@ process_installation() {
   build_end() {
     local status_code="$(<"$CURR_TOOL_STATUS")"
     if [ $((status_code)) -eq 0 ]; then
-      green "┗━━ SUCCESS ━━━"
+      green "┗━━━ SUCCESS ━━━━"
     elif [ $((status_code)) -eq 10 ]; then
-      yellow "┗━━ WARNING ━━━"
+      yellow "┗━━━ WARNING ━━━━"
     else
-      red "┗━━ FAILED ━━━"
+      red "┗━━━ FAILED ━━━━"
     fi
 
   }
@@ -58,7 +58,7 @@ process_installation() {
   } &
   local parser_pid=$!
 
-  green "┏━━ Installing $(cap "$tool") ━━━"
+  multi "$GREEN" "┏━━━ " "$BLUE" "$(cap "$tool")" "$GREEN" " - installing... ━━━━"
   # Foreground `install_*` function to which background process listens to
   "$install_fn" >"$pipe" 2>&1
   wait $parser_pid
@@ -90,7 +90,7 @@ install_tools() {
     if ! "$is_installed_fn" || [ "$force" = true ]; then
       process_installation "$tool" "$install_fn"
     else
-      multi "$BLUE" "$(cap "$tool")" "$YELLOW" " is already installed"
+      multi "$YELLOW" " ━━━ " "$BLUE" "$(cap "$tool")" "$YELLOW" " is already installed ━━━"
     fi
   done
 }
