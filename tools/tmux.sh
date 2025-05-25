@@ -5,7 +5,7 @@ is_installed_tmux() {
 install_linux() {
   sudo apt install tmux || {
     fail "Failed to install TMUX"
-    return
+    return 1
   }
 
 }
@@ -13,17 +13,16 @@ install_linux() {
 install_darwin() {
   brew install tmux || {
     fail "Failed to install TMUX"
-    return
+    return 1
   }
-
 }
 
 install_tmux() {
   blue "Installing TMUX"
   if [ "$OS" = 'darwin' ]; then
-    install_darwin || return
+    install_darwin || return 1
   elif [ "$OS" = 'linux' ]; then
-    install_linux || return
+    install_linux || return 1
   fi
 
   # Install TPM
@@ -37,7 +36,7 @@ install_tmux() {
     blue "Cloning TPM repo $tpm_url to $tpm_repo"
     git clone --depth 1 "$tpm_url" "$tpm_repo" || {
       fail "Failed to clone $tpm_url"
-      return
+      return 1
     }
   fi
   blue "Installing TPM plugins"

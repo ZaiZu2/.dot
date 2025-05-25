@@ -13,7 +13,7 @@ _install_brew() {
   rm "$brew_file"
 
   blue "Installing system packages"
-  brew install cmake curl pkg-config libtool unzip ripgrep \
+  brew install cmake curl pkg-config libtool unzip ripgrep jq \
     build-essential libreadline-dev gnu-tar coreutils
 }
 
