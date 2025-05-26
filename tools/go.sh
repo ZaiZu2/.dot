@@ -16,7 +16,7 @@ install_go() {
   blue "Downloading V$GO_VERSION from $go_url"
   curl -fsSL -o /tmp/go.tar.gz "$go_url" || {
     fail "Failed to download GO binary"
-    return
+    return 1
   }
   tar -C "$XDG_DATA_HOME" -xzf "/tmp/go.tar.gz"
   blue "Extracting to $XDG_DATA_HOME/go"
