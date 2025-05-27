@@ -1,5 +1,0 @@
-- name: Install
-  ansible.builtin.shell: "curl -LsSf https://rclone.org/install.sh | bash"
-  become: true
-  register: result
-  failed_when: result.rc != 0 and result.rc != 3 # Ignore when the newest version is present (rc == 3)

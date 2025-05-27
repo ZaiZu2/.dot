@@ -1,9 +1,0 @@
-- name: Copy
-  ansible.builtin.copy:
-    src: "roles/{{ role_name }}/files/"
-    dest: /usr/share/fonts/UbuntuSansMono/
-    mode: "0644"
-    owner: root
-    group: root
-    remote_src: no
-  become: true
