@@ -1,6 +1,0 @@
-- name: Install
-  community.general.homebrew:
-    name: uv
-    state: present
-  environment:
-    UV_NO_MODIFY_PATH: "1"

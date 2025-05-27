@@ -1,5 +1,0 @@
-- name: "Install"
-  ansible.builtin.shell: "curl -LsSf https://sw.kovidgoyal.net/kitty/installer.sh | bash /dev/stdin"
-  args:
-    creates: /Applications/kitty.app
-
