@@ -28,17 +28,7 @@ install_tmux() {
   # Install TPM
   local tpm_repo="$XDG_CONFIG_HOME/tmux/plugins/tpm"
   local tpm_url="https://github.com/tmux-plugins/tpm"
-  if [ -d "$tpm_repo" ]; then
-    blue "Pulling latest TPM changes from $tpm_repo"
-    git -C "$tpm_repo" fetch || warn "Failed to pull the latest $tpm_repo"
-    git -C "$tpm_repo" reset --hard origin/master
-  else
-    blue "Cloning TPM repo $tpm_url to $tpm_repo"
-    git clone --depth 1 "$tpm_url" "$tpm_repo" || {
-      fail "Failed to clone $tpm_url"
-      return 1
-    }
-  fi
+  clone_repo "$tpm_url" "$tpm_repo"
   blue "Installing TPM plugins"
   bash "$tpm_repo/bin/install_plugins"
 }

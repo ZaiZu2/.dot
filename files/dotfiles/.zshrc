@@ -1,9 +1,6 @@
-<<<<<<< Updated upstream
-=======
 #!/bin/zsh
 
->>>>>>> Stashed changes
-alias df='git --git-dir=$HOME/.git --work-tree=$HOME'
+alias dfgit='git --git-dir=$HOME/.git --work-tree=$HOME'
 df config --local status.showUntrackedFiles no
 
 autoload -Uz compinit && compinit -u
@@ -88,6 +85,15 @@ alias gp='git pull'
 alias gP='git push'
 alias gf='git fetch'
 alias gl='git log --oneline --decorate --graph'
+alias gr='git restore '
+alias grs='git restore --staged'
 alias act='source .venv/bin/activate'
 
 [ -f "$HOME/.zsh_absa" ] && source "$HOME/.zsh_absa"
+
+# fnm
+FNM_PATH="/home/jakub/.local/share/fnm"
+if [ -d "$FNM_PATH" ]; then
+  export PATH="/home/jakub/.local/share/fnm:$PATH"
+  eval "`fnm env`"
+fi

@@ -10,7 +10,7 @@ init_pkg_mgr() {
 }
 
 install_font() {
-  blue "Installing fonts"
+  blue "Copying fonts"
   sudo cp "$SCRIPT_DIR/files/font/"* '/usr/share/fonts'
   sudo chmod 0644 '/usr/share/fonts/'*
 }
