@@ -18,11 +18,11 @@ process_installation() {
     local status_code=$1
     local message=$2
     if [ $((status_code)) -eq 0 ]; then # INFO
-      echo -e "\033[1;32m┃\033[0m$message"
+      multi "$GREEN" "┃" "$DEFAULT" "$message"
     elif [ $((status_code)) -eq 10 ]; then # WARN
-      echo -e "\033[1;33m┃\033[0m$message"
+      multi "$YELLOW" "┃" "$DEFAULT" "$message"
     else # ERROR
-      echo -e "\033[1;31m┃\033[0m$message"
+      multi "$RED" "┃" "$DEFAULT" "$message"
     fi
   }
 
@@ -51,8 +51,7 @@ process_installation() {
   # Background process responsible for live processing individual tool installation logs
   {
     while IFS= read -r line; do
-      local status=$(<"$CURR_TOOL_STATUS")
-      format_line "$status" "$line"
+      format_line "$(<"$CURR_TOOL_STATUS")" "$line"
       echo "$line" >>"$LOGS_DIR/$CURR_TOOL.log"
     done <"$pipe"
   } &
@@ -93,4 +92,20 @@ install_tools() {
       multi "$YELLOW" " ━━━ " "$BLUE" "$(cap "$tool")" "$YELLOW" " is already installed ━━━"
     fi
   done
+}
+
+clone_repo() {
+  local repo_url=$1
+  local repo_dir=$2
+  if [ -d "$repo_dir" ]; then
+    blue "Pulling latest changes from $repo_dir"
+    git -C "$repo_dir" fetch || warn "Failed to pull the latest $repo_dir"
+    git -C "$repo_dir" reset --hard origin/master
+  else
+    blue "Cloning repo $repo_url to $repo_dir"
+    git clone --depth 1 "$repo_url" "$repo_dir" || {
+      fail "Failed to clone $repo_url"
+      return 1
+    }
+  fi
 }

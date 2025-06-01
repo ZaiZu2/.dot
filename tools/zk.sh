@@ -5,11 +5,7 @@ is_installed_zk() {
 install_linux() {
   local zk_url="https://github.com/zk-org/zk.git"
   local zk_repo="$XDG_DATA_HOME/fzf"
-  blue "Cloning repo $zk_url to $zk_repo"
-  git clone --depth 1 "$zk_url" "$zk_repo" || {
-    fail "Failed to clone $zk_url"
-    return 1
-  }
+  clone_repo "$zk_url" "$zk_repo"
   pushd "$zk_repo"
   make
   popd

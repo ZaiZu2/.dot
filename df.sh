@@ -1,13 +1,43 @@
 #!/bin/bash
 
-source "logging.sh"
-source "utils.sh"
-source "constants.sh"
-source "tool.sh"
+get_shell() {
+  if [ -n "$BASH_VERSION" ]; then
+    echo bash
+  elif [ -n "$ZSH_VERSION" ]; then
+    echo zsh
+  else
+    red "Program only supports Zsh and Bash"
+    return 1
+  fi
+}
+
+get_script_dir() {
+  [ $# -eq 0 ] && return 1
+  if [ "$1" = 'bash' ]; then
+    dirname "$(realpath "${BASH_SOURCE[0]}")"
+  elif [ "$1" = 'zsh' ]; then
+    dirname "$(realpath "${(%):-%x}"))"
+  fi
+}
+
+USED_SHELL="$(get_shell || return $?)"
+SCRIPT_DIR="$(get_script_dir "$USED_SHELL" || return $?)"
+source "$SCRIPT_DIR/code/constants.sh"
+source "$SCRIPT_DIR/code/utils.sh"
+source "$SCRIPT_DIR/code/logging.sh"
+source "$SCRIPT_DIR/code/commands.sh"
+source "$SCRIPT_DIR/code/tool.sh"
 
 entrypoint() {
-  setup_shell
+  if [[ $# -eq 0 || $1 = '--help' || $1 = '-h' ]]; then
+    print_help
+    return 1
+  fi
+
+  setup_shell "$USED_SHELL" || return $?
   load_platform || return $?
+  # ln -sf "$SCRIPT_DIR/df.sh" "$XDG_BIN_HOME/df.sh"
+  alias df='$USED_SHELL $SCRIPT_DIR/df.sh'
 
   while [[ $# -gt 0 ]]; do
     case $1 in
@@ -112,14 +142,14 @@ load_platform() {
   esac
 
   blue "Platform recognized as $OS-$ARCH"
-  source "$SCRIPT_DIR/$OS.sh"
+  source "$SCRIPT_DIR/code/$OS.sh"
 }
 
 open_sudo_session() {
   # Invalidate any cached credentials if they are incorrect
   if sudo --non-interactive true 2>/dev/null; then
     sudo --remove-timestamp
-    blue "Provide admin credentials:"
+    blue "Provide admin credentials"
   fi
 
   if ! sudo --validate; then
@@ -133,37 +163,6 @@ open_sudo_session() {
   done) &
   SUDO_SESSION_PID=$!
   trap 'kill "$SUDO_SESSION_PID" 2>/dev/null' EXIT HUP INT QUIT TERM
-}
-
-symlink_dotfiles() {
-  local force=${1-false}
-
-  for dotfile in "$DOTFILES_DIR"/**/*; do
-    [ -d "$dotfile" ] && continue
-
-    local rel_path=${dotfile##"$DOTFILES_DIR/"}
-    target_path="$HOME/$rel_path"
-    if [[ -f "$target_path" && "$force" = false ]]; then
-      multi "$YELLOW" "Skipping " "$BLUE" "$target_path" "$YELLOW" ", file already exists"
-    elif [[ -L "$target_path" && "$force" = false ]]; then
-      multi "$YELLOW" "Skipping " "$BLUE" "$target_path" "$YELLOW" ", symlink already exists"
-    else
-      ln -s "$dotfile" "$target_path"
-    fi
-  done
-}
-
-setup() {
-  local excluded="${1-}"
-  local only="${2-}"
-  local force="${3-false}"
-  local skip_pkg_mgr="${4-false}"
-
-  symlink_dotfiles "$force"
-  open_sudo_session
-  install_font
-  [ "$skip_pkg_mgr" = true ] || init_pkg_mgr || return $?
-  install_tools "$excluded" "$only" "$force"
 }
 
 entrypoint "$@"

@@ -6,13 +6,12 @@ install_linux() {
   local alacritty_url="https://github.com/alacritty/alacritty.git"
   local alacritty_repo="$XDG_DATA_HOME/alacritty"
   blue "Cloning repo $alacritty_url to $alacritty_repo"
-  git clone --depth 1 "$alacritty_url" "$alacritty_repo" || {
-    fail "Failed to clone $alacritty_url"
-    return 1
-  }
-  pushd "$alacritty_url"
+  clone_repo "$alacritty_url" "$alacritty_repo" || return $?
+
+  pushd "$alacritty_repo"
+  blue "Building ALACRITTY"
   cargo build --release
-  cp 'extra/logo/alacritty-term.svg' '/usr/share/pixmaps/Alacritty.svg'
+  sudo cp 'extra/logo/alacritty-term.svg' '/usr/share/pixmaps/Alacritty.svg'
   desktop-file-install 'extra/linux/Alacritty.desktop'
   update-desktop-database
   popd

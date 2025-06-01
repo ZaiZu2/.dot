@@ -1,38 +1,32 @@
-get_shell() {
-  if [ -n "$BASH_VERSION" ]; then
-    echo bash
-  elif [ -n "$ZSH_VERSION" ]; then
-    echo zsh
-  else
-    red "Program only supports Zsh and Bash"
-    exit 1
-  fi
-}
+symlink_dotfiles() {
+  local force=${1-false}
 
-setup_shell() {
-  if [  "$USED_SHELL" = 'bash'  ]; then
-    shopt -s globstar dotglob
-  elif [ "$USED_SHELL" = 'zsh' ]; then
-    setopt dotglob
-  fi
-}
+  for dotfile in "$DOTFILES_DIR"/**/*; do
+    [ -d "$dotfile" ] && continue
 
-get_script_dir() {
-  local shell="$USED_SHELL"
-  if [ "$shell" = 'bash' ]; then
-    dirname "$(realpath "${BASH_SOURCE[0]}")"
-  elif [ "$shell" = 'zsh' ]; then
-    dirname "$(realpath "${(%):-%x}"))"
-  fi
-}
-
-check_fn() {
-  for fn in "$@"; do
-    if ! declare -f "$fn" >/dev/null; then
-      red "Function '$fn' does not exist"
-      return 1
+    local rel_path=${dotfile##"$DOTFILES_DIR/"}
+    target_path="$HOME/$rel_path"
+    if [[ -f "$target_path" && "$force" = false ]]; then
+      multi "$YELLOW" "Skipping " "$BLUE" "$target_path" "$YELLOW" ", file already exists"
+    elif [[ -L "$target_path" && "$force" = false ]]; then
+      multi "$YELLOW" "Skipping " "$BLUE" "$target_path" "$YELLOW" ", symlink already exists"
+    else
+      ln -sf "$dotfile" "$target_path"
     fi
   done
+}
+
+setup() {
+  local excluded="${1-}"
+  local only="${2-}"
+  local force="${3-false}"
+  local skip_pkg_mgr="${4-false}"
+
+  symlink_dotfiles "$force"
+  open_sudo_session
+  install_font
+  [ "$skip_pkg_mgr" = true ] || init_pkg_mgr || return $?
+  install_tools "$excluded" "$only" "$force"
 }
 
 create_tool_template() {
@@ -75,8 +69,4 @@ create_tool_template() {
   chmod +x "$tool_path"
   multi "$GREEN" "Template created for " "$BLUE" "$cap_tool" \
     "$GREEN" " at " "$BLUE" "$tool_path"
-}
-
-cap() {
-  tr '[:lower:]' '[:upper:]' <<<"$1"
 }

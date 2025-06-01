@@ -10,7 +10,7 @@ install_linux() {
     return 1
   }
   blue "Running install script"
-  UV_NO_MODIFY_PATH=1 bash "$script_file" -y || {
+  UV_NO_MODIFY_PATH=1 bash "$script_file" || {
     fail "Error occured while executing the script"
     return 1
   }

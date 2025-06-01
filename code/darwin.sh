@@ -28,8 +28,8 @@ init_pkg_mgr() {
   }
 }
 
-copy_font() {
+install_font() {
+  blue 'Copying fonts'
   cp "$SCRIPT_DIR/files/font/"* '/Library/Fonts'
   chmod 0644 '/Library/Fonts/'*
-  blue 'Installing fonts'
 }
