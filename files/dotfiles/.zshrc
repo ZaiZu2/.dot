@@ -1,8 +1,5 @@
 #!/bin/zsh
 
-alias dfgit='git --git-dir=$HOME/.git --work-tree=$HOME'
-df config --local status.showUntrackedFiles no
-
 autoload -Uz compinit && compinit -u
 autoload bashcompinit && bashcompinit
 
