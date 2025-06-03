@@ -5,12 +5,13 @@ symlink_dotfiles() {
     [ -d "$dotfile" ] && continue
 
     local rel_path=${dotfile##"$DOTFILES_DIR/"}
-    target_path="$HOME/$rel_path"
+    local target_path="$HOME/$rel_path"
     if [[ -f "$target_path" && "$force" = false ]]; then
       multi "$YELLOW" "Skipping " "$BLUE" "$target_path" "$YELLOW" ", file already exists"
     elif [[ -L "$target_path" && "$force" = false ]]; then
       multi "$YELLOW" "Skipping " "$BLUE" "$target_path" "$YELLOW" ", symlink already exists"
     else
+      mkdir -p "$(dirname $target_path)"
       ln -sf "$dotfile" "$target_path"
     fi
   done

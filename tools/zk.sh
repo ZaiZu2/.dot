@@ -4,10 +4,15 @@ is_installed_zk() {
 
 install_linux() {
   local zk_url="https://github.com/zk-org/zk.git"
-  local zk_repo="$XDG_DATA_HOME/fzf"
+  local zk_repo="$XDG_DATA_HOME/zk"
   clone_repo "$zk_url" "$zk_repo"
   pushd "$zk_repo"
-  make
+  blue "Building ZK binary"
+  make || {
+    fail 'Failed to build ZK'
+    return 1
+  }
+
   popd
   blue "Symlinking ZK binary"
   ln -sf "$zk_repo/zk/zk" "$XDG_BIN_HOME/zk"
