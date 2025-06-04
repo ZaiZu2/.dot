@@ -32,16 +32,11 @@ vim.opt.diffopt = { 'internal', 'filler', 'closeoff', 'indent-heuristic', 'linem
 -- vim.opt.winborder = 'rounded' -- Messes up `nvim-treesitter-context` and any window scrolls
 
 vim.keymap.set('n', '<leader>Q', ':bp | sp | bn | bd<CR>', { desc = '[Q]uit current buffer' })
-vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>') -- Deactive search highlights
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [d]iagnostic message' })
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next [d]iagnostic message' })
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic [e]rror messages' })
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [q]uickfix list' })
 vim.keymap.set('n', '<leader>m', ':messages<CR>', { desc = 'Open [m]essages' })
-
-vim.keymap.set('n', '<C-_>', '<C-w><h>', { desc = 'Split window horizontally' })
-vim.keymap.set('n', '<C-|>', '<C-w><v>', { desc = 'Split window vertically' })
 
 vim.keymap.set('v', '<leader>x', ':lua<CR>', { desc = 'E[x]ecute selected Lua code' })
 vim.keymap.set('n', '<leader>x', ':.lua<CR>', { desc = 'E[x]ecute Lua line' })

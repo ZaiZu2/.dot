@@ -12,6 +12,9 @@ return {
                     return {
                         VertSplit = { fg = colors.palette.dragonGray2 },
                         WinSeparator = { fg = colors.palette.dragonGray2 },
+                        QuickFixHeaderSoft  = { fg = colors.palette.sumiInk4 },
+                        QuickFixHeaderHard  = { fg = colors.palette.dragonGray2 },
+                        Delimiter  = { fg = colors.palette.dragonGray2 },
 
                         BlinkCmpMenu = { fg = colors.palette.oldWhite, bg = colors.palette.sumiInk1 },
                         BlinkCmpMenuSelection = { bg = colors.palette.sumiInk5 },
