@@ -35,9 +35,6 @@ entrypoint() {
   fi
 
   setup_shell "$USED_SHELL" || return $?
-  load_platform || return $?
-  # ln -sf "$SCRIPT_DIR/df.sh" "$XDG_BIN_HOME/df.sh"
-  alias df='$USED_SHELL $SCRIPT_DIR/df.sh'
 
   while [[ $# -gt 0 ]]; do
     case $1 in
@@ -92,6 +89,7 @@ entrypoint() {
         esac
       done
 
+      load_platform || return $?
       setup "$excluded" "$only" "$force" "$skip_pkg_mgr"
       ;;
 

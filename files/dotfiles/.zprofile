@@ -1,5 +1,6 @@
 #!/bin/zsh
 
+export DOTFILES="$HOME/.dotfiles"
 export ZK_NOTEBOOK_DIR="$HOME/Notes"
 export BAT_THEME="kanagawa"
 export EDITOR=nvim

@@ -38,7 +38,9 @@ multi() {
 
 print_help() {
   cat <<-EOF
-		Usage: script.sh [command] [options]
+		Tool automating the process of setting up a development environment.
+
+		Usage: dot [command] [options]
 		
 		Commands:
 		  symlink [-f|--force]
