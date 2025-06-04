@@ -34,19 +34,22 @@ return {
                         ['alt-g'] = 'first',
                         ['alt-G'] = 'last',
                     },
-                    actions = {
-                        files = {
-                            ['enter'] = actions.file_edit_or_qf,
-                            ['ctrl-s'] = actions.file_split,
-                            ['ctrl-v'] = actions.file_vsplit,
-                            ['ctrl-t'] = actions.file_tabedit,
-                            ['ctrl-q'] = actions.file_sel_to_qf,
-                            ['alt-i'] = { fn = actions.toggle_ignore, reuse = true, header = false },
-                            ['alt-h'] = { fn = actions.toggle_hidden, reuse = true, header = false },
-                            ['alt-f'] = { fn = actions.toggle_follow, reuse = true, header = false },
-                        },
+                },
+                actions = {
+                    files = {
+                        ['enter'] = actions.file_edit_or_qf,
+                        ['ctrl-s'] = actions.file_split,
+                        ['ctrl-v'] = actions.file_vsplit,
+                        ['ctrl-t'] = actions.file_tabedit,
+                        ['ctrl-q'] = actions.file_sel_to_qf,
+                        ['alt-i'] = { fn = actions.toggle_ignore, reuse = true, header = false },
+                        ['alt-h'] = { fn = actions.toggle_hidden, reuse = true, header = false },
+                        ['alt-f'] = { fn = actions.toggle_follow, reuse = true, header = false },
                     },
                 },
+                files = { follow = true, hidden = true },
+                grep = { follow = true, hidden = true },
+                lsp = { async_or_timeout = 2000, jump1 = true},
             }
 
             vim.keymap.set('n', '<leader>sh', fzflua.helptags, { desc = '[s]earch [h]elp' })

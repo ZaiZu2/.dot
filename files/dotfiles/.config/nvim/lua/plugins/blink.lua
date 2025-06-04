@@ -21,12 +21,20 @@ return {
                         columns = { { 'label', 'label_description' }, { 'kind' } },
                         treesitter = { 'lsp' },
                     },
+                    -- border = 'single',
                 },
                 documentation = {
                     auto_show = true,
+                    -- window = { border = 'single' },
                 },
             },
-            signature = { enabled = true, window = { show_documentation = true } },
+            signature = {
+                enabled = true,
+                window = {
+                    show_documentation = true,
+                    -- border = 'single',
+                },
+            },
             appearance = {
                 -- Sets the fallback highlight groups to nvim-cmp's highlight groups
                 -- Useful for when your theme doesn't support blink.cmp

@@ -29,6 +29,7 @@ vim.opt.scrolloff = 10
 vim.opt.hlsearch = true -- Set highlight on search, but clear on pressing <Esc> in normal mode
 vim.opt.formatoptions = 'cqn1jp' -- help 'format-comments'
 vim.opt.diffopt = { 'internal', 'filler', 'closeoff', 'indent-heuristic', 'linematch:60', 'algorithm:histogram' }
+-- vim.opt.winborder = 'rounded' -- Messes up `nvim-treesitter-context` and any window scrolls
 
 vim.keymap.set('n', '<leader>Q', ':bp | sp | bn | bd<CR>', { desc = '[Q]uit current buffer' })
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
@@ -67,7 +68,7 @@ vim.diagnostic.config {
 vim.filetype.add {
     extension = {
         task = 'xml', -- ABSA specific .task files
-        asql  = 'sql', -- ABSA specific .sql files
+        asql = 'sql', -- ABSA specific .sql files
         j2 = 'jinja',
         ['jinja.html'] = 'jinja',
     },
