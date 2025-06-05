@@ -38,58 +38,6 @@ entrypoint() {
 
   while [[ $# -gt 0 ]]; do
     case $1 in
-    symlink)
-      shift
-      local force=false
-
-      case $1 in
-      -f | --force)
-        local force=true
-        shift
-        ;;
-      *)
-        multi "$RED" "Unknown option: " "$BLUE" "$1"
-        exit 1
-        ;;
-      esac
-
-      blue "Symlinking files"
-      symlink_dotfiles "$force"
-      ;;
-
-    install)
-      shift
-      local excluded=''
-      local only=''
-      local force=false
-
-      while [[ $# -gt 0 ]]; do
-        case $1 in
-        -e | --exclude)
-          local excluded=$2
-          shift 2
-          ;;
-        -o | --only)
-          local only=$2
-          shift 2
-          ;;
-        -f | --force)
-          local force=true
-          shift
-          ;;
-        *)
-          multi "$RED" "Unknown option: " "$BLUE" "$1"
-          exit 1
-          ;;
-        esac
-      done
-
-      load_platform || return $?
-      open_sudo_session
-      install_tools "$excluded" "$only" "$force"
-      ;;
-
-
     setup)
       shift
       local excluded=''
@@ -127,7 +75,60 @@ entrypoint() {
       symlink_dotfiles "$force"
       install_font
       [ "$skip_pkg_mgr" = true ] || init_pkg_mgr || return $?
-      setup_env "$excluded" "$only" "$force" "$skip_pkg_mgr"
+      install_tools "$excluded" "$only" "$force"
+      ;;
+
+    install)
+      shift
+      local excluded=''
+      local only=''
+      local force=false
+
+      while [[ $# -gt 0 ]]; do
+        case $1 in
+        -e | --exclude)
+          local excluded=$2
+          shift 2
+          ;;
+        -o | --only)
+          local only=$2
+          shift 2
+          ;;
+        -f | --force)
+          local force=true
+          shift
+          ;;
+        *)
+          multi "$RED" "Unknown option: " "$BLUE" "$1"
+          exit 1
+          ;;
+        esac
+      done
+
+      load_platform || return $?
+      open_sudo_session
+      install_tools "$excluded" "$only" "$force"
+      ;;
+
+    link)
+      shift
+      local force=false
+
+      while [[ $# -gt 0 ]]; do
+        case $1 in
+        -f | --force)
+          local force=true
+          shift
+          ;;
+        *)
+          multi "$RED" "Unknown option: " "$BLUE" "$1"
+          exit 1
+          ;;
+        esac
+      done
+
+      blue "Symlinking files"
+      symlink_dotfiles "$force"
       ;;
 
     list)
@@ -155,3 +156,5 @@ entrypoint() {
     esac
   done
 }
+
+entrypoint "$@"

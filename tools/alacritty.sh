@@ -1,5 +1,5 @@
 is_installed_alacritty() {
-  command -v alacritty >/dev/null 2>&1
+  /Applications/Alacritty.app/Contents/MacOS/alacritty --version >/dev/null 2>&1
 }
 
 install_linux() {

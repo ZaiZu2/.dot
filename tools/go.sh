@@ -5,7 +5,10 @@ is_installed_go() { command -v go >/dev/null 2>&1; }
 build_url() {
   if [ "$ARCH" = 'x86_64' ]; then
     local url_arch='386'
+  else
+    local url_arch="$ARCH"
   fi
+  # echo $url_arch
   echo "https://go.dev/dl/go${GO_VERSION}.${OS}-${url_arch}.tar.gz"
 }
 

@@ -30,6 +30,6 @@ init_pkg_mgr() {
 
 install_font() {
   blue 'Copying fonts'
-  cp "$SCRIPT_DIR/files/font/"* '/Library/Fonts'
+  sudo cp "$SCRIPT_DIR/files/font/"* '/Library/Fonts'
   chmod 0644 '/Library/Fonts/'*
 }

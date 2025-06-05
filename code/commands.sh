@@ -1,5 +1,5 @@
 load_platform() {
-  OS="$(uname --kernel-name | tr '[:upper:]' '[:lower:]')" || return 1
+  OS="$(uname -s | tr '[:upper:]' '[:lower:]')" || return 1
 
   case "$OS" in
   linux | darwin) ;;
@@ -9,7 +9,7 @@ load_platform() {
     ;;
   esac
 
-  ARCH="$(uname --machine | tr '[:upper:]' '[:lower:]')" || return 1
+  ARCH="$(uname -m | tr '[:upper:]' '[:lower:]')" || return 1
   case "$ARCH" in
   x86_64 | arm64) ;;
   *)
@@ -42,7 +42,6 @@ open_sudo_session() {
   trap 'kill "$SUDO_SESSION_PID" 2>/dev/null' EXIT HUP INT QUIT TERM
 }
 
-entrypoint "$@"
 symlink_dotfiles() {
   local force=${1-false}
 
@@ -57,6 +56,7 @@ symlink_dotfiles() {
       multi "$YELLOW" "Skipping " "$BLUE" "$target_path" "$YELLOW" ", symlink already exists"
     else
       mkdir -p "$(dirname "$target_path")"
+      multi "$GREEN" "Created symlink " "$BLUE" "$target_path" "$GREEN" " -> " "$BLUE" "$dotfile"
       ln -sf "$dotfile" "$target_path"
     fi
   done
@@ -103,3 +103,4 @@ create_tool_template() {
   multi "$GREEN" "Template created for " "$BLUE" "$cap_tool" \
     "$GREEN" " at " "$BLUE" "$tool_path"
 }
+

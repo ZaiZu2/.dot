@@ -10,7 +10,10 @@ export CARGO_HOME="$XDG_DATA_HOME/cargo"
 export RUSTUP_HOME="$XDG_DATA_HOME/rustup"
 . "$CARGO_HOME/env"
 
-export GOPATH="$XDG_DATA_HOME/go"
-PATH="$GOPATH/bin:$PATH"
+export GOROOT="$XDG_DATA_HOME/go"
 
 export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+
+for dotfile in "$HOME/.zshenv_"*; do
+    source $dotfile
+done

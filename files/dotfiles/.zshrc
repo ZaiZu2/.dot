@@ -67,8 +67,8 @@ alias fzf='fzf --preview "bat --theme=kanagawa --color=always --style=numbers --
 
 eval "$(oh-my-posh init zsh --config $XDG_CONFIG_HOME/oh-my-posh.toml)"
 
-alias dot='zsh $DOTFILES/dot.sh'
-alias dfs='cd $DOTFILES'
+alias dot='zsh $DOT/dot.sh'
+alias dfs='cd $DOT'
 alias conf='cd $XDG_CONFIG_HOME'
 alias nconf='cd $XDG_CONFIG_HOME/nvim'
 alias dev='cd $HOME/dev'
@@ -88,4 +88,6 @@ alias gl='git log --oneline --decorate --graph'
 alias gr='git restore'
 alias grs='git restore --staged'
 
-[ -f "$HOME/.zsh_absa" ] && source "$HOME/.zsh_absa"
+for dotfile in "$HOME/.zshrc_"*; do
+    source $dotfile
+done
