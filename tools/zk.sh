@@ -15,7 +15,7 @@ install_linux() {
 
   popd
   blue "Symlinking ZK binary"
-  ln -sf "$zk_repo/zk/zk" "$XDG_BIN_HOME/zk"
+  ln -sf "$zk_repo/zk" "$XDG_BIN_HOME/zk"
 }
 
 install_darwin() {

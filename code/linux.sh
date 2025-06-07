@@ -3,7 +3,7 @@ init_pkg_mgr() {
   sudo apt update || return 1
   blue "Installing/upgrading system packages"
   sudo apt upgrade --yes || return 1
-  sudo apt install --yes cmake curl pkg-config libtool unzip ripgrep jq \
+  sudo apt install --yes libc6-dev cmake curl pkg-config libtool unzip ripgrep jq \
     build-essential libreadline-dev coreutils || return 1
   blue "Removing redundant packages"
   sudo apt autoremove --yes || return 1

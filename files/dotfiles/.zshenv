@@ -14,6 +14,8 @@ export GOROOT="$XDG_DATA_HOME/go"
 
 export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
 
+setopt nullglob # Temporarily make glob pattern expand to nothing
 for dotfile in "$HOME/.zshenv_"*; do
     source $dotfile
 done
+unsetopt nullglob

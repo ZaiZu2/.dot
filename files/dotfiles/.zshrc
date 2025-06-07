@@ -88,6 +88,8 @@ alias gl='git log --oneline --decorate --graph'
 alias gr='git restore'
 alias grs='git restore --staged'
 
+setopt nullglob # Temporarily make glob pattern expand to nothing
 for dotfile in "$HOME/.zshrc_"*; do
     source $dotfile
 done
+unsetopt nullglob

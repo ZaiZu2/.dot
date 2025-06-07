@@ -10,7 +10,7 @@ install_fnm() {
     return 1
   }
   blue "Executing FNM script"
-  bash "$fnm_file" || {
+  bash "$fnm_file" --skip-shell || {
     multi "$RED" "Error occured while executing " "$BLUE" "FNM" "$RED" " script"
     return 1
   }

@@ -1,16 +1,19 @@
 fail() {
+  msg=$1
   echo 1 >"$CURR_TOOL_STATUS"
-  [ "$1" ] && red "$1"
+  [ "$msg" ] && red "$msg"
 }
 
 finish() {
+  msg=$1
   echo 0 >"$CURR_TOOL_STATUS"
-  [ "$1" ] && green "$1"
+  [ "$msg" ] && green "$msg"
 }
 
 warn() {
+  msg=$1
   echo 10 >"$CURR_TOOL_STATUS"
-  [ "$1" ] && yellow "$1"
+  [ "$msg" ] && yellow "$msg"
 }
 
 process_installation() {
@@ -97,10 +100,13 @@ install_tools() {
 clone_repo() {
   local repo_url=$1
   local repo_dir=$2
+
+  local default_branch=$(git remote show origin | sed -n 's/.*HEAD branch: //p')
+
   if [ -d "$repo_dir" ]; then
-    blue "Pulling latest changes from $repo_dir"
+    blue "Pulling latest changes from $repo_url#$default_branch"
     git -C "$repo_dir" fetch || warn "Failed to pull the latest $repo_dir"
-    git -C "$repo_dir" reset --hard origin/master
+    git -C "$repo_dir" reset --hard "origin/$default_branch"
   else
     blue "Cloning repo $repo_url to $repo_dir"
     git clone --depth 1 "$repo_url" "$repo_dir" || {
