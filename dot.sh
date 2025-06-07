@@ -57,6 +57,39 @@ entrypoint() {
       symlink_dotfiles "$force"
       ;;
 
+    install)
+      shift
+      local excluded=''
+      local only=''
+      local force=false
+
+      while [[ $# -gt 0 ]]; do
+        case $1 in
+        -e | --exclude)
+          local excluded=$2
+          shift 2
+          ;;
+        -o | --only)
+          local only=$2
+          shift 2
+          ;;
+        -f | --force)
+          local force=true
+          shift
+          ;;
+        *)
+          multi "$RED" "Unknown option: " "$BLUE" "$1"
+          exit 1
+          ;;
+        esac
+      done
+
+      load_platform || return $?
+      open_sudo_session
+      install_tools "$excluded" "$only" "$force"
+      ;;
+
+
     setup)
       shift
       local excluded=''
@@ -89,8 +122,12 @@ entrypoint() {
         esac
       done
 
+      open_sudo_session
       load_platform || return $?
-      setup "$excluded" "$only" "$force" "$skip_pkg_mgr"
+      symlink_dotfiles "$force"
+      install_font
+      [ "$skip_pkg_mgr" = true ] || init_pkg_mgr || return $?
+      setup_env "$excluded" "$only" "$force" "$skip_pkg_mgr"
       ;;
 
     list)
@@ -118,49 +155,3 @@ entrypoint() {
     esac
   done
 }
-
-load_platform() {
-  OS="$(uname --kernel-name | tr '[:upper:]' '[:lower:]')" || return 1
-
-  case "$OS" in
-  linux | darwin) ;;
-  *)
-    red "Platform unsupported: $OS"
-    exit 1
-    ;;
-  esac
-
-  ARCH="$(uname --machine | tr '[:upper:]' '[:lower:]')" || return 1
-  case "$ARCH" in
-  x86_64 | arm64) ;;
-  *)
-    red "Architecture unsupported: $ARCH"
-    exit 1
-    ;;
-  esac
-
-  blue "Platform recognized as $OS-$ARCH"
-  source "$SCRIPT_DIR/code/$OS.sh"
-}
-
-open_sudo_session() {
-  # Invalidate any cached credentials if they are incorrect
-  if sudo --non-interactive true 2>/dev/null; then
-    sudo --remove-timestamp
-    blue "Provide admin credentials"
-  fi
-
-  if ! sudo --validate; then
-    red "This script requires admin rights"
-    exit 1
-  fi
-
-  (while true; do
-    sudo -n true
-    sleep 60
-  done) &
-  SUDO_SESSION_PID=$!
-  trap 'kill "$SUDO_SESSION_PID" 2>/dev/null' EXIT HUP INT QUIT TERM
-}
-
-entrypoint "$@"

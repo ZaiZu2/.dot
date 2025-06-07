@@ -1,3 +1,48 @@
+load_platform() {
+  OS="$(uname --kernel-name | tr '[:upper:]' '[:lower:]')" || return 1
+
+  case "$OS" in
+  linux | darwin) ;;
+  *)
+    red "Platform unsupported: $OS"
+    exit 1
+    ;;
+  esac
+
+  ARCH="$(uname --machine | tr '[:upper:]' '[:lower:]')" || return 1
+  case "$ARCH" in
+  x86_64 | arm64) ;;
+  *)
+    red "Architecture unsupported: $ARCH"
+    exit 1
+    ;;
+  esac
+
+  blue "Platform recognized as $OS-$ARCH"
+  source "$SCRIPT_DIR/code/$OS.sh"
+}
+
+open_sudo_session() {
+  # Invalidate any cached credentials if they are incorrect
+  if sudo --non-interactive true 2>/dev/null; then
+    sudo --remove-timestamp
+    blue "Provide admin credentials"
+  fi
+
+  if ! sudo --validate; then
+    red "This script requires admin rights"
+    exit 1
+  fi
+
+  (while true; do
+    sudo -n true
+    sleep 60
+  done) &
+  SUDO_SESSION_PID=$!
+  trap 'kill "$SUDO_SESSION_PID" 2>/dev/null' EXIT HUP INT QUIT TERM
+}
+
+entrypoint "$@"
 symlink_dotfiles() {
   local force=${1-false}
 
@@ -11,23 +56,10 @@ symlink_dotfiles() {
     elif [[ -L "$target_path" && "$force" = false ]]; then
       multi "$YELLOW" "Skipping " "$BLUE" "$target_path" "$YELLOW" ", symlink already exists"
     else
-      mkdir -p "$(dirname $target_path)"
+      mkdir -p "$(dirname "$target_path")"
       ln -sf "$dotfile" "$target_path"
     fi
   done
-}
-
-setup() {
-  local excluded="${1-}"
-  local only="${2-}"
-  local force="${3-false}"
-  local skip_pkg_mgr="${4-false}"
-
-  symlink_dotfiles "$force"
-  open_sudo_session
-  install_font
-  [ "$skip_pkg_mgr" = true ] || init_pkg_mgr || return $?
-  install_tools "$excluded" "$only" "$force"
 }
 
 create_tool_template() {
