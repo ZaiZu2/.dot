@@ -14,12 +14,18 @@ final_space = true
 [transient_prompt]
   template = '<p:path>{{ .Folder }}</> ❯ '
   background = 'transparent'
-  foreground_templates = ['{{if gt .Code 0}}red{{end}}', '{{if eq .Code 0}}green{{end}}']
 
 [[blocks]]
   type = 'prompt'
   alignment = 'left'
   newline = true
+
+  [[blocks.segments]]
+    type = "status"
+    foreground_templates = ['{{if gt .Code 0}}red{{end}}', '{{if eq .Code 0}}green{{end}}']
+    template = "({{ .Code }}) "
+    [blocks.segments.properties]
+    always_enabled = true
 
   [[blocks.segments]]
     template = '({{ .Venv }} {{ .Major }}.{{ .Minor }}) '
@@ -45,6 +51,12 @@ final_space = true
     background = 'transparent'
     type = 'path'
     style = 'plain'
+
+    [blocks.segments.properties]
+    style = 'agnoster_short'
+    max_depth = 3
+    # style = 'mixed'
+    # mixed_threshold = 10
 
   [[blocks.segments]]
     template = ' <white>on</> {{ .HEAD }}'
