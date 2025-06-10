@@ -1,3 +1,7 @@
+deps_lazygit() {
+  echo ''
+}
+
 is_installed_lazygit() {
   command -v lazygit >/dev/null 2>&1 || return 1
 
@@ -12,32 +16,32 @@ is_installed_lazygit() {
   fi
 }
 
-install_linux() {
-  local cap_os="$(echo "${OS:0:1}" | tr '[:lower:]' '[:upper:]')${OS:1}"
-  local filename="lazygit_${_latest_version}_${cap_os}_${ARCH}.tar.gz"
-  local binary_url="https://github.com/jesseduffield/lazygit/releases/download/v$_latest_version/$filename"
-  blue "Downloading LAZYGIT archive from '$binary_url'"
-  curl -fsSL -o "/tmp/$filename" "$binary_url" || {
-    fail "Failed to download the archive"
-    return 1
-  }
-  blue "Extracting '$filename' to '$XDG_BIN_HOME'"
-  tar -C "$XDG_BIN_HOME" -xzf "/tmp/$filename" || {
-    fail "Failed to extract the archive"
-    return 1
-  }
-  blue "Removing temporary archive"
-  rm "/tmp/$filename"
-}
-
-install_darwin() {
-  brew install lazygit || {
-    fail "Failed to install LAZYGIT"
-    return 1
-  }
-}
-
 install_lazygit() {
+  install_linux() {
+    local cap_os="$(echo "${OS:0:1}" | tr '[:lower:]' '[:upper:]')${OS:1}"
+    local filename="lazygit_${_latest_version}_${cap_os}_${ARCH}.tar.gz"
+    local binary_url="https://github.com/jesseduffield/lazygit/releases/download/v$_latest_version/$filename"
+    blue "Downloading LAZYGIT archive from '$binary_url'"
+    curl -fsSL -o "/tmp/$filename" "$binary_url" || {
+      fail "Failed to download the archive"
+      return 1
+    }
+    blue "Extracting '$filename' to '$XDG_BIN_HOME'"
+    tar -C "$XDG_BIN_HOME" -xzf "/tmp/$filename" || {
+      fail "Failed to extract the archive"
+      return 1
+    }
+    blue "Removing temporary archive"
+    rm "/tmp/$filename"
+  }
+
+  install_darwin() {
+    brew install lazygit || {
+      fail "Failed to install LAZYGIT"
+      return 1
+    }
+  }
+
   if [ "$OS" = 'darwin' ]; then
     install_darwin || return 1
   elif [ "$OS" = 'linux' ]; then

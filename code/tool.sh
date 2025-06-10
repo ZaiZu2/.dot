@@ -71,23 +71,65 @@ process_installation() {
   return $final_status
 }
 
+CALL_STACK=''
+INSTALL_ORDER=''
+
+# Build a dependency list by recursing into each tool's dependency list. Detect cyclic
+# dependencies and notify user.
+build_install_list() {
+  local tool=$1
+  local deps_fn="deps_$tool"
+  local deps=$($deps_fn | tr ',' ' ')
+
+  if [[ "$CALL_STACK," == *",$tool,"* ]]; then
+    local tmp=${CALL_STACK:1}
+    red "Cyclic dependency detected [${tmp//,/ -> } -> $tool]. Check dependencies of the tools in the cycle."
+    return 1
+  fi
+
+  if [[ "$INSTALL_ORDER," == *",$tool,"* ]]; then
+    return 0
+  fi
+
+  CALL_STACK+=",$tool"
+
+  for dep in $deps; do
+    build_install_list "$dep"
+  done
+
+  CALL_STACK="${CALL_STACK/",$tool"/}"
+  INSTALL_ORDER+=",$tool"
+}
+
 install_tools() {
   local excluded="$1"
   local only="$2"
   local force="$3"
 
+  # Source all tools so all context is available for building dependency list
+  tools=''
   for file in "$SCRIPT_DIR/tools/"*; do
     source "$file"
     local tool="$(basename -s '.sh' "$file")"
+    tools+=",$tool"
+  done
 
+  # Build dependency list only for tools specified by a user
+  for tool in ${tools//,/ }; do
     # Iterate over select tools if --only was set
     [[ -n "${only:-}" && ",$only," != *",$tool,"* ]] && continue
     # Skip excluded tools
     [[ ${excluded+x} && ",$excluded," == *",$tool,"* ]] && continue
 
+    build_install_list "$tool"
+  done
+
+  # Iterate over dependency list, installing tools
+  for tool in ${INSTALL_ORDER//,/ }; do
     local is_installed_fn="is_installed_$tool"
     local install_fn="install_$tool"
-    check_fn "$is_installed_fn" "$install_fn" || return 1
+    local deps_fn="deps_$tool"
+    check_fn "$is_installed_fn" "$install_fn" "$deps_fn" || return 1
 
     if ! "$is_installed_fn" || [ "$force" = true ]; then
       process_installation "$tool" "$install_fn"
@@ -95,23 +137,4 @@ install_tools() {
       multi "$YELLOW" " ━━━ " "$BLUE" "$(cap "$tool")" "$YELLOW" " is already installed ━━━"
     fi
   done
-}
-
-clone_repo() {
-  local repo_url=$1
-  local repo_dir=$2
-
-  local default_branch=$(git remote show origin | sed -n 's/.*HEAD branch: //p')
-
-  if [ -d "$repo_dir" ]; then
-    blue "Pulling latest changes from $repo_url#$default_branch"
-    git -C "$repo_dir" fetch || warn "Failed to pull the latest $repo_dir"
-    git -C "$repo_dir" reset --hard "origin/$default_branch"
-  else
-    blue "Cloning repo $repo_url to $repo_dir"
-    git clone --depth 1 "$repo_url" "$repo_dir" || {
-      fail "Failed to clone $repo_url"
-      return 1
-    }
-  fi
 }

@@ -1,6 +1,10 @@
 export CARGO_HOME="$XDG_DATA_HOME/cargo"
 export RUSTUP_HOME="$XDG_DATA_HOME/rustup"
 
+deps_rust() {
+  echo ''
+}
+
 is_installed_rust() { command -v cargo >/dev/null 2>&1; }
 
 install_rust() {

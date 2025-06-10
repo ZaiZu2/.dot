@@ -1,7 +1,4 @@
-- [ ] Skip `.zshrc` update when running `fnm` install script
 - [ ] Setup git on install - git config
-- [ ] `clone_repo` function assumes the default branch is `master`, which is error-prone
-- [ ] create `install` command which will only allow installing apps
 - [ ] remove explicit logs for a background processes on Darwin
 
       ┃Symlinking binaries

@@ -59,6 +59,7 @@ zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*' menu no
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 
+setopt shwordsplit # Emulate Bash and split string on whitespaces
 setopt globdots # Allow matching hidden files with wildcards
 setopt BASH_REMATCH # Turn on BASH_REMATCH[] syntax for capture groups
 

@@ -1,3 +1,7 @@
+deps_fnm() {
+  echo ''
+}
+
 is_installed_fnm() {
   command -v fnm >/dev/null 2>&1
 }

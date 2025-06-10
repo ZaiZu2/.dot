@@ -1,23 +1,27 @@
+deps_tmux() {
+  echo 'git'
+}
+
 is_installed_tmux() {
   command -v tmux >/dev/null 2>&1
 }
 
-install_linux() {
-  sudo apt install tmux || {
-    fail "Failed to install TMUX"
-    return 1
-  }
-
-}
-
-install_darwin() {
-  brew install tmux || {
-    fail "Failed to install TMUX"
-    return 1
-  }
-}
-
 install_tmux() {
+  install_linux() {
+    sudo apt install tmux || {
+      fail "Failed to install TMUX"
+      return 1
+    }
+
+  }
+
+  install_darwin() {
+    brew install tmux || {
+      fail "Failed to install TMUX"
+      return 1
+    }
+  }
+
   blue "Installing TMUX"
   if [ "$OS" = 'darwin' ]; then
     install_darwin || return 1
