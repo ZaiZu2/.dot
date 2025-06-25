@@ -49,7 +49,7 @@ return {
                 },
                 files = { follow = true, hidden = true },
                 grep = { follow = true, hidden = true },
-                lsp = { async_or_timeout = 2000, jump1 = true},
+                lsp = { async_or_timeout = 2000, jump1 = true },
             }
 
             vim.keymap.set('n', '<leader>sh', fzflua.helptags, { desc = '[s]earch [h]elp' })

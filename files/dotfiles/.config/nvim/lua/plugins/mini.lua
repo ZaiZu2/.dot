@@ -13,10 +13,7 @@ return {
                     prefix = 'ge',
                     reindent_linewise = true, -- Whether to reindent new text to match previous indent
                 },
-                evaluate = {
-                    prefix = '',
-                    func = nil,
-                },
+                evaluate = { prefix = '', func = nil },
             }
 
             require('mini.trailspace').setup()
@@ -24,31 +21,6 @@ return {
             require('mini.test').setup()
 
             require('mini.splitjoin').setup()
-
-            require('mini.files').setup { -- Module mappings created only inside explorer.
-                options = {
-                    permanent_delete = false,
-                    use_as_default_explorer = false,
-                },
-                windows = {
-                    -- Maximum number of windows to show side by side
-                    max_number = math.huge,
-                    -- Whether to show preview of file/directory under cursor
-                    preview = true,
-                    -- Width of focused window
-                    width_focus = 50,
-                    -- Width of non-focused window
-                    width_nofocus = 15,
-                    -- Width of preview window
-                    width_preview = 25,
-                },
-            }
-            vim.api.nvim_set_keymap(
-                'n',
-                '<C-\\>',
-                '<cmd>lua MiniFiles.open()<CR>',
-                { noremap = true, silent = true, desc = 'Open Mini.Files' }
-            )
 
             local hipatterns = require 'mini.hipatterns'
             hipatterns.setup {
@@ -66,8 +38,6 @@ return {
             miniIcons.mock_nvim_web_devicons()
 
             -- require('mini.completion').setup()
-
-            require('mini.tabline').setup()
 
             local statusline = require 'mini.statusline'
             statusline.setup { use_icons = vim.g.have_nerd_font }
