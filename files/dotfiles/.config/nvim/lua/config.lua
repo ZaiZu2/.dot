@@ -68,8 +68,6 @@ return {
                     parser = function(output, bufnr, linter_cwd)
                         local success, output_obj = pcall(vim.json.decode, output)
                         if not success then
-                            vim.print('Unexpected JSON response from Basedpyright linter', vim.log.levels.ERROR)
-                            vim.print(output)
                             return
                         end
 

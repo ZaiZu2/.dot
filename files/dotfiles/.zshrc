@@ -6,9 +6,9 @@ autoload bashcompinit && bashcompinit
 # Add in zsh plugins
 source "$XDG_DATA_HOME/zinit/zinit.git/zinit.zsh"
 zinit ice wait lucid
-zinit light zsh-users/zsh-syntax-highlighting
-zinit ice wait lucid
 zinit light zsh-users/zsh-autosuggestions
+zinit ice wait lucid
+zinit light zsh-users/zsh-syntax-highlighting
 zinit ice wait lucid
 zinit light Aloxaf/fzf-tab
 zinit ice wait lucid
@@ -59,7 +59,6 @@ zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*' menu no
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 
-setopt shwordsplit # Emulate Bash and split string on whitespaces
 setopt globdots # Allow matching hidden files with wildcards
 setopt BASH_REMATCH # Turn on BASH_REMATCH[] syntax for capture groups
 
@@ -88,6 +87,10 @@ alias gf='git fetch'
 alias gl='git log --oneline --decorate --graph'
 alias gr='git restore'
 alias grs='git restore --staged'
+
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
 
 setopt nullglob # Temporarily make glob pattern expand to nothing
 for dotfile in "$HOME/.zshrc_"*; do
