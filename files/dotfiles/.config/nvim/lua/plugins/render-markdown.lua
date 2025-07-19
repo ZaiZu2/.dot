@@ -4,6 +4,8 @@ return {
         event = 'VeryLazy',
         dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.nvim' },
         opts = {
+            file_types = { 'markdown', 'vimwiki', 'copilot-chat' },
+            completions = { blink = { enabled = true } },
             render_modes = true,
             paragraph = {},
             code = {},
@@ -21,13 +23,13 @@ return {
                 },
             },
             pipe_table = {
-                cell = 'trimmed'
+                cell = 'trimmed',
             },
             indent = {
                 enabled = true,
                 per_level = 2,
                 skip_level = 1,
-            }
+            },
         },
     },
 }

@@ -27,66 +27,100 @@ return {
         },
         event = 'VeryLazy',
         build = 'make tiktoken', -- Only on MacOS or Linux
+        ---@type CopilotChat.config
         opts = {
-            model = 'gpt-4o-mini',
+            model = 'gpt-4o',
             question_header = '# User ',
             answer_header = '# Copilot ',
             error_header = '# Error ',
-            prompts = {
-                -- Code related prompts
-                Explain = 'Please explain how the following code works.',
-                Review = 'Please review the following code and provide suggestions for improvement.',
-                Tests = 'Please explain how the selected code works, then generate unit tests for it.',
-                Refactor = 'Please refactor the following code to improve its clarity and readability.',
-                FixCode = 'Please fix the following code to make it work as intended.',
-                FixError = 'Please explain the error in the following text and provide a solution.',
-                BetterNamings = 'Please provide better names for the following variables and functions.',
-                Documentation = 'Please provide documentation for the following code.',
-                SwaggerApiDocs = 'Please provide documentation for the following API using Swagger.',
-                SwaggerJsDocs = 'Please write JSDoc for the following API using Swagger.',
-                -- Text related prompts
-                Summarize = 'Please summarize the following text.',
-                Spelling = 'Please correct any grammar and spelling errors in the following text.',
-                Wording = 'Please improve the grammar and wording of the following text.',
-                Concise = 'Please rewrite the following text to make it more concise.',
+            selection = function(source)
+                local select = require 'CopilotChat.select'
+                return select.visual(source) or select.buffer(source)
+            end,
+            system_prompt = [[
+You are a code-focused AI programming assistant that specializes in practical software
+engineering solutions. Follow the user's requirements carefully & to the letter. Keep your
+answers short and impersonal. The user works in an IDE called Neovim which has a concept
+for editors with open files, integrated unit test support, an output pane that shows the
+output of running the code as well as an integrated terminal. The user is working on
+a Linux machine. Please respond with system specific commands if applicable. You will
+receive code snippets that include line number prefixes - use these to maintain correct
+position references but remove them when generating output.
+
+When presenting code changes:
+1. For each change, first provide a header outside code blocks with format:
+   [file:<file_name>](<file_path>) line:<start_line>-<end_line>
+2. Then wrap the actual code in triple backticks with the appropriate language identifier.
+3. Keep changes minimal and focused to produce short diffs.
+4. Include complete replacement code for the specified line range with:
+   - Proper indentation matching the source
+   - All necessary lines (no eliding with comments)
+   - No line number prefixes in the code
+5. Address any diagnostics issues when fixing code.
+6. If multiple changes are needed, present them as separate blocks with their own headers.
+]],
+            mappings = {
+                reset = { normal = 'gR' },
             },
-            -- auto_follow_cursor = true, -- Don't follow the cursor after getting response
-            -- insert_at_end = true,
             show_help = true,
+            highlight_headers = false,
         },
         config = function(_, opts)
             local chat = require 'CopilotChat'
-            local select = require 'CopilotChat.select'
-            -- Use unnamed register for the selection
-            opts.selection = select.unnamed
-            -- Override the git prompts message
-            opts.prompts.Commit = {
-                prompt = 'Write commit message for the change with commitizen convention',
-                selection = select.gitdiff,
-            }
-
             chat.setup(opts)
-            -- Fallback to buffer source if selection does not exist
-            local set_default_selection = function(source)
-                return select.visual(source) or select.buffer(source)
+
+            local docstring_prompt = [[
+Write a docstring for the selected object - function/method/class.
+1. Use GOOGLE type of a docstring for python, but:
+   - skip type hint next to arguments if the code itself is type hinted.
+   - Merge the header with the description block into one.
+2. Docstring quotes should be defined on separate lines.
+3. Provide only the docstring enclosed in quotes in the code block.
+4. Specify the object for which the docstring was generated above the code block.
+5. If selection spans multiple objects, always choose the outermost one. If there
+   are multiple outermost objects, choose first.
+]]
+            local rewrite_prompt = 'Please rewrite the selected text to make it flow and sound better'
+
+            local open_floating_chat = function()
+                if require('CopilotChat').chat:visible() then
+                    chat.close()
+                else
+                    chat.open {
+                        window = {
+                            layout = 'float',
+                            relative = 'editor',
+                            border = 'rounded',
+                            width = 0.9,
+                            height = 0.9,
+                        },
+                    }
+                end
             end
 
-            -- Inline chat with Copilot
-            local open_floating_chat = function()
+            local open_inline_chat = function(prompt)
                 chat.open {
-                    selection = set_default_selection,
+                    title = '',
+                    ---@type CopilotChat.config.window
                     window = {
+                        title='',
                         layout = 'float',
-                        relative = 'editor',
-                        -- border = 'rounded',
-                        width = 0.9,
-                        height = 0.9,
+                        border = 'rounded',
+                        relative = 'cursor',
+                        width = 1,
+                        height = 0.4,
+                        row = 1,
                     },
                 }
+                chat.ask(prompt)
             end
 
             local open_vertical_chat = function()
-                chat.ask(nil, { selection = set_default_selection })
+                if require('CopilotChat').chat:visible() then
+                    chat.close()
+                else
+                    chat.open()
+                end
             end
 
             -- Custom buffer for CopilotChat
@@ -95,25 +129,19 @@ return {
                 callback = function()
                     vim.opt_local.relativenumber = true
                     vim.opt_local.number = true
-
-                    -- Get current filetype and set it to markdown if the current filetype is copilot-chat
-                    local ft = vim.bo.filetype
-                    if ft == 'copilot-chat' then
-                        vim.bo.filetype = 'markdown'
-                    end
-
-                    vim.keymap.set({ 'x', 'n' }, 'gS', '<CMD>CopilotChatStop<CR>', { desc = 'Open in vertical split' })
+                    vim.keymap.set({ 'x', 'n' }, 'gS', chat.stop, { desc = '[S]top current chat output' })
                 end,
             })
 
-            vim.keymap.set({ 'x', 'n' }, '<leader>cv', open_vertical_chat, { desc = 'Open in vertical split' })
-            vim.keymap.set({ 'x', 'n' }, '<leader>cx', open_floating_chat, { desc = 'Inline chat' })
-            vim.keymap.set('n', '<leader>c?', '<CMD>CopilotChatModels<CR>', { desc = 'Select Models' })
-            vim.keymap.set('x', '<leader>cp', function()
-                require('CopilotChat.integrations.fzflua').pick(
-                    require('CopilotChat.actions').prompt_actions { selection = require('CopilotChat.select').visual }
-                )
-            end, { desc = 'Prompt actions' })
+            vim.keymap.set({ 'x', 'n' }, '<leader>cx', open_floating_chat, { desc = 'Floating chat' })
+            vim.keymap.set({ 'x', 'n' }, '<leader>cv', open_vertical_chat, { desc = 'Vertical split chat' })
+            vim.keymap.set({ 'x', 'n' }, '<leader>cd', function()
+                open_inline_chat(docstring_prompt)
+            end, { desc = 'Generate a docstring' })
+            vim.keymap.set({ 'x', 'n' }, '<leader>cr', function()
+                open_inline_chat(rewrite_prompt)
+            end, { desc = 'Rewrite text' })
+            vim.keymap.set('n', '<leader>cm', chat.select_model, { desc = 'Select Models' })
         end,
     },
 }
