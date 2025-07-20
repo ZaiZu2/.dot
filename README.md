@@ -12,3 +12,5 @@
       [7]  + terminated  ( while true; do; sudo -n true; sleep 60; done; )
        ━━━ RUST is already installed ━━━
       AB0383Q ❯ . .dotfiles/dot.sh setup -o rust -s -f
+- [ ] automate the update process -when pulling from the repo, dotfiles should be automatically synchronized
+      - you could simply pull on `sync` command of the `dot` program

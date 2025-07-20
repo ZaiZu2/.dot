@@ -3,7 +3,7 @@ vim.g.maplocalleader = ' '
 vim.g.have_nerd_font = true
 
 vim.opt.fillchars = { vert = '▕' }
-vim.opt.textwidth = 90
+vim.opt.textwidth = 100
 vim.opt.shiftwidth = 2
 vim.opt.expandtab = true
 vim.opt.number = true

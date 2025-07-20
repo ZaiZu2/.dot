@@ -8,6 +8,7 @@ return {
             telemetry = {
                 enabled = false,
             },
+            format = { printWidth = 100 },
         },
     },
 }

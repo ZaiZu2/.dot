@@ -62,13 +62,13 @@ return {
                     stdin = false,
                     append_fname = true,
                     args = { '--outputjson', '--project', project_dir },
-                    stream = 'both',
+                    stream = 'stdout',
                     ignore_exitcode = true,
                     env = nil,
                     parser = function(output, bufnr, linter_cwd)
                         local success, output_obj = pcall(vim.json.decode, output)
                         if not success then
-                            return
+                            return {}
                         end
 
                         local nvim_severity = vim.diagnostic.severity
