@@ -43,7 +43,7 @@ print_help() {
 		Usage: dot [command] [options]
 		
 		Commands:
-		  symlink [-f|--force]
+		  link [-f|--force]
 		      Create symlinks for dotfiles.
 		      Options:
 		        -f, --force    Overwrite existing files or symlinks.

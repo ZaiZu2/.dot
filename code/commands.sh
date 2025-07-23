@@ -44,12 +44,19 @@ open_sudo_session() {
 
 symlink_dotfiles() {
   local force=${1-false}
+  local correct_links=0
 
   for dotfile in "$DOTFILES_DIR"/**/*; do
     [ -d "$dotfile" ] && continue
 
     local rel_path=${dotfile##"$DOTFILES_DIR/"}
     local target_path="$HOME/$rel_path"
+    # Skip already existing, correct symlinks
+    if [[ -L "$target_path" && $(realpath "$target_path") = "$dotfile" ]]; then
+      correct_links=$((correct_links + 1))
+      continue
+    fi
+
     if [[ -f "$target_path" && "$force" = false ]]; then
       multi "$YELLOW" "Skipping " "$BLUE" "$target_path" "$YELLOW" ", file already exists"
     elif [[ -L "$target_path" && "$force" = false ]]; then
@@ -59,7 +66,9 @@ symlink_dotfiles() {
       multi "$GREEN" "Created symlink " "$BLUE" "$target_path" "$GREEN" " -> " "$BLUE" "$dotfile"
       ln -sf "$dotfile" "$target_path"
     fi
+
   done
+  [ "$correct_links" -ne 0 ] && multi "$GREEN" "Skipped $correct_links correct symlinks"
 }
 
 create_tool_template() {
@@ -103,4 +112,3 @@ create_tool_template() {
   multi "$GREEN" "Template created for " "$BLUE" "$cap_tool" \
     "$GREEN" " at " "$BLUE" "$tool_path"
 }
-
