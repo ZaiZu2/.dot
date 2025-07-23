@@ -69,9 +69,11 @@ When presenting code changes:
             local chat = require 'CopilotChat'
             chat.setup(opts)
 
-            local docstring_prompt = [[
+            local prompts = {
+                docstring = [[
 Write a docstring for the selected object - function/method/class.
-1. Use GOOGLE type of a docstring for python, but:
+1. MUST use GOOGLE type of a docstring for python, especially:
+   - MUST provide full list of object properties - attributes, methods, etc
    - skip type hint next to arguments if the code itself is type hinted.
    - Merge the header with the description block into one.
 2. Docstring quotes should be defined on separate lines.
@@ -79,67 +81,77 @@ Write a docstring for the selected object - function/method/class.
 4. Specify the object for which the docstring was generated above the code block.
 5. If selection spans multiple objects, always choose the outermost one. If there
    are multiple outermost objects, choose first.
-]]
-            local rewrite_prompt = 'Please rewrite the selected text to make it flow and sound better'
+]],
+                docstring_short = [[
+Write a short docstring for the selected object - function/method/class.
+1. Docstring MUST consist of single short paragraph explaining the object.
+2. Docstring quotes should be defined on separate lines.
+3. Provide only the docstring enclosed in quotes in the code block.
+4. Specify the object for which the docstring was generated above the code block.
+5. If selection spans multiple objects, always choose the outermost one. If there
+   are multiple outermost objects, choose first.
+]],
+                rewrite = 'Please rewrite the selected text to make it flow and sound better',
+            }
 
             local open_floating_chat = function()
-                if require('CopilotChat').chat:visible() then
-                    chat.close()
-                else
-                    chat.open {
-                        window = {
-                            layout = 'float',
-                            relative = 'editor',
-                            border = 'rounded',
-                            width = 0.9,
-                            height = 0.9,
-                        },
-                    }
-                end
+                chat.open {
+                    ---@type CopilotChat.config.window
+                    window = {
+                        layout = 'float',
+                        relative = 'editor',
+                        border = 'rounded',
+                        width = 0.9,
+                        height = 0.9,
+                    },
+                }
             end
 
-            local open_inline_chat = function(prompt)
+            local open_inline_chat = function()
                 chat.open {
                     title = '',
                     ---@type CopilotChat.config.window
                     window = {
-                        title='',
+                        title = '',
                         layout = 'float',
                         border = 'rounded',
                         relative = 'cursor',
-                        width = 1,
+                        width = 0.6,
                         height = 0.4,
                         row = 1,
+                        col = 0,
                     },
                 }
-                chat.ask(prompt)
             end
 
             local open_vertical_chat = function()
-                if require('CopilotChat').chat:visible() then
-                    chat.close()
-                else
-                    chat.open()
-                end
+                chat.open()
             end
 
+            local run_prompt = function(open_chat_fn, prompt)
+                open_chat_fn()
+                chat.ask(prompt)
+            end
             -- Custom buffer for CopilotChat
             vim.api.nvim_create_autocmd('BufEnter', {
                 pattern = 'copilot-*',
                 callback = function()
                     vim.opt_local.relativenumber = true
                     vim.opt_local.number = true
-                    vim.keymap.set({ 'x', 'n' }, 'gS', chat.stop, { desc = '[S]top current chat output' })
                 end,
             })
 
-            vim.keymap.set({ 'x', 'n' }, '<leader>cx', open_floating_chat, { desc = 'Floating chat' })
-            vim.keymap.set({ 'x', 'n' }, '<leader>cv', open_vertical_chat, { desc = 'Vertical split chat' })
+            vim.keymap.set({ 'x', 'n' }, '<leader>cx', open_floating_chat, { desc = 'Open floating chat' })
+            vim.keymap.set({ 'x', 'n' }, '<leader>cv', open_vertical_chat, { desc = 'Open split chat' })
+            vim.keymap.set({ 'x', 'n' }, '<leader>ci', open_inline_chat, { desc = 'Open inline chat' })
             vim.keymap.set({ 'x', 'n' }, '<leader>cd', function()
-                open_inline_chat(docstring_prompt)
+                run_prompt(open_inline_chat, prompts['docstring'])
             end, { desc = 'Generate a docstring' })
+            vim.keymap.set({ 'x', 'n' }, '<leader>cD', function()
+                run_prompt(open_inline_chat, prompts['docstring_short'])
+            end, { desc = 'Generate a short docstring' })
             vim.keymap.set({ 'x', 'n' }, '<leader>cr', function()
-                open_inline_chat(rewrite_prompt)
+                run_prompt(open_inline_chat, prompts['rewrite'])
             end, { desc = 'Rewrite text' })
             vim.keymap.set('n', '<leader>cm', chat.select_model, { desc = 'Select Models' })
         end,
