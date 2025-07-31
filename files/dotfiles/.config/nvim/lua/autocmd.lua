@@ -43,15 +43,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
         map('K', vim.lsp.buf.hover, 'Show documentation') -- :help K
         vim.keymap.set('i', '<C-k>', vim.lsp.buf.signature_help, { desc = 'Show signature' })
 
-        local fzflua = require 'fzf-lua'
-        map(';c', fzflua.lsp_code_actions, '[c]ode action')
-        map(';d', fzflua.lsp_definitions, '[d]efinition')
-        map(';r', fzflua.lsp_references, '[r]eferences')
-        map(';i', fzflua.lsp_implementations, '[i]mplementation')
-        map(';t', fzflua.lsp_typedefs, '[t]ype definition')
-        map(';s', fzflua.lsp_document_symbols, '[s]ymbols')
-        map(';p', fzflua.lsp_workspace_symbols, 'symbols in [p]roject')
-
         -- The following two autocommands are used to highlight references of the word
         -- :help CursorHold
         local client = vim.lsp.get_client_by_id(event.data.client_id)
