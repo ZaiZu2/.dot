@@ -31,13 +31,9 @@ return {
                 formatters = {
                     file = { filename_first = true, truncate = 80 },
                 },
-                sources = {
-                    explorer = { hidden = true, follow = true },
-                },
             },
         },
         keys = {
-            { '\\', function() require('snacks').explorer.open() end, desc = '[s]earch [f]iles' },
             {
                 '<leader>sf',
                 function() require('snacks').picker.files { hidden = true, follow = true } end,

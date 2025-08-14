@@ -27,12 +27,14 @@ return {
         },
         event = 'VeryLazy',
         build = 'make tiktoken', -- Only on MacOS or Linux
-        ---@type CopilotChat.config
+        ---@type CopilotChat.config.Config
         opts = {
             model = 'gpt-4o',
-            question_header = '# User ',
-            answer_header = '# Copilot ',
-            error_header = '# Error ',
+            headers = {
+                user = ' # User ',
+                assistant = ' # Copilot ',
+            },
+            separator = ' ',
             selection = function(source)
                 local select = require 'CopilotChat.select'
                 return select.visual(source) or select.buffer(source)
@@ -91,12 +93,18 @@ Write a short docstring for the selected object - function/method/class.
 5. If selection spans multiple objects, always choose the outermost one. If there
    are multiple outermost objects, choose first.
 ]],
+                docstring_all = [[
+Write a docstring for all selected objects.
+1. Each Docstring MUST consist of single short paragraph explaining the object.
+2. Docstring quotes should be defined on separate lines.
+3. Provide the whole selected code block updated with docstrings for each object inside.
+]],
                 rewrite = 'Please rewrite the selected text to make it flow and sound better',
             }
 
             local open_floating_chat = function()
                 chat.open {
-                    ---@type CopilotChat.config.window
+                    ---@type CopilotChat.config.Window
                     window = {
                         layout = 'float',
                         relative = 'editor',
@@ -110,7 +118,7 @@ Write a short docstring for the selected object - function/method/class.
             local open_inline_chat = function()
                 chat.open {
                     title = '',
-                    ---@type CopilotChat.config.window
+                    ---@type CopilotChat.config.Window
                     window = {
                         title = '',
                         layout = 'float',
@@ -124,9 +132,7 @@ Write a short docstring for the selected object - function/method/class.
                 }
             end
 
-            local open_vertical_chat = function()
-                chat.open()
-            end
+            local open_vertical_chat = function() chat.open() end
 
             local run_prompt = function(open_chat_fn, prompt)
                 open_chat_fn()
@@ -144,15 +150,30 @@ Write a short docstring for the selected object - function/method/class.
             vim.keymap.set({ 'x', 'n' }, '<leader>cx', open_floating_chat, { desc = 'Open floating chat' })
             vim.keymap.set({ 'x', 'n' }, '<leader>cv', open_vertical_chat, { desc = 'Open split chat' })
             vim.keymap.set({ 'x', 'n' }, '<leader>ci', open_inline_chat, { desc = 'Open inline chat' })
-            vim.keymap.set({ 'x', 'n' }, '<leader>cd', function()
-                run_prompt(open_inline_chat, prompts['docstring'])
-            end, { desc = 'Generate a docstring' })
-            vim.keymap.set({ 'x', 'n' }, '<leader>cD', function()
-                run_prompt(open_inline_chat, prompts['docstring_short'])
-            end, { desc = 'Generate a short docstring' })
-            vim.keymap.set({ 'x', 'n' }, '<leader>cr', function()
-                run_prompt(open_inline_chat, prompts['rewrite'])
-            end, { desc = 'Rewrite text' })
+            vim.keymap.set(
+                { 'x', 'n' },
+                '<leader>cd',
+                function() run_prompt(open_inline_chat, prompts['docstring']) end,
+                { desc = 'Generate a docstring' }
+            )
+            vim.keymap.set(
+                { 'x', 'n' },
+                '<leader>ca',
+                function() run_prompt(open_inline_chat, prompts['docstring_all']) end,
+                { desc = 'Generate docstrings for all objects' }
+            )
+            vim.keymap.set(
+                { 'x', 'n' },
+                '<leader>cD',
+                function() run_prompt(open_inline_chat, prompts['docstring_short']) end,
+                { desc = 'Generate a short docstring' }
+            )
+            vim.keymap.set(
+                { 'x', 'n' },
+                '<leader>cr',
+                function() run_prompt(open_inline_chat, prompts['rewrite']) end,
+                { desc = 'Rewrite text' }
+            )
             vim.keymap.set('n', '<leader>cm', chat.select_model, { desc = 'Select Models' })
         end,
     },

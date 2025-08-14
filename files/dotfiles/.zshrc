@@ -23,6 +23,7 @@ command -v fnm > /dev/null && eval "$(fnm completions --shell zsh)"
 command -v uv > /dev/null && eval "$(uv generate-shell-completion zsh)"
 command -v fnm > /dev/null && eval "$(fnm env --use-on-cd --shell zsh)"
 command -v aws > /dev/null && complete -C 'aws_completer' aws
+command -v zoxide > /dev/null && eval "$(zoxide init zsh)"
 
 # VIM support
 zinit light softmoth/zsh-vim-mode
@@ -65,15 +66,15 @@ setopt BASH_REMATCH # Turn on BASH_REMATCH[] syntax for capture groups
 eval "$(fzf --zsh)"
 alias fzf='fzf --preview "bat --theme=kanagawa --color=always --style=numbers --line-range=:500 {}"'
 
-eval "$(oh-my-posh init zsh --config $XDG_CONFIG_HOME/oh-my-posh.toml)"
+eval "$(oh-my-posh init zsh --config "$XDG_CONFIG_HOME"/oh-my-posh.toml)"
 
+alias n='nvim'
 alias dot='zsh $DOT/dot.sh'
 alias dfs='cd $DOT'
-alias conf='cd $XDG_CONFIG_HOME'
-alias nconf='cd $XDG_CONFIG_HOME/nvim'
 alias dev='cd $HOME/dev'
 alias notes='cd $ZK_NOTEBOOK_DIR'
 
+alias gact='source ~/.venv/bin/activate'
 alias act='source .venv/bin/activate'
 alias tmux='tmux -f "$XDG_CONFIG_HOME/tmux/tmux.conf"'
 alias ls='ls --color'
@@ -88,12 +89,19 @@ alias gl='git log --oneline --decorate --graph'
 alias gr='git restore'
 alias grs='git restore --staged'
 
-alias ..='cd ..'
-alias ...='cd ../..'
-alias ....='cd ../../..'
+for i in {2..6}; do
+    alias "$(printf '.%.0s' {1..$i} )=cd ..$(printf '/..%.0s' {1..$i})"
+done
 
 setopt nullglob # Temporarily make glob pattern expand to nothing
 for dotfile in "$HOME/.zshrc_"*; do
-    source $dotfile
+    source "$dotfile"
 done
 unsetopt nullglob
+
+zoxide_interactive() {
+  BUFFER="zoxide query --interactive"
+  zle accept-line
+}
+zle -N zoxide_interactive
+bindkey '^G' zoxide_interactive

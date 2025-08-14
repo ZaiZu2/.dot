@@ -6,9 +6,18 @@ return {
         opts = {
             file_types = { 'markdown', 'vimwiki', 'copilot-chat' },
             completions = { blink = { enabled = true } },
-            render_modes = true,
+            render_modes = { 'n', 'i' },
             paragraph = {},
-            code = {},
+            anti_conceal = {
+                disabled_modes = { 'n' },
+                -- ignore = {
+                --     code_background = false,
+                --     indent = true,
+                --     sign = false,
+                --     virtual_lines = false,
+                -- },
+            },
+            code = { conceal_delimiters = false },
             checkbox = {
                 enabled = false,
                 unchecked = {
@@ -27,8 +36,10 @@ return {
             },
             indent = {
                 enabled = true,
-                per_level = 2,
-                skip_level = 1,
+                per_level = 3,
+                skip_level = 0,
+                skip_heading = true,
+                icon = ' ',
             },
         },
     },

@@ -8,14 +8,17 @@ PATH="$XDG_BIN_HOME:/bin:/usr/bin:/usr/local/bin:$PATH"
 
 export CARGO_HOME="$XDG_DATA_HOME/cargo"
 export RUSTUP_HOME="$XDG_DATA_HOME/rustup"
-. "$CARGO_HOME/env"
+source "$CARGO_HOME/env"
 
 export GOROOT="$XDG_DATA_HOME/go"
 
-export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+if [ $(uname -s) = 'Darwin' ]; then
+    export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+    export PATH="/opt/homebrew/opt/gnu-sed/libexec/gnubin:$PATH"
+fi
 
 setopt nullglob # Temporarily make glob pattern expand to nothing
 for dotfile in "$HOME/.zshenv_"*; do
-    source $dotfile
+    source "$dotfile"
 done
 unsetopt nullglob
