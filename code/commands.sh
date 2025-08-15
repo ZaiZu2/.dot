@@ -47,10 +47,21 @@ symlink_dotfiles() {
   local correct_links=0
 
   for dotfile in "$DOTFILES_DIR"/**/*; do
-    [ -d "$dotfile" ] && continue
-
     local rel_path=${dotfile##"$DOTFILES_DIR/"}
     local target_path="$HOME/$rel_path"
+
+    # Remove any broken links from target directories
+    if [ -d "$dotfile" ]; then
+      for target_dotfile in "$target_path"/*; do
+        if [[ -L $target_dotfile && ! -e $target_dotfile ]]; then
+          rm "$target_dotfile"
+          multi "$GREEN" "Removing broken symlink " "$BLUE" "$target_dotfile"
+        fi
+      done
+
+      continue # Do not symlink directories
+    fi
+
     # Skip already existing, correct symlinks
     if [[ -L "$target_path" && $(realpath "$target_path") = "$dotfile" ]]; then
       correct_links=$((correct_links + 1))
