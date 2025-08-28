@@ -7,7 +7,7 @@ _install_brew() {
   }
   blue "Executing BREW script"
   NONINTERACTIVE=1 bash "$brew_file" || {
-    multi "$RED" "Error occured while executing " "$BLUE" "BREW" "$RED" " script"
+    multi "$RED" "Error occurred while executing " "$BLUE" "BREW" "$RED" " script"
     return 1
   }
   rm "$brew_file"
@@ -24,7 +24,7 @@ init_pkg_mgr() {
 
   blue "Updating BREW"
   brew update || {
-    multi "$YELLOW" "Error occured while updating " "$BLUE" "BREW"
+    multi "$YELLOW" "Error occurred while updating " "$BLUE" "BREW"
   }
 }
 

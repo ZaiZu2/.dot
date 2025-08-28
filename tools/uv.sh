@@ -16,7 +16,7 @@ install_uv() {
     }
     blue "Running install script"
     UV_NO_MODIFY_PATH=1 bash "$script_file" || {
-      fail "Error occured while executing the script"
+      fail "Error occurred while executing the script"
       return 1
     }
     rm -f "$script_file"

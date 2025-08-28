@@ -15,11 +15,11 @@ install_linux() {
 
   local ohmyposh_file=$(mktemp -u)
   curl -fsSL -o "$ohmyposh_file" "https://ohmyposh.dev/install.sh"
-  ohmyposh_code=$?
+  local ohmyposh_code=$?
   if [ $ohmyposh_code -ne 0 ]; then
     warn "Failed to download Oh-my-posh script"
   else
-    bash "$ohmyposh_file" -- -d "$XDG_DATA_HOME" || warn "Error occured while executing Oh-my-posh script"
+    bash "$ohmyposh_file" -- -d "$XDG_DATA_HOME" || warn "Error occurred while executing Oh-my-posh script"
   fi
   rm -f "$ohmyposh_file"
 }
@@ -37,11 +37,11 @@ install_zsh() {
 
   local zinit_file=$(mktemp -u)
   curl -fsSL -o "$zinit_file" "https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh"
-  zinit_code=$?
+  local zinit_code=$?
   if [ $zinit_code -ne 0 ]; then
     warn "Failed to download Zinit script"
   else
-    bash "$zinit_file" -- -d "$XDG_DATA_HOME" || warn "Error occured while executing Zinit script"
+    bash "$zinit_file" -- -d "$XDG_DATA_HOME" || warn "Error occurred while executing Zinit script"
   fi
   rm -f "$zinit_file"
 }

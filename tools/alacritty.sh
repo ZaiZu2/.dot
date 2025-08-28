@@ -30,7 +30,7 @@ install_alacritty() {
 
   install_darwin() {
     brew install alacritty || {
-      fail "Failed to install alacritty"
+      fail "Failed to install ALACRITTY"
       return 1
     }
   }

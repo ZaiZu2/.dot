@@ -15,7 +15,7 @@ install_claude() {
   }
   blue "Running install script"
   bash "$script_file" || {
-    fail "Error occured while executing the script"
+    fail "Error occurred while executing the script"
     return 1
   }
   rm -f "$script_file"

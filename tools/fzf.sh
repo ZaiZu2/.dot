@@ -1,5 +1,5 @@
 deps_fzf() {
-  echo ''
+  echo 'git'
 }
 
 is_installed_fzf() {
@@ -13,7 +13,7 @@ install_linux() {
 
   blue "Running $fzf_repo/install script"
   bash "$fzf_repo/install" --bin --no-update-rc --no-fish || {
-    fail "Error occured during fzf script execution"
+    fail "Error occurred during fzf script execution"
     return
   }
   blue "Symlinking fzf binary"

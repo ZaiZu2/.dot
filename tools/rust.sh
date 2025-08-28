@@ -16,7 +16,7 @@ install_rust() {
   }
   blue "Running install script"
   bash "$script_file" -y --no-modify-path || {
-    fail "Error occured while executing the script"
+    fail "Error occurred while executing the script"
     return
   }
   rm -f "$script_file"
