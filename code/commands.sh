@@ -95,6 +95,10 @@ create_tool_template() {
   touch "$tool_path"
   # Tabs with `-EOF` allow to indent here-doc without injecting indentation into file
   cat >"./tools/${tool}.sh" <<-EOF
+		deps_${tool}() {
+		  echo ''
+		}
+
 		is_installed_${tool}() {
 		  command -v ${tool} >/dev/null 2>&1;
 		}

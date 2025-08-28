@@ -24,7 +24,7 @@ install_zk() {
   }
 
   install_darwin() {
-    brew install nvim || {
+    brew install zk || {
       fail 'Failed to install ZK'
       return 1
     }

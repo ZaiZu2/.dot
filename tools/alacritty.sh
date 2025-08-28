@@ -25,7 +25,7 @@ install_alacritty() {
     update-desktop-database
     popd
     blue "Symlinking ALACRITTY binary"
-    ln -sf "$alacritty_url/target/release/alacritty" "$XDG_BIN_HOME/alacritty"
+    ln -sf "$alacritty_repo/target/release/alacritty" "$XDG_BIN_HOME/alacritty"
   }
 
   install_darwin() {
