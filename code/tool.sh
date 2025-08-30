@@ -16,6 +16,12 @@ warn() {
   [ "$msg" ] && yellow "$msg"
 }
 
+list_tools() {
+  for file in "$SCRIPT_DIR/tools/"*; do
+    basename -s '.sh' "$file"
+  done | tr '\n' ' '
+}
+
 process_installation() {
   format_line() {
     local status_code=$1
@@ -81,24 +87,24 @@ build_install_list() {
   local deps_fn="deps_$tool"
   local deps=$($deps_fn | tr ',' ' ')
 
-  if [[ "$CALL_STACK," == *",$tool,"* ]]; then
+  if [[ "$CALL_STACK " == *" $tool "* ]]; then
     local tmp=${CALL_STACK:1}
     red "Cyclic dependency detected [${tmp//,/ -> } -> $tool]. Check dependencies of the tools in the cycle."
     return 1
   fi
 
-  if [[ "$INSTALL_ORDER," == *",$tool,"* ]]; then
+  if [[ "$INSTALL_ORDER " == *" $tool "* ]]; then
     return 0
   fi
 
-  CALL_STACK+=",$tool"
+  CALL_STACK+=" $tool"
 
   for dep in $deps; do
     build_install_list "$dep"
   done
 
-  CALL_STACK="${CALL_STACK/",$tool"/}"
-  INSTALL_ORDER+=",$tool"
+  CALL_STACK="${CALL_STACK/" $tool"/}"
+  INSTALL_ORDER+=" $tool"
 }
 
 install_tools() {
@@ -111,21 +117,22 @@ install_tools() {
   for file in "$SCRIPT_DIR/tools/"*; do
     source "$file"
     local tool="$(basename -s '.sh' "$file")"
-    tools+=",$tool"
+    tools="$tools $tool"
   done
 
   # Build dependency list only for tools specified by a user
-  for tool in ${tools//,/ }; do
+  for tool in $tools; do
     # Iterate over select tools if --only was set
-    [[ -n "${only:-}" && ",$only," != *",$tool,"* ]] && continue
+    [[ -n "${only:-}" && " $only " != *" $tool "* ]] && continue
     # Skip excluded tools
-    [[ ${excluded+x} && ",$excluded," == *",$tool,"* ]] && continue
+    [[ ${excluded+x} && " $excluded " == *" $tool "* ]] && continue
 
     build_install_list "$tool"
   done
 
+  echo "INSTALL_ORDER = $INSTALL_ORDER"
   # Iterate over dependency list, installing tools
-  for tool in ${INSTALL_ORDER//,/ }; do
+  for tool in $INSTALL_ORDER; do
     local is_installed_fn="is_installed_$tool"
     local install_fn="install_$tool"
     local deps_fn="deps_$tool"

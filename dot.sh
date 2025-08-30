@@ -35,6 +35,7 @@ entrypoint() {
   fi
 
   setup_shell "$USED_SHELL" || return $?
+  local tools=$(list_tools)
 
   while [[ $# -gt 0 ]]; do
     case $1 in
@@ -48,12 +49,20 @@ entrypoint() {
       while [[ $# -gt 0 ]]; do
         case $1 in
         -e | --exclude)
-          local excluded=$2
-          shift 2
+          shift
+          while [[ $# -gt 0 && ${1#-} = "$1" ]]; do
+            validate_tool_arg "$1" "$tools"
+            excluded="$excluded $1"
+            shift
+          done
           ;;
         -o | --only)
-          local only=$2
-          shift 2
+          shift
+          while [[ $# -gt 0 && ${1#-} = "$1" ]]; do
+            validate_tool_arg "$1" "$tools"
+            only="$only $1"
+            shift
+          done
           ;;
         -f | --force)
           local force=true
@@ -69,6 +78,11 @@ entrypoint() {
           ;;
         esac
       done
+
+      if [[ $excluded != '' && $excluded != '' ]]; then
+        red "-o/--only and -e/--exclude arguments cannot be used together"
+        exit
+      fi
 
       open_sudo_session
       load_platform || return $?
@@ -87,15 +101,23 @@ entrypoint() {
       while [[ $# -gt 0 ]]; do
         case $1 in
         -e | --exclude)
-          local excluded=$2
-          shift 2
+          shift
+          while [[ $# -gt 0 && ${1#-} = "$1" ]]; do
+            validate_tool_arg "$1" "$tools"
+            excluded="$excluded $1"
+            shift
+          done
           ;;
         -o | --only)
-          local only=$2
-          shift 2
+          shift
+          while [[ $# -gt 0 && ${1#-} = "$1" ]]; do
+            validate_tool_arg "$1" "$tools"
+            only="$only $1"
+            shift
+          done
           ;;
         -f | --force)
-          local force=true
+          force=true
           shift
           ;;
         *)
@@ -104,6 +126,11 @@ entrypoint() {
           ;;
         esac
       done
+
+      if [[ $excluded != '' && $excluded != '' ]]; then
+        red "-o/--only and -e/--exclude arguments cannot be used together"
+        exit
+      fi
 
       load_platform || return $?
       open_sudo_session
@@ -133,9 +160,7 @@ entrypoint() {
 
     list)
       blue "Following tools are available:"
-      for file in "$SCRIPT_DIR/tools/"*; do
-        basename -s '.sh' "$file"
-      done
+      list_tools | tr ' ' '\n'
       exit
       ;;
 
@@ -155,6 +180,16 @@ entrypoint() {
       ;;
     esac
   done
+}
+
+validate_tool_arg(){
+  local tools="$2"
+  local tool_arg="$1"
+
+  if [[ " $tools " != *" $tool_arg "* ]]; then
+    multi "$RED" "Unknown tool: " "$BLUE" "$1"
+    exit
+  fi
 }
 
 entrypoint "$@"
