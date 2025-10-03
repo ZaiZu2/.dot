@@ -11,6 +11,8 @@ return {
                     request = 'launch',
                     justMyCode = true,
                     showReturnValue = true,
+                    cwd = vim.fn.getcwd,
+                    redirectOutput = true,
                 },
                 {
                     name = 'Debug with external code',
@@ -19,6 +21,8 @@ return {
                     request = 'launch',
                     justMyCode = false,
                     showReturnValue = true,
+                    cwd = vim.fn.getcwd,
+                    redirectOutput = true,
                 },
                 {
                     name = 'Debug all configs',
@@ -27,6 +31,8 @@ return {
                     request = 'launch',
                     justMyCode = false,
                     showReturnValue = true,
+                    cwd = vim.fn.getcwd,
+                    redirectOutput = true,
                     django = true,
                     gevent = true,
                     pyramid = true,
