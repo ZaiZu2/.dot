@@ -86,8 +86,10 @@ alias gp='git pull'
 alias gP='git push'
 alias gf='git fetch'
 alias gl='git log --oneline --decorate --graph'
+alias gll='gl "$(git branch --show-current)" "$(git rev-parse --abbrev-ref --symbolic-full-name @{u})"'
 alias gr='git restore'
 alias grs='git restore --staged'
+alias gR='git restore --staged && git restore'
 
 for i in {2..6}; do
     alias "$(printf '.%.0s' {1..$i} )=cd ..$(printf '/..%.0s' {1..$i})"
