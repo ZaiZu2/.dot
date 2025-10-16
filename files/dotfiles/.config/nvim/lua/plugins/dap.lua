@@ -30,11 +30,11 @@ return {
             local dap_view = require 'dap-view'
             local widgets = require 'dap.ui.widgets'
 
-            local fzflua = require 'fzf-lua'
-            vim.keymap.set('n', ',fc', fzflua.dap_commands, { desc = 'List [c]ommands' })
-            vim.keymap.set('n', ',fC', fzflua.dap_configurations, { desc = 'List [C]onfigurations' })
-            vim.keymap.set('n', ',fv', fzflua.dap_variables, { desc = 'List [v]ariables' })
-            vim.keymap.set('n', ',ff', fzflua.dap_frames, { desc = 'List [f]rames' })
+            -- local fzflua = require 'fzf-lua'
+            -- vim.keymap.set('n', ',fc', fzflua.dap_commands, { desc = 'List [c]ommands' })
+            -- vim.keymap.set('n', ',fC', fzflua.dap_configurations, { desc = 'List [C]onfigurations' })
+            -- vim.keymap.set('n', ',fv', fzflua.dap_variables, { desc = 'List [v]ariables' })
+            -- vim.keymap.set('n', ',ff', fzflua.dap_frames, { desc = 'List [f]rames' })
             -- 4 main stepping mechanism are represented by 'hjkl' keys
             vim.keymap.set('n', ',s', dap.continue, { desc = 'Continue/[s]tart' })
             vim.keymap.set('n', ',j', dap.step_into, { desc = 'Step into (down)' })
@@ -49,45 +49,46 @@ return {
             end, { desc = '[S]top debugger' })
 
             vim.keymap.set('n', ',b', dap.toggle_breakpoint, { desc = 'Toggle [b]reakpoint' })
-            vim.keymap.set('n', ',B', function()
-                dap.set_breakpoint(vim.fn.input 'Breakpoint condition: ')
-            end, { desc = 'Set conditional [B]reakpoint' })
-            vim.keymap.set('n', ',fb', fzflua.dap_breakpoints, { desc = 'List [b]reakpoints' })
+            vim.keymap.set(
+                'n',
+                ',B',
+                function() dap.set_breakpoint(vim.fn.input 'Breakpoint condition: ') end,
+                { desc = 'Set conditional [B]reakpoint' }
+            )
+            -- vim.keymap.set('n', ',fb', fzflua.dap_breakpoints, { desc = 'List [b]reakpoints' })
 
             vim.keymap.set('n', ',d', dap.down, { desc = 'Move [d]own the stack frame' })
             vim.keymap.set('n', ',u', dap.up, { desc = 'Move [u]p the stack frame' })
+            vim.keymap.set('n', ',w', dap_view.add_expr, { desc = '[w]atch the expression' })
 
             require('nvim-dap-virtual-text').setup {
                 display_callback = function(variable)
                     if #variable.value > 10 then
                         return ''
                     end
-
                     return ' ' .. variable.value
                 end,
             }
 
             -- Toggle to see last session result. Without this, you can't see session output in case of unhandled exception.
             vim.keymap.set('n', ',U', dap_view.toggle, { desc = 'toggle [U]I' })
-            vim.keymap.set('n', ',K', function()
-                require('dap.ui.widgets').hover(nil, { border = 'rounded' })
-            end, { desc = 'Hover expression' })
-            vim.keymap.set('n', ',v', function()
-                widgets.centered_float(widgets.scopes, { border = 'rounded' })
-            end, { desc = 'Inspect [v]ariables' })
+            vim.keymap.set(
+                'n',
+                ',K',
+                function() require('dap.ui.widgets').hover(nil, { border = 'rounded' }) end,
+                { desc = 'Hover expression' }
+            )
+            vim.keymap.set(
+                'n',
+                ',v',
+                function() widgets.centered_float(widgets.scopes, { border = 'rounded' }) end,
+                { desc = 'Inspect [v]ariables' }
+            )
 
-            dap.listeners.before.attach['dap-view-config'] = function()
-                dap_view.open()
-            end
-            dap.listeners.before.launch['dap-view-config'] = function()
-                dap_view.open()
-            end
-            dap.listeners.before.event_terminated['dap-view-config'] = function()
-                dap_view.close()
-            end
-            dap.listeners.before.event_exited['dap-view-config'] = function()
-                dap_view.close()
-            end
+            dap.listeners.before.attach['dap-view-config'] = function() dap_view.open() end
+            dap.listeners.before.launch['dap-view-config'] = function() dap_view.open() end
+            dap.listeners.before.event_terminated['dap-view-config'] = function() dap_view.close(true) end
+            dap.listeners.before.event_exited['dap-view-config'] = function() dap_view.close(true) end
 
             -- :help dap-configuration
             -- :help dap-python

@@ -27,6 +27,9 @@ return {
                     auto_show = true,
                     -- window = { border = 'single' },
                 },
+                accept = {
+                    auto_brackets = { enabled = true },
+                },
             },
             signature = {
                 enabled = true,

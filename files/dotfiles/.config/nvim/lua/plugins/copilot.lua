@@ -29,7 +29,6 @@ return {
         build = 'make tiktoken', -- Only on MacOS or Linux
         ---@type CopilotChat.config.Config
         opts = {
-            model = 'gpt-4o',
             headers = {
                 user = ' # User ',
                 assistant = ' # Copilot ',

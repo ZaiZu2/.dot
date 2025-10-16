@@ -13,6 +13,6 @@ for file in "$HOME/.ssh"/*; do
     if [ -f "$file" ] &&
         [[ "$file" != *.pub ]] &&
         [ "$(head -n 1 "$file")" = '-----BEGIN OPENSSH PRIVATE KEY-----' ]; then
-        ssh-add "$(realpath "$file")"
+        ssh-add "$(realpath "$file")" 2>/dev/null
     fi
 done

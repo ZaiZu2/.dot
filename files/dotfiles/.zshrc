@@ -73,6 +73,7 @@ alias dot='zsh $DOT/dot.sh'
 alias dfs='cd $DOT'
 alias dev='cd $HOME/dev'
 alias notes='cd $ZK_NOTEBOOK_DIR'
+alias dl='cd ~/Downloads'
 
 alias gact='source ~/.venv/bin/activate'
 alias act='source .venv/bin/activate'
