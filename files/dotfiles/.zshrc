@@ -22,6 +22,7 @@ command -v gh > /dev/null && eval "$(gh completion -s zsh)"
 command -v fnm > /dev/null && eval "$(fnm completions --shell zsh)"
 command -v uv > /dev/null && eval "$(uv generate-shell-completion zsh)"
 command -v fnm > /dev/null && eval "$(fnm env --use-on-cd --shell zsh)"
+command -v kubectl > /dev/null && eval "$(kubectl completion zsh)"
 command -v aws > /dev/null && complete -C 'aws_completer' aws
 command -v zoxide > /dev/null && eval "$(zoxide init zsh)"
 

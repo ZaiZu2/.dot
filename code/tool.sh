@@ -130,7 +130,6 @@ install_tools() {
     build_install_list "$tool"
   done
 
-  echo "INSTALL_ORDER = $INSTALL_ORDER"
   # Iterate over dependency list, installing tools
   for tool in $INSTALL_ORDER; do
     local is_installed_fn="is_installed_$tool"

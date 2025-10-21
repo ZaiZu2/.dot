@@ -85,7 +85,7 @@ symlink_dotfiles() {
 create_tool_template() {
   local tool=$1
   local cap_tool="$(cap "$tool")"
-  local tool_path=$(realpath "$SCRIPT_DIR/tools/$tool.sh")
+  local tool_path="$(realpath "$SCRIPT_DIR/tools")/$tool.sh"
 
   if [ -f "$tool_path" ]; then
     multi "$BLUE" "$cap_tool" "$RED" " already exists, template not created"
@@ -103,19 +103,19 @@ create_tool_template() {
 		  command -v ${tool} >/dev/null 2>&1;
 		}
 
-		install_linux() {
-
-
-		}
-
-		install_darwin() {
-		  brew install ${tool} || {
-		    fail "Failed to install ${tool}"
-		    return 1
-		  }
-		}
-
 		install_${tool}() {
+		  # Must be nested within 'install_${tool}' function to not polute global scope during sourcing
+		  install_linux() {
+
+		  }
+
+		  install_darwin() {
+		     brew install ${tool} || {
+		       fail "Failed to install ${tool}"
+		     return 1
+		     }
+		  }
+
 		  if [ "\$OS" = 'darwin' ]; then
 		    install_darwin || return 1
 		  elif [ "\$OS" = 'linux' ]; then
