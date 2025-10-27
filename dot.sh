@@ -164,6 +164,37 @@ entrypoint() {
       exit
       ;;
 
+    export)
+      shift
+      local patch_file=${1:-patch.zip}
+
+      blue "Exporting origin/master..master patch '$(realpath "$patch_file")'"
+      pushd "$DOT" 1>/dev/null || return 1
+      rm -r .patch "$patch_file" &>/dev/null
+      mkdir .patch
+      git format-patch origin/master..master -o .patch
+      zip "$patch_file" .patch/* >/dev/null
+      rm -r .patch
+      open .
+      popd 1>/dev/null || return 1
+      exit
+      ;;
+
+    import)
+      shift
+      local patch_file=${1:-patch.zip}
+
+      blue "Importing a patch '$(realpath "$patch_file")'"
+      pushd "$DOT" >/dev/null || return 1
+      rm -r .patch &>/dev/null
+      unzip "$patch_file" >/dev/null
+      git am .patch/*.patch || return 1
+      git status
+      rm -r .patch
+      popd 1>/dev/null || return 1
+      exit
+      ;;
+
     create)
       shift
       if [ ! $# -eq 1 ]; then

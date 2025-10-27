@@ -51,17 +51,24 @@ print_help() {
 		  setup [-e|--exclude <tools>] [-o|--only <tools>] [-f|--force] [-s|--skip-pkg-mgr]
 		      Set up environment: symlink dotfiles, install fonts, packages, and tools.
 		      Options:
-		        -e, --exclude <tools>     Exclude specific tools from installation. Expects comma-separated list.
-		        -o, --only <tools>        Install only specified tools. Expects comma-separated list.
+		        -e, --exclude <tools>     Exclude specific tools from installation. Expects space-separated list.
+		        -o, --only <tools>        Install only specified tools. Expects space-separated list.
 		        -f, --force               Force file overwrite during symlink and setup.
 		        -s, --skip-pkg-mgr        Skip system package manager setup.
 		
 		  list
 		      List currently available tools.
-		
+
+		  export [patch-file]
+		      Export local commits as a patch zip file. Defaults to 'patch.zip' if no file specified.
+		      Useful when the machine cannot push to origin.
+
+		  import [patch-file]
+		      Import and apply patches from a zip file. Defaults to 'patch.zip' if no file specified.
+
 		  create <tool-name>
 		      Create shell files for a new tool using a template.
-		
+
 		  --help
 		      Show this help message and exit.
 		EOF
