@@ -36,7 +36,7 @@ return {
                     if fmt_conf ~= nil then
                         opts.formatters[fmt_name] = {
                             inherit = true,
-                            prepend_args = function(_, ctx)
+                            append_args = function(_, ctx)
                                 -- Check if there is no formatter config file available locally in project dir
                                 local is_local, local_conf_path =
                                     utils.find_files_upwards(ctx.dirname, fmt_conf.conf_files)
@@ -48,7 +48,7 @@ return {
                                 else
                                     last_conf_message =
                                         string.format("'%s' using global '%s'", fmt_name, fmt_path .. fmt_conf.filename)
-                                    return { fmt_conf.arg, fmt_path .. fmt_conf.filename }
+                                    return { unpack(fmt_conf.args), fmt_path .. fmt_conf.filename }
                                 end
                             end,
                         }
@@ -56,10 +56,12 @@ return {
                 end
                 conform.setup(opts)
                 conform.format({ lsp_format = 'fallback' }, function(err, did_edit)
+                    local fmtr_log = last_conf_message ~= '' and ' - ' .. last_conf_message or ''
+
                     if did_edit then
-                        vim.notify(string.format('Formatted (%s)', last_conf_message))
+                        vim.notify('Formatted' .. fmtr_log)
                     elseif not did_edit and err == nil then
-                        vim.notify(string.format('Nothing to format (%s)', last_conf_message))
+                        vim.notify('Nothing to format' .. fmtr_log)
                     else
                         vim.notify('Failed to format file - ' .. tostring(err))
                     end

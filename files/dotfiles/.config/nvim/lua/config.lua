@@ -120,20 +120,21 @@ return {
             css = { 'prettier' },
             yaml = { 'prettier' },
             yml = { 'prettier' },
+            toml = { 'taplo' },
         },
         config = {
             stylua = {
-                arg = '--config-path', -- CLI arg for injecting fmt config
+                args = { '--config-path' }, -- CLI arg for injecting fmt config
                 conf_files = { 'stylua.toml', '.stylua.toml' }, -- All files which might be used for local fmt config
                 filename = 'stylua.toml', -- Name of the default global fmt config file
             },
             ruff_format = {
-                arg = '--config',
+                args = { '--config' },
                 conf_files = { 'ruff.toml', 'pyproject.toml' },
                 filename = 'ruff.toml',
             },
             ['markdownlint-cli2'] = {
-                arg = '--config',
+                args = { '--config' },
                 conf_files = {
                     '.markdownlint-cli2.jsonc',
                     '.markdownlint-cli2.yaml',
@@ -150,7 +151,7 @@ return {
                 filename = '.markdownlint.yaml',
             },
             prettierd = {
-                arg = '--config',
+                args = { '--config' },
                 conf_files = {
                     -- 2. .prettierrc file (JSON or YAML)
                     '.prettierrc',
@@ -180,7 +181,7 @@ return {
                 filename = '.prettierrc',
             },
             prettier = {
-                arg = '--config',
+                args = { '--config' },
                 conf_files = {
                     -- 2. .prettierrc file (JSON or YAML)
                     '.prettierrc',
@@ -208,6 +209,11 @@ return {
                     '.prettierrc.toml',
                 },
                 filename = '.prettierrc',
+            },
+            taplo = {
+                args = { '--config' },
+                conf_files = { '.taplo.toml', 'taplo.toml' },
+                filename = '.taplo.toml',
             },
         },
     },
