@@ -41,12 +41,13 @@ return {
                                 local is_local, local_conf_path =
                                     utils.find_files_upwards(ctx.dirname, fmt_conf.conf_files)
                                 if is_local then
-                                    last_conf_message = string.format('using local config - %s)', local_conf_path)
+                                    last_conf_message =
+                                        string.format("'%s' using local '%s'", fmt_name, local_conf_path)
                                     return {}
                                 -- Fallback to global config
                                 else
                                     last_conf_message =
-                                        string.format('using global config - %s)', fmt_path .. fmt_conf.filename)
+                                        string.format("'%s' using global '%s'", fmt_name, fmt_path .. fmt_conf.filename)
                                     return { fmt_conf.arg, fmt_path .. fmt_conf.filename }
                                 end
                             end,
@@ -56,7 +57,9 @@ return {
                 conform.setup(opts)
                 conform.format({ lsp_format = 'fallback' }, function(err, did_edit)
                     if did_edit then
-                        vim.notify('File formatted ' .. last_conf_message)
+                        vim.notify(string.format('Formatted (%s)', last_conf_message))
+                    elseif not did_edit and err == nil then
+                        vim.notify(string.format('Nothing to format (%s)', last_conf_message))
                     else
                         vim.notify('Failed to format file - ' .. tostring(err))
                     end

@@ -84,7 +84,7 @@ return {
             { ';t', function() require('snacks').picker.lsp_type_definitions() end, desc = '[t]ype definition' },
             { ';s', function() require('snacks').picker.lsp_symbols() end, desc = '[s]ymbols' },
             { ';p', function() require('snacks').picker.lsp_workspace_symbols() end, desc = 'symbols in [p]roject' },
-            { '<leader>?', function() require('snacks').picker.pickers() end, desc = '[s]earch pickers' },
+            { '<leader>s?', function() require('snacks').picker.pickers() end, desc = '[s]earch pickers' },
         },
     },
 }
