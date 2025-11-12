@@ -116,6 +116,7 @@ return {
             jinja = { 'djlint' },
             javascript = { 'prettier' },
             typescript = { 'prettier' },
+            json = { 'prettier' },
             html = { 'prettier' },
             css = { 'prettier' },
             yaml = { 'prettier' },
