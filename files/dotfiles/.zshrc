@@ -104,8 +104,11 @@ done
 unsetopt nullglob
 
 zoxide_interactive() {
-  BUFFER="zoxide query --interactive"
-  zle accept-line
+  local result=$(zoxide query --interactive)
+  if [[ -n $result ]]; then
+    BUFFER="cd $result"
+    zle accept-line
+  fi
 }
 zle -N zoxide_interactive
 bindkey '^G' zoxide_interactive
