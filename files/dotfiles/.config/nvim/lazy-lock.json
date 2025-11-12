@@ -1,7 +1,7 @@
 {
-  "CopilotChat.nvim": { "branch": "main", "commit": "f68deee85b8d734db1a9fbf63ce17a8164921267" },
   "Vim-Jinja2-Syntax": { "branch": "master", "commit": "2c17843b074b06a835f88587e1023ceff7e2c7d1" },
   "blink.cmp": { "branch": "main", "commit": "327fff91fe6af358e990be7be1ec8b78037d2138" },
+  "claudecode.nvim": { "branch": "main", "commit": "1552086ebcce9f4a2ea3b9793018a884d6b60169" },
   "conform.nvim": { "branch": "master", "commit": "fbcb4fa7f34bfea9be702ffff481a8e336ebf6ed" },
   "copilot.lua": { "branch": "master", "commit": "92e08cd472653beaece28ad9c8508a851a613358" },
   "diffview.nvim": { "branch": "main", "commit": "4516612fe98ff56ae0415a259ff6361a89419b0a" },

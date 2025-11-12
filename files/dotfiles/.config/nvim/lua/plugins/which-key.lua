@@ -13,7 +13,7 @@ return {
 
       -- Updated general key mappings
       require('which-key').add {
-        { '<leader>c', group = '[c]opilot' },
+        { '<leader>c', group = '[c]laude' },
         { '<leader>c_', hidden = true },
         { '<leader>g', group = '[g]it' },
         { '<leader>g_', hidden = true },
