@@ -15,6 +15,7 @@ export GOROOT="$XDG_DATA_HOME/go"
 if [ $(uname -s) = 'Darwin' ]; then
     export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
     export PATH="/opt/homebrew/opt/gnu-sed/libexec/gnubin:$PATH"
+    export FPATH="$(brew --prefix)/share/zsh/site-functions:$FPATH"
 fi
 
 setopt nullglob # Temporarily make glob pattern expand to nothing
