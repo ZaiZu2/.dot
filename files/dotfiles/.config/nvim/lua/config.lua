@@ -25,7 +25,7 @@ return {
                     redirectOutput = true,
                 },
                 {
-                    name = 'Debug all configs',
+                    name = 'Debug all',
                     program = '${file}',
                     type = 'python',
                     request = 'launch',
@@ -37,6 +37,21 @@ return {
                     gevent = true,
                     pyramid = true,
                     jinja = true,
+                },
+                {
+                    name = 'Attach all',
+                    program = '${file}',
+                    type = 'python',
+                    request = 'attach',
+                    connect = {
+                        host = 'localhost', -- or '127.0.0.1'
+                        port = 5678, -- default debugpy port
+                    },
+                    console = 'externalTerminal',
+                    justMyCode = false,
+                    showReturnValue = true,
+                    cwd = vim.fn.getcwd,
+                    redirectOutput = true,
                 },
             },
         },

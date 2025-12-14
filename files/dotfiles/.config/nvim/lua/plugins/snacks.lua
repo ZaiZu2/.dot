@@ -34,11 +34,11 @@ return {
             },
         },
         keys = {
-            {
-                '<leader>sf',
-                function() require('snacks').picker.files { hidden = true, follow = true } end,
-                desc = '[s]earch [f]iles',
-            },
+            -- {
+            --     '<leader>sf',
+            --     function() require('snacks').picker.files { hidden = true, follow = true } end,
+            --     desc = '[s]earch [f]iles',
+            -- },
             {
                 '<leader>ss',
                 function() require('snacks').picker.smart { hidden = true, follow = true } end,

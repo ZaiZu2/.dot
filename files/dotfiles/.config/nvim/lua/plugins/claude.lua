@@ -2,34 +2,47 @@ return {
     {
         'coder/claudecode.nvim',
         dependencies = { 'folke/snacks.nvim' },
-        opts = {
-            terminal = {
-                provider = 'external',
-                provider_opts = {
-                    external_terminal_cmd = function(cmd, env)
-                        return { 'bash', vim.env.XDG_CONFIG_HOME .. '/tmux/focus_claude_pane.sh' }
-                    end,
+        config = function()
+            require('claudecode').setup {
+                terminal = {
+                    provider = 'external',
+                    provider_opts = {
+                        external_terminal_cmd = function(cmd, env)
+                            return { 'sh', vim.env.XDG_CONFIG_HOME .. '/tmux/focus_claude_pane.sh' }
+                        end,
+                    },
                 },
-            },
-            focus_after_send = true,
-        },
-        keys = {
-            { '<leader>c', nil, desc = '[c]laude code' },
-            { '<leader>cc', '<cmd>ClaudeCode<cr>', desc = 'Toggle [c]laude' },
-            -- Add context
-            { '<leader>ca', '<cmd>ClaudeCodeAdd %<cr>', desc = '[a]dd current buffer' },
-            { '<leader>ca', '<cmd>ClaudeCodeSend<cr>', mode = 'v', desc = '[a]dd selection' },
-            {
-                '<leader>ca',
-                '<cmd>ClaudeCodeTreeAdd<cr>',
-                desc = '[a]dd file',
-                ft = { 'NvimTree', 'neo-tree', 'oil', 'minifiles', 'netrw' },
-            },
-            -- Diff management
-            { '<leader>cda', '<cmd>ClaudeCodeDiffAccept<cr>', desc = 'Accept diff' },
-            { '<leader>cdd', '<cmd>ClaudeCodeDiffDeny<cr>', desc = 'Deny diff' },
+                focus_after_send = true,
+            }
 
-            { '<leader>cm', '<cmd>ClaudeCodeSelectModel<cr>', desc = 'Select [m]odel' },
-        },
+            -- Keymaps
+            -- vim.keymap.set({ 'n', 'v' }, '<leader>cc', '<cmd>ClaudeCode<cr>gv', { desc = 'Toggle [c]laude' })
+            vim.keymap.set('n', '<leader>cc', '<cmd>ClaudeCode<cr>', { desc = 'Toggle [c]laude' })
+            -- Reselect after trigger `ClaudeCode` command
+            vim.keymap.set('v', '<leader>cc', '<cmd>ClaudeCode<cr>gv', { desc = 'Toggle [c]laude' })
+
+            -- Add context
+            vim.keymap.set('n', '<leader>ca', '<cmd>ClaudeCodeAdd %<cr>', { desc = '[a]dd current buffer' })
+            vim.keymap.set('v', '<leader>ca', '<cmd>ClaudeCodeSend<cr>', { desc = '[a]dd selection' })
+
+            -- Add file from file explorer (using autocmd for filetype-specific mapping)
+            vim.api.nvim_create_autocmd('FileType', {
+                pattern = { 'NvimTree', 'neo-tree', 'oil', 'minifiles', 'netrw' },
+                callback = function()
+                    vim.keymap.set(
+                        'n',
+                        '<leader>ca',
+                        '<cmd>ClaudeCodeTreeAdd<cr>',
+                        { desc = '[a]dd file', buffer = true }
+                    )
+                end,
+            })
+
+            -- Diff management
+            vim.keymap.set('n', '<leader>cy', '<cmd>ClaudeCodeDiffAccept<cr>', { desc = 'Accept diff' })
+            vim.keymap.set('n', '<leader>cn', '<cmd>ClaudeCodeDiffDeny<cr>', { desc = 'Deny diff' })
+
+            vim.keymap.set('n', '<leader>cm', '<cmd>ClaudeCodeSelectModel<cr>', { desc = 'Select [m]odel' })
+        end,
     },
 }
