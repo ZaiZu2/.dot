@@ -11,9 +11,9 @@ final_space = true
   foreground = 'white'
   background = 'transparent'
 
-[transient_prompt]
-  template = '<p:path>{{ .Folder }}</> ❯ '
-  background = 'transparent'
+# [transient_prompt]
+#   template = '<p:path>{{ .Folder }}</> ❯ '
+#   background = 'transparent'
 
 [[blocks]]
   type = 'prompt'
