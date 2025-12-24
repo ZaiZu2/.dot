@@ -7,30 +7,42 @@ Generate docstrings for code objects (functions/methods/classes).
 **Detect mode based on context:**
 
 - If the user provides code in their message (selected text), work with that selection
-  - If selection spans multiple objects, choose the outermost one (or first if multiple outermost)
+- If user provides a file or multiple files, work with these full files
 - If no code is provided in the message, use the current file/buffer
+- Use the Edit tool to add/update the docstring in the file, triggering a diff view for the user to review
 
 ## Common Rules (All Variants)
 
-- Follow language-specific formatting rules below
-- Always wrap proper names or names of objects in backticks `` when writing a docstring
+- ALWAYS follow language-specific formatting rules below
+- ALWAYS use imperative form for functions/methods ("Return the sum", "Calculate the result")
+  - Header should use IMPERATIVE form
+  - Body should use DESCRIPTIVE form
+  - If they both are merged, IMPERATIVE form should be used
+- ALWAYS use descriptive form for classes ("A container for...", "Represents a user account").
+- ALWAYS wrap proper names or names of objects in backticks `` when writing a docstring
+- NEVER add empty lines between the docstring and function content
+- Maximum line width is 100 chars
+- Skip listing class attributes / function parameters in the docstring if they are obvious or their description
+  does now introduce any new information
 
 ## Language-Specific Formatting
 
 ### Python
 
-- **Style**: Google-style docstrings
-- **Type hints**: Skip type hints in docstring if code is already type-hinted
-- **Format**: Merge header with description into one block. Docstring quotes MUST be defined on separate lines
-  (where applicable)
+- ALWAYS use Google-style docstrings
+- ALWAYS Skip type hints in docstring if code is already type-hinted
+- In case function is simple, Merge header with description into a single paragraph
+- Docstring quotes MUST be defined on separate line (where applicable)
+- Skip `__init__` docstrings if all they are generic and all they do is setup instance attributes
 - **Example structure**:
 
   ```python
   """
-  Brief description of function/class.
+  Brief description of function/class. Written in IMPERATIVE form for functions/methods.
 
   Args:
-      param1: Description
+      param1: Long description which is longer than 100 characters and will wrap into a
+              new line which is indented deep enough to match the first line
       param2: Description
 
   Returns:
@@ -40,22 +52,3 @@ Generate docstrings for code objects (functions/methods/classes).
       ExceptionType: When this exception occurs
   """
   ```
-
-## Default: Full Docstring
-
-Generate a comprehensive docstring for the selected object.
-
-**Instructions:**
-
-1. Provide full list of object properties (attributes, methods, arguments, returns, raises, etc.)
-2. Use the Edit tool to add/update the docstring in the file, triggering a diff view for the user to review
-
-## Variant 2: All Objects
-
-To generate docstrings for ALL objects in selection, use: `/doc --all`
-
-**Instructions:**
-
-1. Each docstring MUST be a single short paragraph
-2. Use the Edit tool to add/update docstrings for each object in the file, triggering a diff view for the user to
-   review
