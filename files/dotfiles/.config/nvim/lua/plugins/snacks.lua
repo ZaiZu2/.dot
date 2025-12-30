@@ -3,7 +3,15 @@ return {
         'folke/snacks.nvim',
         ---@type snacks.Config
         opts = {
-            image = { enabled = true },
+            image = {
+                doc = {
+                    inline = true,
+                    -- float = true,
+                    max_width = 100,
+                    max_height = 100,
+                },
+                math = { enabled = false }
+            },
             scroll = {
                 animate = {
                     duration = { step = 5, total = 100 },
@@ -34,29 +42,38 @@ return {
             },
         },
         keys = {
-            -- {
-            --     '<leader>sf',
-            --     function() require('snacks').picker.files { hidden = true, follow = true } end,
-            --     desc = '[s]earch [f]iles',
-            -- },
             {
                 '<leader>ss',
                 function() require('snacks').picker.smart { hidden = true, follow = true } end,
                 desc = '[s]earch [s]mart',
             },
-            { '<leader>sg', function() require('snacks').picker.grep() end, desc = '[s]earch by [g]rep' },
+            { '<leader>sg', function() require('snacks').picker.grep { hidden = true, follow = true } end, desc = '[s]earch by [g]rep' },
             {
                 '<leader>sw',
                 function() require('snacks').picker.grep_word() end,
                 mode = { 'n', 'x' },
                 desc = '[s]earch current [w]ord',
             },
-            { '<leader>sh', function() require('snacks').picker.help() end, desc = '[s]earch [h]elp' },
-            { '<leader>sk', function() require('snacks').picker.keymaps() end, desc = '[s]earch [k]eymaps' },
-            { '<leader>sd', function() require('snacks').picker.diagnostics() end, desc = '[s]earch [d]iagnostics' },
-            { '<leader>sp', function() require('snacks').picker.resume() end, desc = '[s]earch [p]revious' },
-            { '<leader>so', function() require('snacks').picker.recent() end, desc = '[s]earch recent files' },
-            { '<leader><leader>', function() require('snacks').picker.buffers() end, desc = 'Search existing buffers' },
+            { '<leader>sh', function() require('snacks').picker.help() end,                               desc = '[s]earch [h]elp' },
+            { '<leader>sk', function() require('snacks').picker.keymaps() end,                            desc = '[s]earch [k]eymaps' },
+            { '<leader>sd', function() require('snacks').picker.diagnostics() end,                        desc = '[s]earch [d]iagnostics' },
+            { '<leader>sp', function() require('snacks').picker.resume() end,                             desc = '[s]earch [p]revious' },
+            { '<leader>so', function() require('snacks').picker.recent() end,                             desc = '[s]earch recent files' },
+            {
+                '<leader>si',
+                function()
+                    require('snacks').picker.files {
+                        ft = { "jpg", "jpeg", "png", "webp" },
+                        confirm = function(self, item, _)
+                            self:close()
+                            require("img-clip").paste_image({}, "./" .. item.file) -- ./ is necessary for img-clip to recognize it as path
+                        end,
+                        desc = '[s]earch [i]mage and paste it as a link'
+                    }
+                end,
+                desc = '[s]earch [i]mage',
+            },
+            { '<leader><leader>', function() require('snacks').picker.buffers() end,               desc = 'Search existing buffers' },
             {
                 '<leader>s/',
                 function() require('snacks').picker.lines() end,
@@ -76,15 +93,15 @@ return {
                 end,
                 desc = '[s]earch [c]onfig files',
             },
-            { '<leader>su', function() Snacks.picker.undo() end, desc = '[s]earch [u]ndo history' },
-            { ';c', function() vim.lsp.buf.code_action() end, desc = '[c]ode action' },
-            { ';d', function() require('snacks').picker.lsp_definitions() end, desc = '[d]efinition' },
-            { ';r', function() require('snacks').picker.lsp_references() end, desc = '[r]eferences' },
-            { ';i', function() require('snacks').picker.lsp_implementations() end, desc = '[i]mplementation' },
-            { ';t', function() require('snacks').picker.lsp_type_definitions() end, desc = '[t]ype definition' },
-            { ';s', function() require('snacks').picker.lsp_symbols() end, desc = '[s]ymbols' },
-            { ';p', function() require('snacks').picker.lsp_workspace_symbols() end, desc = 'symbols in [p]roject' },
-            { '<leader>s?', function() require('snacks').picker.pickers() end, desc = '[s]earch pickers' },
+            { '<leader>su',       function() Snacks.picker.undo() end,                             desc = '[s]earch [u]ndo history' },
+            { ';c',               function() vim.lsp.buf.code_action() end,                        desc = '[c]ode action' },
+            { ';d',               function() require('snacks').picker.lsp_definitions() end,       desc = '[d]efinition' },
+            { ';r',               function() require('snacks').picker.lsp_references() end,        desc = '[r]eferences' },
+            { ';i',               function() require('snacks').picker.lsp_implementations() end,   desc = '[i]mplementation' },
+            { ';t',               function() require('snacks').picker.lsp_type_definitions() end,  desc = '[t]ype definition' },
+            { ';s',               function() require('snacks').picker.lsp_symbols() end,           desc = '[s]ymbols' },
+            { ';p',               function() require('snacks').picker.lsp_workspace_symbols() end, desc = 'symbols in [p]roject' },
+            { '<leader>s?',       function() require('snacks').picker.pickers() end,               desc = '[s]earch pickers' },
         },
     },
 }
