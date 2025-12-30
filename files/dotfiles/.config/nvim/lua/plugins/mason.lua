@@ -24,11 +24,13 @@ return {
             -- package.path = package.path .. lsp_path .. '/?.lua;'
             local lsps = {} ---@type string[]
             for file_name in vim.fs.dir(lsp_path, {}) do
-                local lsp_name = vim.fs.basename(file_name):match '^[^%.]+'
-                local lsp_conf = require(lsp_name)
-                -- Ignore commented-out LSP files (empty modules)
-                if lsp_conf ~= true then
-                    table.insert(lsps, lsp_name)
+                local lsp_name = vim.fs.basename(file_name):match '^(.+)%.lua$'
+                if lsp_name then
+                    local lsp_conf = require(lsp_name)
+                    -- Ignore commented-out LSP files (empty modules)
+                    if lsp_conf ~= true then
+                        table.insert(lsps, lsp_name)
+                    end
                 end
             end
             vim.lsp.enable(lsps)
