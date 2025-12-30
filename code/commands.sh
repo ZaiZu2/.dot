@@ -46,24 +46,26 @@ symlink_dotfiles() {
   local force=${1-false}
   local correct_links=0
 
-  for dotfile in "$DOTFILES_DIR"/**/*; do
-    local rel_path=${dotfile##"$DOTFILES_DIR/"}
+  for dot_path in "$DOTFILES_DIR"/**/*; do
+    local rel_path=${dot_path##"$DOTFILES_DIR/"}
     local target_path="$HOME/$rel_path"
 
-    # Remove any broken links from target directories
-    if [ -d "$dotfile" ]; then
-      for target_dotfile in "$target_path"/*; do
-        if [[ -L $target_dotfile && ! -e $target_dotfile ]]; then
-          rm "$target_dotfile"
-          multi "$GREEN" "Removing broken symlink " "$BLUE" "$target_dotfile"
-        fi
-      done
-
+    if [ -d "$dot_path" ]; then
+      # Remove any broken links from target directories - handles situation in which some files were
+      # removed from DOT repo but their symlinks persisted in user's dotfiles
+      if [ -d "$target_path" ]; then
+        for target_dotfile in "$target_path"/*; do
+          if [[ -L $target_dotfile && ! -e $target_dotfile ]]; then
+            rm "$target_dotfile"
+            multi "$GREEN" "Removing broken symlink " "$BLUE" "$target_dotfile"
+          fi
+        done
+      fi
       continue # Do not symlink directories
     fi
 
     # Skip already existing, correct symlinks
-    if [[ -L "$target_path" && $(realpath "$target_path") = "$dotfile" ]]; then
+    if [[ -L "$target_path" && $(realpath "$target_path") = "$dot_path" ]]; then
       correct_links=$((correct_links + 1))
       continue
     fi
@@ -74,8 +76,8 @@ symlink_dotfiles() {
       multi "$YELLOW" "Skipping " "$BLUE" "$target_path" "$YELLOW" ", symlink already exists"
     else
       mkdir -p "$(dirname "$target_path")"
-      multi "$GREEN" "Created symlink " "$BLUE" "$target_path" "$GREEN" " -> " "$BLUE" "$dotfile"
-      ln -sf "$dotfile" "$target_path"
+      multi "$GREEN" "Created symlink " "$BLUE" "$target_path" "$GREEN" " -> " "$BLUE" "$dot_path"
+      ln -sf "$dot_path" "$target_path"
     fi
 
   done
