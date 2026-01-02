@@ -1,8 +1,12 @@
+# General
+
+- NEVER commit anything to GIT by yourself, even when explicitly asked. Any commits can only be done by ME, the user.
+
 # MCPs
 
 Below rules define when each listed MCP should be used.
 
-# Context7 -
+# Context7
 
 Up-to-date Code Docs - Context7 MCP pulls up-to-date, version-specific documentation and code examples straight from
 the source — and places them directly into your prompt.

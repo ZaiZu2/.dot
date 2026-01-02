@@ -25,7 +25,7 @@ Cross-platform dotfiles manager with intelligent dependency resolution and modul
 
 ## Supported Tools
 
-`git`, `nvim`, `tmux`, `fzf`, `go`, `rust`, `python`, `fnm`, `bat`, `jq`, `gh`, `lazygit`, `claude`, `zsh`, `alacritty`, `uv`, `docker`, `zk`
+`git`, `nvim`, `tmux`, `fzf`, `go`, `rust`, `python`, `fnm`, `bat`, `jq`, `gh`, `lazygit`, `claude`, `zsh`, `alacritty`, `uv`, `docker`, `zk`, `zoxide`
 
 Supports macOS and Linux with automatic dependency resolution.
 

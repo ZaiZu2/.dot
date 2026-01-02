@@ -41,9 +41,10 @@ Generate docstrings for code objects (functions/methods/classes).
   Brief description of function/class. Written in IMPERATIVE form for functions/methods.
 
   Args:
-      param1: Long description which is longer than 100 characters and will wrap into a
-              new line which is indented deep enough to match the first line
-      param2: Description
+      param: Description
+      longer_param: Long description which is longer than 100 characters and will wrap into
+                    a new line which is indented deep enough to match the description in
+                    the first line
 
   Returns:
       Description of return value
