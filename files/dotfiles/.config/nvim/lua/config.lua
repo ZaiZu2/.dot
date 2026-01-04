@@ -45,7 +45,7 @@ return {
                     request = 'attach',
                     connect = {
                         host = 'localhost', -- or '127.0.0.1'
-                        port = 5678, -- default debugpy port
+                        port = 5678,        -- default debugpy port
                     },
                     console = 'externalTerminal',
                     justMyCode = false,
@@ -62,7 +62,7 @@ return {
             bash = { 'shellcheck' },
             zsh = { 'shellcheck' },
             dockerfile = { 'hadolint' },
-            markdown = { 'markdownlint-cli2' },
+            -- markdown = { 'markdownlint-cli2' },
             yaml = { 'yamllint' },
             jinja = { 'djlint' },
             python = { 'basedpyright' },
@@ -124,7 +124,6 @@ return {
         ft = {
             lua = { 'stylua' },
             python = { 'ruff_format' },
-            markdown = { 'markdownlint-cli2' },
             bash = { 'shmft' },
             zsh = { 'shmft' },
             sh = { 'shmft' },
@@ -136,13 +135,14 @@ return {
             css = { 'prettier' },
             yaml = { 'prettier' },
             yml = { 'prettier' },
+            markdown = { 'prettier' },
             toml = { 'taplo' },
         },
         config = {
             stylua = {
-                args = { '--config-path' }, -- CLI arg for injecting fmt config
+                args = { '--config-path' },                     -- CLI arg for injecting fmt config
                 conf_files = { 'stylua.toml', '.stylua.toml' }, -- All files which might be used for local fmt config
-                filename = 'stylua.toml', -- Name of the default global fmt config file
+                filename = 'stylua.toml',                       -- Name of the default global fmt config file
             },
             ruff_format = {
                 args = { '--config' },

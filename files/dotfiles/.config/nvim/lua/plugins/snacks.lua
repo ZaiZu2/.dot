@@ -7,8 +7,8 @@ return {
                 doc = {
                     inline = true,
                     -- float = true,
-                    max_width = 100,
-                    max_height = 100,
+                    -- max_width = 100,
+                    -- max_height = 100,
                 },
                 math = { enabled = false }
             },
@@ -54,11 +54,11 @@ return {
                 mode = { 'n', 'x' },
                 desc = '[s]earch current [w]ord',
             },
-            { '<leader>sh', function() require('snacks').picker.help() end,                               desc = '[s]earch [h]elp' },
-            { '<leader>sk', function() require('snacks').picker.keymaps() end,                            desc = '[s]earch [k]eymaps' },
-            { '<leader>sd', function() require('snacks').picker.diagnostics() end,                        desc = '[s]earch [d]iagnostics' },
-            { '<leader>sp', function() require('snacks').picker.resume() end,                             desc = '[s]earch [p]revious' },
-            { '<leader>so', function() require('snacks').picker.recent() end,                             desc = '[s]earch recent files' },
+            { '<leader>sh', function() require('snacks').picker.help() end,                                desc = '[s]earch [h]elp' },
+            { '<leader>sk', function() require('snacks').picker.keymaps() end,                             desc = '[s]earch [k]eymaps' },
+            { '<leader>sd', function() require('snacks').picker.diagnostics() end,                         desc = '[s]earch [d]iagnostics' },
+            { '<leader>sp', function() require('snacks').picker.resume() end,                              desc = '[s]earch [p]revious' },
+            { '<leader>so', function() require('snacks').picker.recent() end,                              desc = '[s]earch recent files' },
             {
                 '<leader>si',
                 function()
