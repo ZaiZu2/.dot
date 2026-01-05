@@ -17,18 +17,18 @@ return {
     --     },
     -- },
     {
-        "HakonHarnes/img-clip.nvim",
-        event = "VeryLazy",
+        'HakonHarnes/img-clip.nvim',
+        event = 'VeryLazy',
         opts = {
             default = {
                 dir_path = vim.fn.getenv('ZK_NOTEBOOK_DIR') .. "/images",
                 extension = "avif",
-                use_absolute_path = true,
+                use_absolute_path = false,
                 relative_to_current_file = false,
             },
         },
         keys = {
-            { "<leader>p", "<cmd>PasteImage<cr>", desc = "Paste image from system clipboard" },
+            { '<leader>p', '<cmd>PasteImage<cr>', desc = 'Paste image from system clipboard' },
         },
-    }
+    },
 }
