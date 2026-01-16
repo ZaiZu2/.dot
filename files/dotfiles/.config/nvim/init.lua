@@ -41,9 +41,7 @@ vim.keymap.set('n', '<leader>m', ':messages<CR>', { desc = 'Open [m]essages' })
 vim.keymap.set('v', '<leader>x', ':lua<CR>', { desc = 'E[x]ecute selected Lua code' })
 vim.keymap.set('n', '<leader>x', ':.lua<CR>', { desc = 'E[x]ecute Lua line' })
 vim.keymap.set('n', '<leader>X', '<cmd>source %<CR>', { desc = 'E[X]ecute current file' })
-vim.keymap.set('n', ',tn', function()
-    require('mini.test').run()
-end, { desc = 'mini.[t]est current file' })
+vim.keymap.set('n', ',tn', function() require('mini.test').run() end, { desc = 'mini.[t]est current file' })
 
 local utils = require 'utils'
 vim.keymap.set({ 'n', 'v' }, '<leader>sr', utils.find_and_replace, { desc = '[s]earch and [r]eplace' })
@@ -53,6 +51,18 @@ vim.keymap.set(
     utils.find_and_replace_globally,
     { desc = '[s]earch and [R]eplace globally' }
 )
+
+-- Copy path with line range to the clipboard
+vim.keymap.set('n', '<leader>l', function()
+    local path = vim.fn.expand '%' .. ':' .. vim.fn.line '.'
+    vim.fn.setreg('+', path)
+    print('Copied: ' .. path)
+end, { desc = 'Extract file:line' })
+vim.keymap.set('v', '<leader>l', function()
+    local path = vim.fn.expand '%' .. ':' .. vim.fn.line "'<" .. '-' .. vim.fn.line "'>"
+    vim.fn.setreg('+', path)
+    print('Copied: ' .. path)
+end, { desc = 'Extract file:line-range' })
 
 vim.diagnostic.config {
     virtual_text = {

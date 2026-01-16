@@ -12,11 +12,10 @@ return {
                 formatters = {}, -- Must stay initialized to empty
             }
 
-            -- Following code prioritizes local formatter configs. It traverses upwards
-            -- searching for a local config. In case no config files are found, it
-            -- defaults to a global config file specified in Neovim configuration under
-            -- `nvim/fmts/`. Each formatter can have a global config set up in
-            -- `fmt_configs.lua`
+            -- Following code prioritizes local formatter configs. It traverses upwards searching
+            -- for a local config. In case no config files are found, it defaults to a global config
+            -- file specified in Neovim configuration under `nvim/fmts/`. Each formatter can have
+            -- a global config set up in configs.lua`.
             local fmt_path = vim.fn.stdpath 'config' .. '/fmts/'
             -- Collect all used formatters
             local fmt_names = {}

@@ -8,7 +8,9 @@ return {
             telemetry = {
                 enabled = false,
             },
-            format = { printWidth = 100 },
+            yaml = {
+                format = { printWidth = 100 },
+            },
         },
     },
 }
