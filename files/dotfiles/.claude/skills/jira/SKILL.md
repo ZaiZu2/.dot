@@ -50,33 +50,35 @@ Confluence instance details:
 
 ## Implementation
 
-Uses `uv run` to execute `confluence_manager.py` with dependencies automatically managed. The script:
+Uses the shared Python environment at `~/.claude/skills/.venv` to execute `confluence_manager.py`. The script:
 - Retrieves API token from macOS Keychain (service: `jira-api-token`)
 - Accepts URL and username as command-line arguments
 
 Example commands:
 ```bash
 # Get page by ID
-uv run --directory ~/.claude/skills/jira confluence_manager.py \
+~/.claude/skills/.venv/bin/python ~/.claude/skills/jira/confluence_manager.py \
   --url https://absa.atlassian.net \
   --username jakub.kawecki@absa.africa \
   get --page-id 123456
 
 # Update page
-uv run --directory ~/.claude/skills/jira confluence_manager.py \
+~/.claude/skills/.venv/bin/python ~/.claude/skills/jira/confluence_manager.py \
   --url https://absa.atlassian.net \
   --username jakub.kawecki@absa.africa \
   update --page-id 123456 --content "New content here"
 
 # Create page
-uv run --directory ~/.claude/skills/jira confluence_manager.py \
+~/.claude/skills/.venv/bin/python ~/.claude/skills/jira/confluence_manager.py \
   --url https://absa.atlassian.net \
   --username jakub.kawecki@absa.africa \
   create --space TECH --title "New Page" --content "Page content"
 
 # Search pages
-uv run --directory ~/.claude/skills/jira confluence_manager.py \
+~/.claude/skills/.venv/bin/python ~/.claude/skills/jira/confluence_manager.py \
   --url https://absa.atlassian.net \
   --username jakub.kawecki@absa.africa \
   search --query "SFTP" --space TECH
 ```
+
+**Note:** All skills now share a common Python environment managed at `~/.claude/skills/`. Dependencies are defined in `~/.claude/skills/pyproject.toml`.

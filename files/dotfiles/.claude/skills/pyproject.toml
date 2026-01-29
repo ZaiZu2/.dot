@@ -1,9 +1,10 @@
 [project]
-name = "confluence-manager"
+name = "claude-skills"
 version = "0.1.0"
-description = "Confluence documentation manager for Claude Code"
+description = "Shared Python environment for Claude Code skills"
 requires-python = ">=3.13"
 dependencies = [
+    # Jira/Confluence skill dependencies
     "atlassian-python-api>=3.41.0",
     "markdown>=3.4.0",
     "keyring>=24.0.0",
