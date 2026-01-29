@@ -1,10 +1,11 @@
 setup_shell() {
   [ $# -eq 0 ] && return 1
   if [ "$1" = 'bash' ]; then
-    shopt -s globstar dotglob
+    shopt -s globstar dotglob nullglob
   elif [ "$1" = 'zsh' ]; then
     setopt shwordsplit
     setopt dotglob
+    setopt null_glob
   fi
 }
 

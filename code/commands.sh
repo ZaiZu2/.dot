@@ -51,8 +51,8 @@ symlink_dotfiles() {
     local target_path="$HOME/$rel_path"
 
     if [ -d "$dot_path" ]; then
-      # Remove any broken links from target directories - handles situation in which some files were
-      # removed from DOT repo but their symlinks persisted in user's dotfiles
+      # Remove any broken links from target directories - handles situation in which some files
+      # were removed from DOT repo but their symlinks persisted in user's dotfiles
       if [ -d "$target_path" ]; then
         for target_dotfile in "$target_path"/*; do
           if [[ -L $target_dotfile && ! -e $target_dotfile ]]; then

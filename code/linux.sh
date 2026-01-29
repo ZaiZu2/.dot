@@ -10,6 +10,9 @@ init_pkg_mgr() {
 }
 
 install_font() {
+  if [ -z "$(ls -A "$SCRIPT_DIR/files/font/" 2>/dev/null)" ]; then
+    return 0
+  fi
   blue "Copying fonts"
   sudo cp "$SCRIPT_DIR/files/font/"* '/usr/share/fonts'
   sudo chmod 0644 '/usr/share/fonts/'*
