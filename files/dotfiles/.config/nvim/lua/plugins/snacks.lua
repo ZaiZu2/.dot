@@ -69,10 +69,9 @@ return {
                             self:close()
                             require("img-clip").paste_image({}, "./" .. item.file) -- ./ is necessary for img-clip to recognize it as path
                         end,
-                        desc = '[s]earch [i]mage and paste it as a link'
                     }
                 end,
-                desc = '[s]earch [i]mage',
+                desc = '[s]earch [i]mage and paste it as a link',
             },
             { '<leader><leader>', function() require('snacks').picker.buffers() end,               desc = 'Search existing buffers' },
             {
