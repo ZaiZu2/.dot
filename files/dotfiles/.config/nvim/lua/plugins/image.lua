@@ -21,7 +21,14 @@ return {
         event = 'VeryLazy',
         opts = {
             default = {
-                dir_path = vim.fn.getenv('ZK_NOTEBOOK_DIR') .. "/images",
+                dir_path = function()
+                    local img_dir = vim.fn.expand("%:p:h") .. "/images"
+                    if vim.fn.isdirectory(img_dir) then -- Save in relative ./images
+                        return img_dir
+                    else
+                        return vim.fn.getenv('ZK_NOTEBOOK_DIR') .. "/images"
+                    end
+                end,
                 extension = "avif",
                 use_absolute_path = false,
                 relative_to_current_file = false,
