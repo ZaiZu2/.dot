@@ -5,7 +5,6 @@ if [ -z "$TMUX" ]; then
   exit 1
 fi
 
-# Iterate through panes in reverse, looking for an idle pane
 for pane_info in $( \
   tmux list-panes -F "#{pane_id}:#{pane_pid}:#{pane_current_command}" \
   | awk '{a[NR]=$0} END{for(i=NR;i>=1;i--)print a[i]}' \
