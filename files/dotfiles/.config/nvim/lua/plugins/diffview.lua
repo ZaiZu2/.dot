@@ -1,5 +1,10 @@
 return {
     {
+        'esmuellert/codediff.nvim',
+        dependencies = { "MunifTanjim/nui.nvim" },
+        cmd = "CodeDiff",
+    },
+    {
         'sindrets/diffview.nvim',
         event = 'VeryLazy',
         config = function()
