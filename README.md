@@ -1,4 +1,4 @@
-# Dot - Dotfiles Management System
+# .dot - Dotfiles Management System
 
 Cross-platform dotfiles manager with intelligent dependency resolution and modular tool installation.
 
