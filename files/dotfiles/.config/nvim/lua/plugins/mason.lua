@@ -35,7 +35,7 @@ return {
             require('mason').setup {}
             require('mason-lspconfig').setup {
                 ensure_installed = lsp_names,
-                automatic_enable = true,
+                automatic_enable = lsp_names,
             }
 
             -- Parse all used linters from the config

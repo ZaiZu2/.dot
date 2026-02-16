@@ -10,11 +10,8 @@ return {
         },
         pyrefly = {
             settings = {
-                pyrefly = { disableLanguageServices = false },
+                python = { pyrefly = { displayTypeErrors = 'force-off' } },
             },
-            on_exit = function(code, _, _)
-                vim.notify('Closing Pyrefly LSP exited with code: ' .. code, vim.log.levels.INFO)
-            end,
         },
         ts_ls = {
             init_options = { hostInfo = 'neovim' },
@@ -39,8 +36,6 @@ return {
         dockerls = {},
         docker_compose_language_service = {},
         marksman = {},
-        -- basedpyright = {},
-        -- jedi_language_server = {},
         -- jinja_lsp = {},
     },
     daps = {
@@ -106,7 +101,6 @@ return {
             bash = { 'shellcheck' },
             zsh = { 'shellcheck' },
             dockerfile = { 'hadolint' },
-            -- markdown = { 'markdownlint-cli2' },
             yaml = { 'yamllint' },
             jinja = { 'djlint' },
             python = { 'basedpyright' },
@@ -162,6 +156,51 @@ return {
                     end,
                 }
             end,
+            -- pyrefly = function()
+            --     return {
+            --         cmd = 'pyrefly',
+            --         stdin = false,
+            --         append_fname = true,
+            --         args = { 'check', '--output-format', 'json', '--color', 'never' },
+            --         stream = 'stdout',
+            --         ignore_exitcode = true,
+            --         env = nil,
+            --         parser = function(output, bufnr, linter_cwd)
+            --             -- Strip trailing non-JSON lines (e.g. "INFO 1 error")
+            --             local json_str = output:match '^(%b{})'
+            --             if not json_str then
+            --                 return {}
+            --             end
+            --             local success, output_obj = pcall(vim.json.decode, json_str)
+            --             if not success or not output_obj.errors then
+            --                 return {}
+            --             end
+            --
+            --             local nvim_severity = vim.diagnostic.severity
+            --             local severity_map = {
+            --                 warning = nvim_severity.WARN,
+            --                 error = nvim_severity.ERROR,
+            --                 info = nvim_severity.INFO,
+            --             }
+            --
+            --             local diagnostics = {}
+            --             for _, err in ipairs(output_obj.errors) do
+            --                 table.insert(diagnostics, {
+            --                     bufnr = bufnr,
+            --                     lnum = err.line - 1,
+            --                     end_lnum = err.stop_line - 1,
+            --                     col = err.column - 1,
+            --                     end_col = err.stop_column - 1,
+            --                     severity = severity_map[err.severity] or nvim_severity.ERROR,
+            --                     message = err.description,
+            --                     source = 'pyrefly',
+            --                     code = err.name,
+            --                 })
+            --             end
+            --             return diagnostics
+            --         end,
+            --     }
+            -- end,
         },
     },
     formatters = {
