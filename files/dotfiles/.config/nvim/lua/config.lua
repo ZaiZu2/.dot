@@ -1,4 +1,48 @@
 return {
+    lsps = {
+        lua_ls = {
+            settings = {
+                Lua = { runtime = { version = 'LuaJIT' } },
+            },
+        },
+        ruff = {
+            settings = { args = { 'server' } },
+        },
+        pyrefly = {
+            settings = {
+                pyrefly = { disableLanguageServices = false },
+            },
+            on_exit = function(code, _, _)
+                vim.notify('Closing Pyrefly LSP exited with code: ' .. code, vim.log.levels.INFO)
+            end,
+        },
+        ts_ls = {
+            init_options = { hostInfo = 'neovim' },
+        },
+        html = {
+            init_options = {
+                configurationSection = { 'html', 'css', 'javascript' },
+                embeddedLanguages = { css = true, javascript = true },
+                provideFormatter = true,
+            },
+        },
+        yamlls = {
+            settings = {
+                redhat = {
+                    telemetry = { enabled = false },
+                    yaml = { format = { printWidth = 100 } },
+                },
+            },
+        },
+        bashls = {},
+        taplo = {},
+        dockerls = {},
+        docker_compose_language_service = {},
+        marksman = {},
+        -- basedpyright = {},
+        -- jedi_language_server = {},
+        -- jinja_lsp = {},
+    },
     daps = {
         python = {
             name = 'debugpy',
@@ -45,7 +89,7 @@ return {
                     request = 'attach',
                     connect = {
                         host = 'localhost', -- or '127.0.0.1'
-                        port = 5678,        -- default debugpy port
+                        port = 5678, -- default debugpy port
                     },
                     console = 'externalTerminal',
                     justMyCode = false,
@@ -123,10 +167,10 @@ return {
     formatters = {
         ft = {
             lua = { 'stylua' },
-            python = { 'ruff_format' },
-            bash = { 'shmft' },
-            zsh = { 'shmft' },
-            sh = { 'shmft' },
+            python = { 'ruff' },
+            bash = { 'shfmt' },
+            zsh = { 'shfmt' },
+            sh = { 'shfmt' },
             jinja = { 'djlint' },
             javascript = { 'prettier' },
             typescript = { 'prettier' },
@@ -140,11 +184,11 @@ return {
         },
         config = {
             stylua = {
-                args = { '--config-path' },                     -- CLI arg for injecting fmt config
+                args = { '--config-path' }, -- CLI arg for injecting fmt config
                 conf_files = { 'stylua.toml', '.stylua.toml' }, -- All files which might be used for local fmt config
-                filename = 'stylua.toml',                       -- Name of the default global fmt config file
+                filename = 'stylua.toml', -- Name of the default global fmt config file
             },
-            ruff_format = {
+            ruff = {
                 args = { '--config' },
                 conf_files = { 'ruff.toml', 'pyproject.toml' },
                 filename = 'ruff.toml',
