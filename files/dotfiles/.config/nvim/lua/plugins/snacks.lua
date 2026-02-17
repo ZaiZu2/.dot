@@ -89,7 +89,7 @@ return {
             {
                 '<leader>sc',
                 function()
-                    require('snacks').picker.files { cwd = os.getenv 'XDG_CONFIG_HOME', hidden = true, follow = true }
+                    require('snacks').picker.files { cwd = os.getenv 'DOT' .. '/files/dotfiles', hidden = true, follow = true }
                 end,
                 desc = '[s]earch [c]onfig files',
             },
