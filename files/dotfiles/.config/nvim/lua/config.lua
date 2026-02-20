@@ -10,7 +10,8 @@ return {
         },
         pyrefly = {
             settings = {
-                python = { pyrefly = { displayTypeErrors = 'force-off' } },
+                -- python = { pyrefly = { displayTypeErrors = 'force-off' } },
+                python = { pyrefly = {} },
             },
         },
         ts_ls = {
@@ -103,7 +104,7 @@ return {
             dockerfile = { 'hadolint' },
             yaml = { 'yamllint' },
             jinja = { 'djlint' },
-            python = { 'basedpyright' },
+            python = {},
         },
         -- https://github.com/mfussenegger/nvim-lint?tab=readme-ov-file#custom-linters
         custom = {
@@ -206,7 +207,7 @@ return {
     formatters = {
         ft = {
             lua = { 'stylua' },
-            python = { 'ruff' },
+            python = { 'ruff_format' },
             bash = { 'shfmt' },
             zsh = { 'shfmt' },
             sh = { 'shfmt' },
@@ -227,7 +228,8 @@ return {
                 conf_files = { 'stylua.toml', '.stylua.toml' }, -- All files which might be used for local fmt config
                 filename = 'stylua.toml', -- Name of the default global fmt config file
             },
-            ruff = {
+            ruff_format = {
+                mason_name = 'ruff',
                 args = { '--config' },
                 conf_files = { 'ruff.toml', 'pyproject.toml' },
                 filename = 'ruff.toml',

@@ -51,8 +51,9 @@ return {
             local formatters = {}
             for _, ft_fmts in pairs(config.formatters.ft) do
                 for _, fmt in ipairs(ft_fmts) do
-                    if not vim.list_contains(formatters, fmt) then
-                        table.insert(formatters, fmt)
+                    local mason_name = (config.formatters.config[fmt] or {}).mason_name or fmt
+                    if not vim.list_contains(formatters, mason_name) then
+                        table.insert(formatters, mason_name)
                     end
                 end
             end
