@@ -33,10 +33,14 @@ vim.opt.diffopt = { 'internal', 'filler', 'closeoff', 'indent-heuristic', 'linem
 
 vim.keymap.set('n', '<leader>Q', ':bp | sp | bn | bd<CR>', { desc = '[Q]uit current buffer' })
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>') -- Deactive search highlights
-vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [d]iagnostic message' })
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next [d]iagnostic message' })
+vim.keymap.set('n', '[d', vim.diagnostic.get_prev, { desc = 'Go to previous [d]iagnostic message' })
+vim.keymap.set('n', ']d', vim.diagnostic.get_next, { desc = 'Go to next [d]iagnostic message' })
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic [e]rror messages' })
 vim.keymap.set('n', '<leader>m', ':messages<CR>', { desc = 'Open [m]essages' })
+vim.keymap.set('n', '<leader>D', function()
+    vim.diagnostic.enable(not vim.diagnostic.is_enabled())
+    print('Diagnostics were ' .. (vim.diagnostic.is_enabled() and 'enabled' or 'disabled'))
+end, { desc = 'Toggle [D]iagnostics' })
 
 vim.keymap.set('v', '<leader>x', ':lua<CR>', { desc = 'E[x]ecute selected Lua code' })
 vim.keymap.set('n', '<leader>x', ':.lua<CR>', { desc = 'E[x]ecute Lua line' })

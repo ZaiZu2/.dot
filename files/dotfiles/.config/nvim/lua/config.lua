@@ -104,7 +104,7 @@ return {
             dockerfile = { 'hadolint' },
             yaml = { 'yamllint' },
             jinja = { 'djlint' },
-            python = {},
+            python = { 'basedpyright' },
         },
         -- https://github.com/mfussenegger/nvim-lint?tab=readme-ov-file#custom-linters
         custom = {

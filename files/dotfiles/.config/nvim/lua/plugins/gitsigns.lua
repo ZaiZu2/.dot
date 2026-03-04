@@ -36,19 +36,19 @@ return {
                 -- Navigation
                 map('n', ']h', function()
                     if vim.wo.diff then
-                        vim.cmd.normal { ']h', bang = true }
+                        vim.cmd.normal { ']g', bang = true }
                     else
                         gitsigns.nav_hunk 'next'
                     end
-                end, { desc = 'Jump to next [g]it chunk' })
+                end, { desc = 'Jump to next git c[h]unk' })
 
-                map('n', '[g', function()
+                map('n', '[h', function()
                     if vim.wo.diff then
                         vim.cmd.normal { '[g', bang = true }
                     else
                         gitsigns.nav_hunk 'prev'
                     end
-                end, { desc = 'Jump to previous [g]it chunk' })
+                end, { desc = 'Jump to previous git c[h]unk' })
 
                 -- Actions
                 -- visual mode
