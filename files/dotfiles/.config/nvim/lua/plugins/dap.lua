@@ -13,7 +13,7 @@ return {
                         default_section = 'repl',
                     },
                     windows = {
-                        height = 12,
+                        -- height = 12,
                         terminal = {
                             position = 'right',
                             hide = {},
