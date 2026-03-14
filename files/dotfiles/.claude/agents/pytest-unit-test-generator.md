@@ -6,7 +6,7 @@ description:
 
 model: sonnet
 color: yellow
-skills: [mkdoc]
+skills: [mkdoc, doc]
 permissionMode: acceptEdits
 tools: Read, Write, Edit, Bash, Grep, Glob, Python
 ---

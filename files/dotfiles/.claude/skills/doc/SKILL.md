@@ -1,3 +1,8 @@
+---
+title: Docstring Generator
+description: Generate docstrings for code objects (functions, methods, classes). Use when the user invokes /doc or asks to add, update, or generate docstrings for code.
+---
+
 # Docstring Generator
 
 Generate docstrings for code objects (functions/methods/classes).
