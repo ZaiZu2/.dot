@@ -131,7 +131,7 @@ return {
             vim.keymap.set(
                 'n',
                 '<leader>zao',
-                function() zk.edit { notebook_path = ZK_ABSA_DIR } end,
+                function() zk.edit({ notebook_path = ZK_ABSA_DIR }, {}) end,
                 { desc = '[o]pen absa note' }
             )
 
