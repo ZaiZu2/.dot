@@ -1,6 +1,8 @@
 ---
 title: Docstring Generator
-description: Generate docstrings for code objects (functions, methods, classes). Use when the user invokes /doc or asks to add, update, or generate docstrings for code.
+description:
+    Generate docstrings for code objects (functions, methods, classes). Use when the user invokes /doc or asks to add,
+    update, or generate docstrings for code.
 ---
 
 # Docstring Generator
@@ -20,15 +22,15 @@ Generate docstrings for code objects (functions/methods/classes).
 
 - ALWAYS follow language-specific formatting rules below
 - ALWAYS use imperative form for functions/methods ("Return the sum", "Calculate the result")
-  - Header should use IMPERATIVE form
-  - Body should use DESCRIPTIVE form
-  - If they both are merged, IMPERATIVE form should be used
+    - Header should use IMPERATIVE form
+    - Body should use DESCRIPTIVE form
+    - If they both are merged, IMPERATIVE form should be used
 - ALWAYS use descriptive form for classes ("A container for...", "Represents a user account").
 - ALWAYS wrap proper names or names of objects in backticks `` when writing a docstring
 - NEVER add empty lines between the docstring and function content
 - Maximum line width is 100 chars
-- Skip listing class attributes / function parameters in the docstring if they are obvious or their description
-  does now introduce any new information
+- Skip listing class attributes / function parameters in the docstring if they are obvious or their description does now
+  introduce any new information
 
 ## Language-Specific Formatting
 
@@ -39,22 +41,25 @@ Generate docstrings for code objects (functions/methods/classes).
 - In case function is simple, Merge header with description into a single paragraph
 - Docstring quotes MUST be defined on separate line (where applicable)
 - Skip `__init__` docstrings if all they are generic and all they do is setup instance attributes
+- For type aliases and complex type assignments (e.g. `RootModel[...]`, `TypedDict`, `dict[...]` aliases), ALWAYS add an
+  inline `#` comment explaining the structure and semantics of the type. If comment would make the line too long, attach
+  it above
 - **Example structure**:
 
-  ```python
-  """
-  Brief description of function/class. Written in IMPERATIVE form for functions/methods.
+    ```python
+    """
+    Brief description of function/class. Written in IMPERATIVE form for functions/methods.
 
-  Args:
-      param: Description
-      longer_param: Long description which is longer than 100 characters and will wrap into
-                    a new line which is indented deep enough to match the description in
-                    the first line
+    Args:
+        param: Description
+        longer_param: Long description which is longer than 100 characters and will wrap into
+                      a new line which is indented deep enough to match the description in
+                      the first line
 
-  Returns:
-      Description of return value
+    Returns:
+        Description of return value
 
-  Raises:
-      ExceptionType: When this exception occurs
-  """
-  ```
+    Raises:
+        ExceptionType: When this exception occurs
+    """
+    ```

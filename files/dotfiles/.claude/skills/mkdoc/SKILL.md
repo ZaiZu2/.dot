@@ -60,6 +60,11 @@ Read the relevant source files, config examples, and CLI entry points. Identify:
 - CLI interface (commands, flags, arguments) inferred from source
 - How it runs in production (cron, daemon, manual, etc.)
 
+While reading source files, scan all inline comments for any remarks related to docstrings or documentation — not just TODOs. Specifically:
+- If a comment says anything like `# add to docstring`, `# TODO: document this`, `# mention in docs`, `# note: document X`, or any similar indication that something should be reflected in the docstring/documentation — incorporate that information into the generated output, then remove the comment from the source file.
+- If a comment references a documentation update or improvement — treat its content as a signal about what should be reflected in the documentation you generate.
+- Only remove inline comments that have been fully addressed by what you've written. Do not remove unrelated comments.
+
 Do not invent behaviour — only document what is observable in the code.
 
 ### Step 3 — Determine the output location
