@@ -82,6 +82,7 @@ bindkey '^G' zoxide_interactive
 
 # Aliases
 alias n='nvim'
+alias lg='lazygit'
 alias dot='zsh $DOT/dot.sh'
 alias dfs='cd $DOT'
 alias dev='cd $HOME/dev'
@@ -105,6 +106,7 @@ alias gll='gl "$(git branch --show-current)" "$(git rev-parse --abbrev-ref --sym
 alias gr='git restore'
 alias grs='git restore --staged'
 alias gR='git restore --staged $(git rev-parse --show-toplevel) && git restore $(git rev-parse --show-toplevel)'
+alias gA='git commit --amend --no-verify --no-edit'
 
 for i in {2..6}; do
     alias "$(printf '.%.0s' {1..$i} )=cd ..$(printf '/..%.0s' {1..$i})"
