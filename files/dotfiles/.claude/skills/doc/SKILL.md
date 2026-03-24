@@ -38,7 +38,8 @@ Generate docstrings for code objects (functions/methods/classes).
 
 - ALWAYS use Google-style docstrings
 - ALWAYS Skip type hints in docstring if code is already type-hinted
-- In case function is simple, Merge header with description into a single paragraph
+- In case function is simple, Merge header with description into a single paragraph. You should still keep the
+  Google-style of docstring
 - Docstring quotes MUST be defined on separate line (where applicable)
 - Skip `__init__` docstrings if all they are generic and all they do is setup instance attributes
 - For type aliases and complex type assignments (e.g. `RootModel[...]`, `TypedDict`, `dict[...]` aliases), ALWAYS add an

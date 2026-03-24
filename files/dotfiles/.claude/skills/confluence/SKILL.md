@@ -57,25 +57,25 @@ Uses the shared Python environment at `~/.claude/skills/.venv` to execute `confl
 Example commands:
 ```bash
 # Get page by ID
-~/.claude/skills/.venv/bin/python ~/.claude/skills/jira/confluence_manager.py \
+~/.claude/skills/.venv/bin/python ~/.claude/skills/confluence/confluence_manager.py \
   --url https://absa.atlassian.net \
   --username jakub.kawecki@absa.africa \
   get --page-id 123456
 
 # Update page
-~/.claude/skills/.venv/bin/python ~/.claude/skills/jira/confluence_manager.py \
+~/.claude/skills/.venv/bin/python ~/.claude/skills/confluence/confluence_manager.py \
   --url https://absa.atlassian.net \
   --username jakub.kawecki@absa.africa \
   update --page-id 123456 --content "New content here"
 
 # Create page
-~/.claude/skills/.venv/bin/python ~/.claude/skills/jira/confluence_manager.py \
+~/.claude/skills/.venv/bin/python ~/.claude/skills/confluence/confluence_manager.py \
   --url https://absa.atlassian.net \
   --username jakub.kawecki@absa.africa \
   create --space TECH --title "New Page" --content "Page content"
 
 # Search pages
-~/.claude/skills/.venv/bin/python ~/.claude/skills/jira/confluence_manager.py \
+~/.claude/skills/.venv/bin/python ~/.claude/skills/confluence/confluence_manager.py \
   --url https://absa.atlassian.net \
   --username jakub.kawecki@absa.africa \
   search --query "SFTP" --space TECH

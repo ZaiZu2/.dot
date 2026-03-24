@@ -33,11 +33,17 @@ Python skills should invoke scripts using the shared interpreter:
 
 ## Available Skills
 
-### `/jira`
+### `/confluence`
 Confluence Documentation Manager - Create and update Confluence pages directly from Claude.
-- Location: `jira/`
+- Location: `confluence/`
 - Script: `confluence_manager.py`
 - Dependencies: atlassian-python-api, markdown, keyring
+
+### `/ticket`
+JIRA Ticket Manager - Create, update, search, and transition JIRA issues.
+- Location: `ticket/`
+- Script: `jira_ticket_manager.py`
+- Dependencies: atlassian-python-api, keyring
 
 ### `/note`
 Zettelkasten Note Generator - Generate markdown notes from conversation context.
@@ -80,9 +86,12 @@ Zettelkasten Note Generator - Generate markdown notes from conversation context.
 ├── pyproject.toml      # Shared dependencies
 ├── uv.lock            # Lock file
 ├── README.md          # This file
-├── jira/              # Jira/Confluence skill
+├── confluence/        # Confluence documentation skill
 │   ├── SKILL.md
 │   └── confluence_manager.py
+├── ticket/            # JIRA ticket management skill
+│   ├── SKILL.md
+│   └── jira_ticket_manager.py
 └── note/              # Note-taking skill
     └── SKILL.md
 ```
