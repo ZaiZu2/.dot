@@ -63,6 +63,7 @@ security find-generic-password -s "jira-api-token" -a "$USER" -w
 JIRA instance details:
 - **URL**: `https://absa.atlassian.net`
 - **Username**: `jakub.kawecki@absa.africa`
+- **Account ID**: `712020:8e7a54c5-a95d-4d2e-be17-7a7a6348c4e4` (use this for `--assignee` when assigning to Jakub Kawecki)
 
 ## Implementation
 
@@ -144,7 +145,13 @@ For **search**, if the user gives natural language, convert it to JQL. Common pa
 - "FAPE bugs" → `project = FAPE AND type = Bug`
 - "created this week" → `created >= startOfWeek()`
 
-### 3. Report results
+### 3. Description preferences
+
+When creating tickets, keep descriptions lean:
+- Structure with **Objective** and **Scope** sections only
+- Do NOT include "Acceptance Criteria" sections unless the user explicitly asks for them
+
+### 4. Report results
 
 - For **create**: Show the new issue key and URL
 - For **get**: Show key, summary, status, assignee, priority, description, and URL
