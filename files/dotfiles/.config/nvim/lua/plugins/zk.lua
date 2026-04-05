@@ -111,19 +111,6 @@ return {
             )
             vim.keymap.set(
                 'n',
-                '<leader>zd',
-                function() zk.new { dir = 'daily', template = 'daily.md' } end,
-                { desc = 'Open [d]aily note' }
-            )
-
-            vim.keymap.set(
-                'n',
-                '<leader>zad',
-                function() zk.new { notebook_path = ZK_ABSA_DIR, dir = ZK_ABSA_DIR .. 'daily', template = 'daily.md' } end,
-                { desc = 'Open absa [d]aily note' }
-            )
-            vim.keymap.set(
-                'n',
                 '<leader>zan',
                 function() zk.new { notebook_path = ZK_ABSA_DIR, extra = { tags = "['absa', ]" } } end,
                 { desc = '[n]ew absa note' }
@@ -134,6 +121,13 @@ return {
                 function() zk.edit({ notebook_path = ZK_ABSA_DIR }, {}) end,
                 { desc = '[o]pen absa note' }
             )
+            vim.keymap.set('n', '<leader>zas', function()
+                require('zk.api').list(ZK_ABSA_DIR, { match = { 'Scratchpad' }, select = { 'absPath' } }, function(_, notes)
+                    if notes and #notes > 0 then
+                        vim.cmd('edit ' .. notes[1].absPath)
+                    end
+                end)
+            end, { desc = 'Open absa [s]cratchpad' })
 
             vim.keymap.set('n', '<leader>zb', '<Cmd>ZkBacklinks<CR>', { desc = 'Open [b]acklinks' })
             vim.keymap.set('n', '<leader>zo', "<Cmd>ZkNotes { sort = { 'modified' } }<CR>", { desc = '[o]pen notes' })
