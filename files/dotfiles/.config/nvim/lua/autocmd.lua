@@ -16,27 +16,21 @@ vim.api.nvim_create_autocmd({ 'TextChanged', 'TextChangedI', 'TextChangedT', 'Te
 vim.api.nvim_create_autocmd('TextYankPost', {
     desc = 'Highlight when yanking (copying) text',
     group = vim.api.nvim_create_augroup('highlight-yank', { clear = true }),
-    callback = function()
-        vim.highlight.on_yank()
-    end,
+    callback = function() vim.highlight.on_yank() end,
 })
 
 -- Trigger linting on these events
 local lint_augroup = vim.api.nvim_create_augroup('lint', { clear = true })
 vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWritePost', 'InsertLeave' }, {
     group = lint_augroup,
-    callback = function()
-        require('lint').try_lint()
-    end,
+    callback = function() require('lint').try_lint() end,
 })
 
 -- Set up LSP support
 vim.api.nvim_create_autocmd('LspAttach', {
     group = vim.api.nvim_create_augroup('lsp-attach', { clear = true }),
     callback = function(event)
-        local map = function(keys, func, desc)
-            vim.keymap.set('n', keys, func, { buffer = event.buf, desc = desc })
-        end
+        local map = function(keys, func, desc) vim.keymap.set('n', keys, func, { buffer = event.buf, desc = desc }) end
 
         map(';D', vim.lsp.buf.declaration, '[D]eclaration')
         map(';R', vim.lsp.buf.rename, '[R]ename')
@@ -72,9 +66,19 @@ vim.api.nvim_create_autocmd('LspAttach', {
         -- The following autocommand is used to enable inlay hints in your
         -- code, if the language server you are using supports them
         if client and client.server_capabilities.inlayHintProvider and vim.lsp.inlay_hint then
-            map('<leader>th', function()
-                vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled {})
-            end, '[t]oggle Inlay [h]ints')
+            map(
+                '<leader>th',
+                function() vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled {}) end,
+                '[t]oggle Inlay [h]ints'
+            )
         end
+    end,
+})
+
+-- Enable treesitter-based highlighting and indentation
+vim.api.nvim_create_autocmd('FileType', {
+    callback = function()
+        pcall(vim.treesitter.start)
+        vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
     end,
 })

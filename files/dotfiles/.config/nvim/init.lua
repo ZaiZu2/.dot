@@ -58,15 +58,14 @@ vim.keymap.set('n', '<leader>X', '<cmd>source %<CR>', { desc = 'E[X]ecute curren
 vim.keymap.set('n', ',tn', function() require('mini.test').run() end, { desc = 'mini.[t]est current file' })
 
 local utils = require 'utils'
-vim.keymap.set({ 'n', 'v' }, '<leader>sr', utils.find_and_replace, { desc = '[s]earch and [r]eplace' })
-vim.keymap.set(
-    { 'n', 'v' },
-    '<leader>sR',
-    utils.find_and_replace_globally,
-    { desc = '[s]earch and [R]eplace globally' }
-)
+vim.keymap.set({ 'n', 'v' }, '<leader>sr', utils.find_and_replace, { desc = '[s]earch and [r]eplace in file' })
 
--- Copy path with line range to the clipboard
+vim.keymap.set('n', '<leader>F', function()
+    local path = vim.fn.expand '%:p'
+    vim.fn.setreg('+', path)
+    print('Copied: ' .. path)
+end, { desc = 'Extract full file path' })
+
 vim.keymap.set('n', '<leader>l', function()
     local path = vim.fn.expand '%' .. ':' .. vim.fn.line '.'
     vim.fn.setreg('+', path)
@@ -76,12 +75,10 @@ vim.keymap.set('v', '<leader>l', function()
     local path = vim.fn.expand '%' .. ':' .. vim.fn.line "'<" .. '-' .. vim.fn.line "'>"
     vim.fn.setreg('+', path)
     print('Copied: ' .. path)
-end, { desc = 'Extract file:line-range' })
+end, { desc = 'Extract selected file:line-range' })
 
 vim.diagnostic.config {
-    virtual_text = {
-        prefix = '■ ',
-    },
+    virtual_text = { prefix = '■ ' },
 }
 
 vim.filetype.add {
@@ -111,6 +108,7 @@ if not vim.uv.fs_stat(lazypath) then
 end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 
+require('vim._core.ui2').enable {}
 require('lazy').setup('plugins', { change_detection = { notify = false } })
 require 'autocmd'
 require 'health'

@@ -3,7 +3,13 @@ return {
         'echasnovski/mini.nvim',
         opts = {},
         config = function()
-            require('mini.ai').setup { n_lines = 500 }
+            require('mini.ai').setup {
+                mappings = {
+                    -- Conflict with default nvim 0.12 incremental selection mappings
+                    around_next = '<Nop>',
+                    inside_next = '<Nop>',
+                },
+            }
 
             vim.keymap.set({ 'n', 'x' }, 's', '<Nop>') -- Unbind default vim `s`
             require('mini.surround').setup()
@@ -43,9 +49,7 @@ return {
             statusline.setup { use_icons = vim.g.have_nerd_font }
 
             ---@diagnostic disable-next-line: duplicate-set-field
-            statusline.section_location = function()
-                return '%2l:%-2v'
-            end
+            statusline.section_location = function() return '%2l:%-2v' end
         end,
     },
 }

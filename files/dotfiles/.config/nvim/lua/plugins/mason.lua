@@ -17,7 +17,6 @@ return {
             'mason-org/mason-lspconfig.nvim',
             'jay-babu/mason-nvim-dap.nvim', -- Provides mapping of nvim-dap (DAP) names to Mason names
             'WhoIsSethDaniel/mason-tool-installer.nvim', -- Automatic installation of LSPs/formatters/linters/DAPs
-            'j-hui/fidget.nvim',
         },
         config = function()
             local config = require 'config'
