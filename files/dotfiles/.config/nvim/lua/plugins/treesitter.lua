@@ -70,6 +70,9 @@ return {
                 ['aP'] = { '@parameter.outer', '[P]arameter' },
                 ['ia'] = { '@assignment.rhs', 'RHS [a]ssignment' },
                 ['aa'] = { '@assignment.lhs', 'LHS [a]ssignment' },
+                ['iA'] = { '@attribute.inner', '[A]ttribute' },
+                ['aA'] = { '@attribute.outer', '[A]ttribute' },
+                ['as'] = { '@statement.outer', '[s]tatement' },
             }
             for key, val in pairs(text_obj_map) do
                 vim.keymap.set(
