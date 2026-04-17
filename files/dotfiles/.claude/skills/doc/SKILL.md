@@ -31,6 +31,8 @@ Generate docstrings for code objects (functions/methods/classes).
 - Maximum line width is 100 chars
 - Skip listing class attributes / function parameters in the docstring if they are obvious or their description does now
   introduce any new information
+- Use a `Note:` block for cross-cutting information that applies to multiple parameters or the function as a whole, rather
+  than duplicating it across individual parameter descriptions
 
 ## Language-Specific Formatting
 

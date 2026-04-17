@@ -149,3 +149,4 @@ Apply these rules in the **Language-Specific** section when the relevant languag
 - **Be proportionate**: don't flag nits if there are blocking issues — focus attention on what matters
 - **Skip empty sections**: if there are no findings for a category, omit it
 - **Context matters**: read surrounding code before flagging something — it may be intentional
+- **Verify before flagging**: if a finding depends on the behavior of a called function (e.g. whether it raises or returns None), read that function's source before including the finding. Do not assume behavior — trace through to the implementation

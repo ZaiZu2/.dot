@@ -88,18 +88,22 @@ Read through the git log and diff output and write:
 
 ## Summary
 
-[1-3 sentences describing what the PR achieves at a high level. Focus on the outcome, not the implementation details. Do not use generic filler phrases.]
+- [Bullet describing one user-facing outcome or business goal the PR achieves]
+- [Additional bullet if the PR bundles more than one outcome]
 
 ## Implementation
 
-[2-4 sentences describing the technical approach: key new functions/classes, data structures, or patterns introduced, and how they fit together. Be specific about what changed and why.]
+- [Bullet naming a specific new/changed function, class, or file and what it does]
+- [Bullet for each additional significant technical change — new data structure, refactor, contract, etc.]
+- [Bullet for any notable supporting changes (CI, config, migrations, docs)]
 ```
 
 **Rules:**
 - Omit the `### [TICKET]` header entirely if no ticket was found
-- Summary = what it achieves (user-facing / business outcome)
-- Implementation = how it was built (technical, specific)
-- Keep both sections concise — no padding
+- **Prefer bullet lists over prose.** By default both Summary and Implementation are bullet lists, one self-contained point per bullet. Name concrete files, functions, or classes in Implementation bullets.
+- Summary bullets = what it achieves (user-facing / business outcome). Implementation bullets = how it was built (technical, specific).
+- **Exception — small/single-purpose PRs:** when the change is small enough that bullets would feel forced (e.g. a one-line fix, a docstring tweak, a single rename), you may write Summary and/or Implementation as one short sentence of prose instead. Use this sparingly — if in doubt, bullet.
+- Keep bullets tight — one line each where possible, no padding or filler phrases
 - Do not include a "Generated with Claude Code" footer
 
 ### 5. Determine PR title
