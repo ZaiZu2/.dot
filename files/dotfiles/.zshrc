@@ -107,6 +107,15 @@ alias gr='git restore'
 alias grs='git restore --staged'
 alias gR='git restore --staged $(git rev-parse --show-toplevel) && git restore $(git rev-parse --show-toplevel)'
 alias gA='git commit --amend --no-verify --no-edit'
+gw() { # fuzzy search through worktrees available in the repo
+  git rev-parse --git-dir >/dev/null 2>&1 || {
+    echo "Not in a git repo" >&2; return 1
+  }
+  [ $(git worktree list | wc -l) -le 1 ] && {
+    echo "Only current worktree exists" >&2; return 1
+  }
+  cd "$(git worktree list | \fzf --height 40% --reverse | awk '{print $1}')"
+}
 
 for i in {2..6}; do
     alias "$(printf '.%.0s' {1..$i} )=cd ..$(printf '/..%.0s' {1..$i})"
