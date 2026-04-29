@@ -1,4 +1,5 @@
 ---
+name: note
 title: Zettelkasten Note Generator
 description: Generate markdown notes from conversation context and save them to your ZK notebook
 permissions:

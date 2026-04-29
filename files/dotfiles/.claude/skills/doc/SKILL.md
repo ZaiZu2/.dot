@@ -1,4 +1,5 @@
 ---
+name: doc
 title: Docstring Generator
 description:
     Generate docstrings for code objects (functions, methods, classes). Use when the user invokes /doc or asks to add,

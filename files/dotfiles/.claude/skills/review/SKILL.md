@@ -1,4 +1,5 @@
 ---
+name: review
 title: PR Review
 description: Review code changes and provide structured feedback. Use when the user invokes /review or asks to review changes, review a diff, or review the current branch.
 permissions:

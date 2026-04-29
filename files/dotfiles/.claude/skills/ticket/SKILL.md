@@ -1,4 +1,5 @@
 ---
+name: ticket
 title: JIRA Ticket Manager
 description: Create, update, and search JIRA issues/tickets directly from Claude
 permissions:

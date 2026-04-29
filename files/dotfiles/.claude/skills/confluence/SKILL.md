@@ -1,4 +1,5 @@
 ---
+name: confluence
 title: Confluence Documentation Manager
 description: Create and update Confluence documentation pages directly from Claude
 permissions:

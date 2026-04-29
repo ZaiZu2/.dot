@@ -1,4 +1,5 @@
 ---
+name: mkdoc
 title: Project Documentation Generator
 description: Generate markdown documentation for projects, matching the established writing style and formatting conventions
 permissions:
