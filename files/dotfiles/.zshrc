@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/sh
 
 # Add in zsh plugins
 source "$XDG_DATA_HOME/zinit/zinit.git/zinit.zsh"
@@ -98,6 +98,7 @@ alias gs='git status'
 alias gS='git switch'
 alias gc='git commit'
 alias gp='git pull'
+alias gpp='git pull --prune'
 alias gP='git push'
 alias gf='git fetch'
 alias gd='git diff'
@@ -115,6 +116,31 @@ gw() { # fuzzy search through worktrees available in the repo
     echo "Only current worktree exists" >&2; return 1
   }
   cd "$(git worktree list | \fzf --height 40% --reverse | awk '{print $1}')"
+}
+alias gwl='git worktree list'
+gwa() {
+    local new_branch="$1"
+
+    local master_branch=$(git symbolic-ref --short refs/remotes/origin/HEAD)
+    local master_branch="${master_branch##*\/}" # strip `origin/`
+    local base_branch="${2:-$master_branch}"
+
+    local repo_dir="$(git rev-parse --path-format=absolute --git-common-dir)"
+    local worktree_path="$repo_dir/${new_branch//\//-}" # replace all `/` with `-`
+
+    git worktree add "$worktree_path" -b "$new_branch" "$base_branch" || return 1
+    cd "$(git worktree list | grep "$new_branch" | awk '{print $1}')"
+    uv sync --quiet || return 1
+}
+gwr() {
+    local branch="$1"
+    local repo_dir="$(git rev-parse --path-format=absolute --git-common-dir)"
+    local worktree_path="$(git worktree list | grep "$branch" | awk '{print $1}')"
+    [ -z "$worktree_path" ] && { echo "Worktree does not exist for '$branch'"; return 1; }
+
+    git worktree remove "$worktree_path"
+    [ "$worktree_path" = "$(pwd)" ] && cd "$repo_dir"
+    git branch -d "$branch"
 }
 
 for i in {2..6}; do
