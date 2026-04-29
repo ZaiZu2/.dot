@@ -221,6 +221,7 @@ return {
             yml = { 'prettier' },
             markdown = { 'prettier' },
             toml = { 'taplo' },
+            xml = { 'xmlformatter' },
         },
         config = {
             stylua = {
@@ -315,6 +316,11 @@ return {
                 args = { '--config' },
                 conf_files = { '.taplo.toml', 'taplo.toml' },
                 filename = '.taplo.toml',
+            },
+            xmlformat = {
+                args = { '--config-file' },
+                conf_files = { '.xmlformat.conf', 'xmlformat.conf' },
+                filename = '.xmlformat.conf',
             },
         },
     },
