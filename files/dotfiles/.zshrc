@@ -120,6 +120,7 @@ gw() { # fuzzy search through worktrees available in the repo
 alias gwl='git worktree list'
 gwa() {
     local new_branch="$1"
+    local new_branch_exists=$(git branch -a --list "$new_branch" "*/$new_branch")
 
     local master_branch=$(git symbolic-ref --short refs/remotes/origin/HEAD)
     local master_branch="${master_branch##*\/}" # strip `origin/`
@@ -128,12 +129,18 @@ gwa() {
     local repo_dir="$(git rev-parse --path-format=absolute --git-common-dir)"
     local worktree_path="$repo_dir/${new_branch//\//-}" # replace all `/` with `-`
 
-    git worktree add "$worktree_path" -b "$new_branch" "$base_branch" || return 1
+    if [ -z "$new_branch_exists" ]; then
+        git worktree add "$worktree_path" -b "$new_branch" "$base_branch" || return 1
+    else
+        git worktree add "$worktree_path" "$new_branch" || return 1
+    fi
     cd "$(git worktree list | grep "$new_branch" | awk '{print $1}')"
     uv sync --quiet || return 1
 }
 gwr() {
-    local branch="$1"
+    local current_branch="$(git branch --show-current)"
+    local current_branch="${current_branch//\//-}"
+    local branch="${1:-"$current_branch"}"
     local repo_dir="$(git rev-parse --path-format=absolute --git-common-dir)"
     local worktree_path="$(git worktree list | grep "$branch" | awk '{print $1}')"
     [ -z "$worktree_path" ] && { echo "Worktree does not exist for '$branch'"; return 1; }
