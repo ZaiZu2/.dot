@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/zsh
 
 # Add in zsh plugins
 source "$XDG_DATA_HOME/zinit/zinit.git/zinit.zsh"
@@ -139,10 +139,10 @@ gwa() {
 }
 gwr() {
     local current_branch="$(git branch --show-current)"
-    local current_branch="${current_branch//\//-}"
     local branch="${1:-"$current_branch"}"
+    local worktree_name="${branch//\//-}"
     local repo_dir="$(git rev-parse --path-format=absolute --git-common-dir)"
-    local worktree_path="$(git worktree list | grep "$branch" | awk '{print $1}')"
+    local worktree_path="$(git worktree list | grep "$worktree_name" | awk '{print $1}')"
     [ -z "$worktree_path" ] && { echo "Worktree does not exist for '$branch'"; return 1; }
 
     git worktree remove "$worktree_path"
