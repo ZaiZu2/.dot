@@ -167,7 +167,7 @@ def main():
     create_parser.add_argument("--type", default="Task", help="Issue type (default: Task)")
     create_parser.add_argument("--priority", default="Medium", help="Priority (default: Medium)")
     create_parser.add_argument("--description", help="Issue description")
-    create_parser.add_argument("--assignee", help="Assignee account ID")
+    create_parser.add_argument("--assignee", default="712020:8e7a54c5-a95d-4d2e-be17-7a7a6348c4e4", help="Assignee account ID (default: Jakub Kawecki)")
     create_parser.add_argument("--labels", help="Comma-separated labels")
 
     # Get issue

@@ -146,13 +146,33 @@ For **search**, if the user gives natural language, convert it to JQL. Common pa
 - "FAPE bugs" → `project = FAPE AND type = Bug`
 - "created this week" → `created >= startOfWeek()`
 
-### 3. Description preferences
+### 3. Title prefix and label convention
+
+When creating tickets, apply a project tag as both a **title prefix** and a **JIRA label**:
+
+Available tags:
+- **fa** — File Automation / SFTP-related work
+- **prime_portal** — Prime Portal application work
+- **ps_rep** — PS Reporting work
+
+**Rules:**
+- Prefix the summary with `[TAG]`, e.g. `[fa] Add retry logic to SFTP connector`
+- Also add the same tag value as a label via `--labels "fa"` (append to any other labels)
+- Infer the appropriate tag from context (e.g. SFTP/file transfers → `fa`, portal UI/APIs → `prime_portal`, reporting → `ps_rep`)
+- If the tag cannot be confidently inferred, ask the user which project the task belongs to before creating the ticket
+
+**Examples:**
+- Summary: `[fa] Add retry logic to SFTP connector` + label: `fa`
+- Summary: `[prime_portal] Fix session timeout on dashboard` + label: `prime_portal`
+- Summary: `[ps_rep] Add monthly reconciliation report` + label: `ps_rep`
+
+### 4. Description preferences
 
 When creating tickets, keep descriptions lean:
 - Structure with **Objective** and **Scope** sections only
 - Do NOT include "Acceptance Criteria" sections unless the user explicitly asks for them
 
-### 4. Report results
+### 5. Report results
 
 - For **create**: Show the new issue key and URL
 - For **get**: Show key, summary, status, assignee, priority, description, and URL

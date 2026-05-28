@@ -1,5 +1,5 @@
 ---
-name: pr
+name: create-pr
 title: GitHub PR Manager
 description: Automatically create or update a GitHub PR for the current branch with an AI-generated description
 permissions:
