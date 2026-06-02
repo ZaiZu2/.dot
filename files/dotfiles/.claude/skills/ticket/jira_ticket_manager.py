@@ -113,6 +113,7 @@ def update_issue(
     priority: Optional[str] = None,
     assignee: Optional[str] = None,
     labels: Optional[list] = None,
+    due_date: Optional[str] = None,
 ) -> dict:
     """Update fields on an existing issue"""
     fields = {}
@@ -126,6 +127,8 @@ def update_issue(
         fields["assignee"] = {"accountId": assignee}
     if labels:
         fields["labels"] = labels
+    if due_date:
+        fields["duedate"] = due_date
 
     if not fields:
         raise ValueError("No fields to update")
@@ -145,6 +148,7 @@ def format_issue(issue: dict, url: str) -> dict:
         "assignee": (fields.get("assignee") or {}).get("displayName"),
         "type": fields.get("issuetype", {}).get("name"),
         "labels": fields.get("labels", []),
+        "duedate": fields.get("duedate"),
         "description": fields.get("description"),
         "created": fields.get("created"),
         "updated": fields.get("updated"),
@@ -197,6 +201,7 @@ def main():
     update_parser.add_argument("--priority", help="New priority")
     update_parser.add_argument("--assignee", help="New assignee account ID")
     update_parser.add_argument("--labels", help="Comma-separated labels")
+    update_parser.add_argument("--due-date", dest="due_date", help="Due date (YYYY-MM-DD)")
 
     args = parser.parse_args()
 
@@ -252,6 +257,7 @@ def main():
                 args.priority,
                 args.assignee,
                 labels,
+                args.due_date,
             )
             print(json.dumps({"success": True, **result}, indent=2))
 

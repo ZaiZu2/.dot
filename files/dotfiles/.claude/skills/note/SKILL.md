@@ -98,7 +98,40 @@ EOF
 - `$ZK_NOTEBOOK_DIR` environment variable set
 - ZK notebook initialized at that location
 
-**Verify setup:**
+## Notebooks
+
+Two separate ZK notebooks are configured:
+
+| Notebook | Path env var | When to use |
+|----------|--------------|-------------|
+| Personal | `$ZK_NOTEBOOK_DIR` (`/Users/AB0383Q/Notes`) | Default. Personal notes, learning, hobbies, dsa, etc. |
+| Absa (work) | `$ZK_ABSA_DIR` (`/Users/AB0383Q/dev/AB0383Q-ZK`) | Anything work-related. Triggered by hints like "absa note", "zka", "work note". |
+
+When using the absa notebook, set `ZK_NOTEBOOK_DIR=$ZK_ABSA_DIR` for the `zk` invocation (or `cd` into it first):
+
+```bash
+cd $ZK_ABSA_DIR && ZK_NOTEBOOK_DIR=$ZK_ABSA_DIR zk new -i -p ...
+```
+
+### Notebook-specific template quirks
+
+- **Absa notebook** (`$ZK_ABSA_DIR`): the `default.md` template renders **only YAML frontmatter** — it does **not** include `{{content}}`. Piping markdown via `-i` stdin will silently drop the body. Workaround: let `zk new` create the file (capture the printed path), then **append** the body to it:
+
+  ```bash
+  NOTE_PATH=$(cd $ZK_ABSA_DIR && ZK_NOTEBOOK_DIR=$ZK_ABSA_DIR zk new -p --title "..." --extra tags="...")
+  cat >> "$NOTE_PATH" <<'EOF'
+
+  # Heading
+
+  body...
+  EOF
+  ```
+
+- **Absa notebook** `--extra tags`: the template uses `{{extra.tags}}` rendered as a single string into a space-separated YAML field, so **separate tags with spaces, not commas**: `--extra tags="front-arena pswap runbook"`.
+
+- **Personal notebook** (`$ZK_NOTEBOOK_DIR`): standard template; pipe body via stdin and use comma-separated tags as documented below.
+
+## Verify setup
 ```bash
 echo $ZK_NOTEBOOK_DIR  # Should print: /Users/AB0383Q/Notes
 zk list --limit 5       # Should list recent notes

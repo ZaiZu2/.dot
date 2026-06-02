@@ -18,6 +18,7 @@ if [ $(uname -s) = 'Linux' ]; then
     command -v uv > /dev/null && eval "$(uv generate-shell-completion zsh)"
     command -v kubectl > /dev/null && eval "$(kubectl completion zsh)"
     command -v aws > /dev/null && complete -C 'aws_completer' aws
+    command -v opencode > /dev/null && eval "$(opencode completion)"
 fi
 zinit light zsh-users/zsh-completions
 autoload -Uz compinit && compinit -u
