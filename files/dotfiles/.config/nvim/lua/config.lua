@@ -215,6 +215,7 @@ return {
             javascript = { 'prettier' },
             typescript = { 'prettier' },
             json = { 'prettier' },
+            jsonc = { 'prettier' },
             html = { 'prettier' },
             css = { 'prettier' },
             yaml = { 'prettier' },

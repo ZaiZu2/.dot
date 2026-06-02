@@ -1,0 +1,59 @@
+{
+    "$schema": "https://opencode.ai/config.json",
+    "provider": {
+        "amazon-bedrock": {
+            "options": {
+                "region": "eu-west-1",
+                "profile": "dev",
+                "endpoint": "https://bedrock-runtime.eu-west-1.amazonaws.com",
+            },
+            "models": {
+                "arn:aws:bedrock:eu-west-1:843931780115:application-inference-profile/qy0rveqbubla": {
+                    "name": "Opus 4.7 Inference",
+                    "cost": {
+                        "input": 5.5,
+                        "output": 27.5,
+                        "cache_write": 6.875, // 5 min TTL cache (default) - Bedrock always uses 5-min TTL unless "ttl":"1h" is explicitly passed in cache_control.
+                        // "cache_write": 11.0, // 60 min TTL cache - only applies if API request includes "ttl":"1h"; opencode does not set this, so this rate will never apply.
+                        "cache_read": 0.55,
+                    },
+                    "options": {
+                        "thinking": {
+                            "type": "adaptive",
+                        },
+                    },
+                },
+                "arn:aws:bedrock:eu-west-1:843931780115:application-inference-profile/zuwutgx75t2i": {
+                    "name": "Sonnet 4.6 Inference",
+                    "cost": {
+                        "input": 3.3,
+                        "output": 16.5,
+                        "cache_write": 4.125, // 5 min TTL cache (default) - Sonnet 4.6 only supports 5-min TTL; 1-hour TTL is not available for this model.
+                        "cache_read": 0.33,
+                    },
+                    "options": {
+                        "thinking": {
+                            "type": "adaptive",
+                        },
+                    },
+                },
+                "arn:aws:bedrock:eu-west-1:843931780115:application-inference-profile/xvr6zlyxrw6j": {
+                    "name": "Haiku 4.5 Inference",
+                    "cost": {
+                        "input": 1.1,
+                        "output": 5.5,
+                        "cache_write": 1.375, // 5 min TTL cache (default) - Haiku 4.5 supports 1-hour TTL too, but only if "ttl":"1h" is passed in cache_control; opencode does not set this.
+                        // "cache_write": 2.20, // 60 min TTL cache - only applies if API request includes "ttl":"1h"; opencode does not set this, so this rate will never apply.
+                        "cache_read": 0.11,
+                    },
+                    "options": {
+                        "thinking": {
+                            "type": "enabled",
+                            "budgetTokens": 1024,
+                        },
+                    },
+                },
+            },
+        },
+    },
+}
