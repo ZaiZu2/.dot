@@ -1,5 +1,13 @@
 {
     "$schema": "https://opencode.ai/config.json",
+    "lsp": {
+        "python-ruff": {
+            "command": ["uvx", "ruff", "server"],
+            "extensions": [".py"],
+            "env": {},
+            "initialization": {},
+        },
+    },
     "provider": {
         "amazon-bedrock": {
             "options": {

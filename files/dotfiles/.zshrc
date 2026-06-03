@@ -147,8 +147,7 @@ gwr() {
     [ -z "$worktree_path" ] && { echo "Worktree does not exist for '$branch'"; return 1; }
 
     git worktree remove "$worktree_path"
-    [ "$worktree_path" = "$(pwd)" ] && cd "$repo_dir"
-    git branch -d "$branch"
+    git branch -d "$branch" && [ "$worktree_path" = "$(pwd)" ] && cd "$repo_dir"
 }
 
 for i in {2..6}; do
