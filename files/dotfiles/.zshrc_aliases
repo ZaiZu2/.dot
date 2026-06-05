@@ -1,0 +1,102 @@
+#!/bin/zsh
+
+zoxide_interactive() {
+    local result=$(zoxide query --interactive)
+    if [[ -n $result ]]; then
+        BUFFER="cd $result"
+        zle accept-line
+    fi
+}
+zle -N zoxide_interactive
+bindkey '^G' zoxide_interactive
+
+for i in {2..6}; do
+    alias "$(printf '.%.0s' {1..$i})=cd ..$(printf '/..%.0s' {1..$i})"
+done
+
+alias n='nvim'
+alias o='opencode'
+alias lg='lazygit'
+alias dot='zsh $DOT/dot.sh'
+alias dfs='cd $DOT'
+alias dev='cd $HOME/dev'
+alias notes='cd $ZK_NOTEBOOK_DIR'
+alias dl='cd ~/Downloads'
+alias gact='source ~/.venv/bin/activate'
+alias act='source .venv/bin/activate'
+alias tmux='tmux -f "$XDG_CONFIG_HOME/tmux/tmux.conf"'
+alias ls='ls --color'
+alias ll='ls -lah'
+alias grep='grep --color=auto'
+alias gs='git status'
+alias gS='git switch'
+alias gc='git commit'
+alias gp='git pull'
+alias gpp='git pull --prune'
+alias gP='git push'
+alias gf='git fetch'
+alias gd='git diff'
+alias gl='git log --oneline --decorate --graph'
+alias gll='gl "$(git branch --show-current)" "$(git rev-parse --abbrev-ref --symbolic-full-name @{u})"'
+alias gr='git restore'
+alias grs='git restore --staged'
+alias gR='git restore --staged $(git rev-parse --show-toplevel) && git restore $(git rev-parse --show-toplevel)'
+alias gA='git commit --amend --no-verify --no-edit'
+
+gw() { # fuzzy search through worktrees available in the repo
+    git rev-parse --git-dir >/dev/null 2>&1 || {
+        echo "Not in a git repo" >&2
+        return 1
+    }
+    [ $(git worktree list | wc -l) -le 1 ] && {
+        echo "Only current worktree exists" >&2
+        return 1
+    }
+    cd "$(git worktree list | \fzf --height 40% --reverse | awk '{print $1}')"
+}
+alias gwl='git worktree list'
+
+gwa() {
+    local new_branch="$1"
+    local new_branch_exists=$(git branch -a --list "$new_branch" "*/$new_branch")
+
+    local master_branch=$(git symbolic-ref --short refs/remotes/origin/HEAD)
+    local master_branch="${master_branch##*\/}" # strip `origin/`
+    local base_branch="${2:-$master_branch}"
+
+    local repo_dir="$(git rev-parse --path-format=absolute --git-common-dir)"
+    local worktree_path="$repo_dir/${new_branch//\//-}" # replace all `/` with `-`
+
+    if [ -z "$new_branch_exists" ]; then
+        git worktree add "$worktree_path" -b "$new_branch" "$base_branch" || return 1
+    else
+        git worktree add "$worktree_path" "$new_branch" || return 1
+    fi
+    cd "$(git worktree list | grep "$new_branch" | awk '{print $1}')"
+    uv sync --quiet || return 1
+}
+
+gwr() {
+    local current_dir="$(basename $(pwd))"
+    local worktree_name="${1:-$current_dir}"
+    local repo_dir="$(git rev-parse --path-format=absolute --git-common-dir)"
+    local worktree_path="$(git worktree list | grep "$worktree_name" | awk '{print $1}')"
+    [ -z "$worktree_path" ] && {
+        echo "Worktree '$worktree_name' does not exist"
+        return 1
+    }
+
+    git worktree remove "$worktree_path"
+    [ "$worktree_path" = "$(pwd)" ] && cd "$repo_dir"
+}
+_gwr_completion() {
+    git rev-parse --git-dir >/dev/null 2>&1 || return 1
+    local worktrees=($(git worktree list 2>/dev/null | awk 'NR>1 {print $1}' | xargs -I {} basename {}))
+    _values 'worktrees' "${worktrees[@]}"
+}
+_register_gwr_completion() {
+    compdef _gwr_completion gwr
+    add-zsh-hook -d precmd _register_gwr_completion
+}
+autoload -Uz add-zsh-hook
+add-zsh-hook precmd _register_gwr_completion
