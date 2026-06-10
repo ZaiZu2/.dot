@@ -75,6 +75,11 @@ gwa() {
     cd "$(git worktree list | grep "$new_branch" | awk '{print $1}')"
     uv sync --quiet || return 1
 }
+_gwa_completion() {
+    git rev-parse --git-dir >/dev/null 2>&1 || return 1
+    local branches=($(git branch -a 2>/dev/null | sed 's/^[* ]*//' | grep -v 'HEAD' | sed 's|remotes/[^/]*/||' | sort -u))
+    _values 'branches' "${branches[@]}"
+}
 
 gwr() {
     local current_dir="$(basename $(pwd))"
@@ -94,9 +99,11 @@ _gwr_completion() {
     local worktrees=($(git worktree list 2>/dev/null | awk 'NR>1 {print $1}' | xargs -I {} basename {}))
     _values 'worktrees' "${worktrees[@]}"
 }
-_register_gwr_completion() {
+
+_register_completions() {
     compdef _gwr_completion gwr
-    add-zsh-hook -d precmd _register_gwr_completion
+    compdef _gwa_completion gwa
+    add-zsh-hook -d precmd _register_completions
 }
 autoload -Uz add-zsh-hook
-add-zsh-hook precmd _register_gwr_completion
+add-zsh-hook precmd _register_completions
