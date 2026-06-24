@@ -21,3 +21,5 @@ source — and places them directly into your prompt.
 Always use context7 when answering questions about API, interfaces or internal workings of a given library. This means
 you should automatically use the Context7 MCP tools to resolve library id and get library docs without me having to
 explicitly ask.
+
+@RTK.md

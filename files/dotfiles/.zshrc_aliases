@@ -82,8 +82,16 @@ _gwa_completion() {
 }
 
 gwr() {
+    local force=0
+    local worktree_name=""
+    for arg in "$@"; do
+        case "$arg" in
+        -f | --force) force=1 ;;
+        *) worktree_name="$arg" ;;
+        esac
+    done
     local current_dir="$(basename $(pwd))"
-    local worktree_name="${1:-$current_dir}"
+    local worktree_name="${worktree_name:-$current_dir}"
     local repo_dir="$(git rev-parse --path-format=absolute --git-common-dir)"
     local worktree_path="$(git worktree list | grep "$worktree_name" | awk '{print $1}')"
     [ -z "$worktree_path" ] && {
@@ -91,7 +99,7 @@ gwr() {
         return 1
     }
 
-    git worktree remove "$worktree_path"
+    [ "$force" -eq 1 ] && git worktree remove --force "$worktree_path" || git worktree remove "$worktree_path"
     [ "$worktree_path" = "$(pwd)" ] && cd "$repo_dir"
 }
 _gwr_completion() {

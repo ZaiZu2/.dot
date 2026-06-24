@@ -45,6 +45,11 @@ JIRA Ticket Manager - Create, update, search, and transition JIRA issues.
 - Script: `jira_ticket_manager.py`
 - Dependencies: atlassian-python-api, keyring
 
+### `/memorize`
+CLAUDE.md Updater - Persist session insights, conventions, and solved problems into project or global CLAUDE.md.
+- Location: `memorize/`
+- Dependencies: None
+
 ### `/note`
 Zettelkasten Note Generator - Generate markdown notes from conversation context.
 - Location: `note/`
@@ -92,6 +97,8 @@ Zettelkasten Note Generator - Generate markdown notes from conversation context.
 ├── ticket/            # JIRA ticket management skill
 │   ├── SKILL.md
 │   └── jira_ticket_manager.py
+├── memorize/          # CLAUDE.md updater skill
+│   └── SKILL.md
 └── note/              # Note-taking skill
     └── SKILL.md
 ```

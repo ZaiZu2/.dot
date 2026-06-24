@@ -79,6 +79,20 @@ def search_issues(jira: Jira, jql: str, max_results: int = 50) -> list:
     return results.get("issues", [])
 
 
+def assert_owned_by(jira: Jira, key: str, username: str) -> None:
+    """Raise PermissionError if the issue is not assigned to username."""
+    issue = jira.issue(key)
+    fields = issue.get("fields", {})
+    assignee = fields.get("assignee") or {}
+    assignee_email = assignee.get("emailAddress", "")
+    assignee_display = assignee.get("displayName", "Unassigned")
+    if assignee_email.lower() != username.lower():
+        raise PermissionError(
+            f"{key} is assigned to {assignee_display} ({assignee_email or 'no email'}), "
+            f"not {username}. Refusing to modify a ticket that does not belong to you."
+        )
+
+
 def add_comment(jira: Jira, key: str, body: str) -> dict:
     """Add a comment to an issue"""
     result = jira.issue_add_comment(key, body)
@@ -236,6 +250,7 @@ def main():
             print(json.dumps({"results": formatted, "count": len(formatted)}, indent=2))
 
         elif args.command == "comment":
+            assert_owned_by(jira, args.key, args.username)
             result = add_comment(jira, args.key, args.body)
             print(json.dumps({
                 "success": True,
@@ -244,10 +259,12 @@ def main():
             }, indent=2))
 
         elif args.command == "transition":
+            assert_owned_by(jira, args.key, args.username)
             result = transition_issue(jira, args.key, args.status)
             print(json.dumps({"success": True, **result}, indent=2))
 
         elif args.command == "update":
+            assert_owned_by(jira, args.key, args.username)
             labels = args.labels.split(",") if args.labels else None
             result = update_issue(
                 jira,
