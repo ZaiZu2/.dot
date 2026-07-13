@@ -1,0 +1,30 @@
+{
+    "permissions": {
+        "allow": [
+            "Bash(git fetch *)",
+            "Bash(git worktree *)",
+            "Bash(git add *)",
+            "Bash(git status *)",
+            "Bash(git show *)",
+            "Bash(git log *)",
+            "Bash(git diff *)",
+            "Bash(git checkout *)",
+            "Bash(git branch *)",
+
+            "Bash(uv sync *)",
+            "Bash(uv lock *)",
+            "Bash(uv run pytest *)",
+            "Bash(uv run ruff *)",
+
+            "Bash(make *)",
+
+            "Bash(gh pr *)",
+            "Bash(gh run *)"
+        ],
+        "deny": [
+            "Bash(git checkout -- *)",
+            "Bash(git checkout .)",
+            "Bash(git branch -D *)"
+        ]
+    }
+}

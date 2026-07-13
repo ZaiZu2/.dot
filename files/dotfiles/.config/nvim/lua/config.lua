@@ -113,6 +113,7 @@ return {
             jinja = { 'djlint' },
             python = { 'basedpyright' },
             terraform = { 'terraform_validate' },
+            ['terraform-vars'] = { 'terraform_validate' },
         },
         config = {
             terraform_validate = {
@@ -249,6 +250,7 @@ return {
             toml = { 'taplo' },
             xml = { 'xmlformatter' },
             terraform = { 'terraform_fmt' },
+            ['terraform-vars'] = { 'terraform_fmt' },
         },
         config = {
             stylua = {
