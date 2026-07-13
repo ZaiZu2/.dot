@@ -77,7 +77,12 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
 -- Enable treesitter-based highlighting and indentation
 vim.api.nvim_create_autocmd('FileType', {
-    callback = function()
+    callback = function(ctx)
+        local lang = vim.treesitter.language.get_lang(ctx.match) or ctx.match
+        if lang ~= '' and not vim.treesitter.language.add(lang) then
+            local ok, ts = pcall(require, 'nvim-treesitter')
+            if ok and vim.tbl_contains(ts.get_available(), lang) then ts.install { lang } end
+        end
         pcall(vim.treesitter.start)
         vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
     end,

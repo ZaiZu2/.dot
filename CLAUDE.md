@@ -70,3 +70,42 @@ tracked file needs no re-link — the symlink already points here.
   `files/dotfiles/.claude/CLAUDE.md`).
 - New files under `files/dotfiles/` require `dot link` before they surface
   in `$HOME`.
+
+## Neovim: adding a formatter/linter
+
+Central config lives in `files/dotfiles/.config/nvim/lua/config.lua` and is
+consumed by three plugin bootstraps:
+
+- `plugins/format.lua` reads `formatters.ft` / `formatters.config` into
+  `conform.nvim`.
+- `plugins/lint.lua` reads `linters.ft` / `linters.custom` into
+  `nvim-lint`.
+- `plugins/mason.lua` walks the same tables to build
+  `mason-tool-installer`'s `ensure_installed` list.
+
+Three name spaces are in play and often disagree — do not assume they
+match:
+
+- **filetype key** in `ft` tables must be Neovim's filetype (`terraform`,
+  not `tf`; `dockerfile`, not `docker`). Check with `:set ft?` on a real
+  buffer if unsure.
+- **tool name** (values in `ft` lists) must be the exact name registered
+  by conform.nvim (`conform/formatters/*.lua`) or nvim-lint
+  (`nvim-lint/lua/lint/linters/*.lua`). Examples: `terraform_fmt` (not
+  `terraform`), `terraform_validate` (not `terraform`), `ruff_format`
+  (not `ruff`).
+- **mason package name** — mason-tool-installer takes the tool name
+  verbatim unless `formatters.config[<name>].mason_name` overrides it.
+  When the conform/lint name differs from mason's package (`terraform_fmt`
+  → mason `terraform`, `ruff_format` → mason `ruff`), the override is
+  mandatory or startup will error with `Cannot find package "<name>"`.
+
+Both formatters and linters support a `mason_name` override in their
+`config.<name>` entry (`formatters.config` / `linters.config`) —
+mason-tool-installer resolves through it before adding to
+`ensure_installed`.
+
+`plugins/format.lua` guards on `fmt_conf.conf_files ~= nil` before
+building the config-path arg injector — formatters that take no
+`--config` flag (e.g. `terraform_fmt`) should have a `config` entry with
+only `mason_name` set, or no `config` entry at all.

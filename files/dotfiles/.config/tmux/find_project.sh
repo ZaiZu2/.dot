@@ -87,7 +87,7 @@ w=$((sess_w + path_w + abs_w + 6 + 7 + 4))
 [ "$w" -gt "$MAX_W" ] && w="$MAX_W"
 
 tmux display-popup -E -w "$w" -h "$h" \
-  "fzf --ansi --reverse --with-nth=2.. --delimiter='\t' < '$list' > '$sel'" ||
+  "fzf --ansi --reverse --delimiter='[ \t]+' --with-nth=2.. --nth=1 < '$list' > '$sel'" ||
   true
 
 [ -s "$sel" ] || exit 0
