@@ -32,7 +32,7 @@ return {
                 local ft_fmts = formatters.ft[vim.bo.filetype] or {}
                 for _, fmt_name in ipairs(ft_fmts) do
                     local fmt_conf = formatters.config[fmt_name]
-                    if fmt_conf ~= nil then
+                    if fmt_conf ~= nil and fmt_conf.conf_files ~= nil then
                         opts.formatters[fmt_name] = {
                             inherit = true,
                             append_args = function(_, ctx)

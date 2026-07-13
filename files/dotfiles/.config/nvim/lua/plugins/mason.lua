@@ -41,8 +41,9 @@ return {
             local linters = {}
             for _, ft_linters in pairs(config.linters.ft) do
                 for _, linter in ipairs(ft_linters) do
-                    if not vim.list_contains(linters, linter) then
-                        table.insert(linters, linter)
+                    local mason_name = (config.linters.config[linter] or {}).mason_name or linter
+                    if not vim.list_contains(linters, mason_name) then
+                        table.insert(linters, mason_name)
                     end
                 end
             end

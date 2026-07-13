@@ -96,6 +96,13 @@ return {
             },
         },
     },
+    -- Adding a linter:
+    --   1. `ft.<filetype> = { '<lint_name>' }` — key is Neovim's filetype; value is nvim-lint's linter
+    --      name (see `nvim-lint/lua/lint/linters/`). e.g. `terraform_validate`, NOT `terraform`.
+    --   2. `config.<lint_name> = { mason_name = '<pkg>' }` — required when the nvim-lint name differs
+    --      from the mason package name (e.g. `terraform_validate` → `terraform`), else omit.
+    --   3. `custom.<lint_name> = function() ... end` — optional, for linters not shipped by nvim-lint
+    --      or needing bespoke arg/parser logic (see `basedpyright`).
     linters = {
         ft = {
             shell = { 'shellcheck' },
@@ -105,6 +112,12 @@ return {
             yaml = { 'yamllint' },
             jinja = { 'djlint' },
             python = { 'basedpyright' },
+            terraform = { 'terraform_validate' },
+        },
+        config = {
+            terraform_validate = {
+                mason_name = 'terraform',
+            },
         },
         -- https://github.com/mfussenegger/nvim-lint?tab=readme-ov-file#custom-linters
         custom = {
@@ -204,6 +217,18 @@ return {
             -- end,
         },
     },
+    -- Adding a formatter:
+    --   1. `ft.<filetype> = { '<conform_name>' }` — key is Neovim's filetype (not extension); value is
+    --      conform.nvim's formatter name (see `conform/formatters/`). e.g. `terraform_fmt`, NOT `terraform`.
+    --   2. `config.<conform_name> = {...}` — optional. Only needed if the formatter accepts a `--config`
+    --      flag (see `stylua`, `prettier`) OR if its mason package name differs from the conform name.
+    --      Fields:
+    --        `mason_name` — mason package to install when conform name ≠ mason name
+    --                       (e.g. `ruff_format` → `ruff`, `terraform_fmt` → `terraform`).
+    --        `args`       — CLI flag that injects a config path (e.g. `{ '--config' }`).
+    --        `conf_files` — filenames searched upward from the buffer for a project-local config.
+    --        `filename`   — global fallback config filename under `nvim/fmts/`.
+    --      Omit `args`/`conf_files`/`filename` for formatters with no config-injection flag.
     formatters = {
         ft = {
             lua = { 'stylua' },
@@ -223,12 +248,13 @@ return {
             markdown = { 'prettier' },
             toml = { 'taplo' },
             xml = { 'xmlformatter' },
+            terraform = { 'terraform_fmt' },
         },
         config = {
             stylua = {
-                args = { '--config-path' }, -- CLI arg for injecting fmt config
-                conf_files = { 'stylua.toml', '.stylua.toml' }, -- All files which might be used for local fmt config
-                filename = 'stylua.toml', -- Name of the default global fmt config file
+                args = { '--config-path' },
+                conf_files = { 'stylua.toml', '.stylua.toml' },
+                filename = 'stylua.toml',
             },
             ruff_format = {
                 mason_name = 'ruff',
@@ -322,6 +348,9 @@ return {
                 args = { '--config-file' },
                 conf_files = { '.xmlformat.conf', 'xmlformat.conf' },
                 filename = '.xmlformat.conf',
+            },
+            terraform_fmt = {
+                mason_name = 'terraform',
             },
         },
     },
