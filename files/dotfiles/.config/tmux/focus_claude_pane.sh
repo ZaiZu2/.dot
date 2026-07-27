@@ -21,11 +21,11 @@ for pane_info in $( \
   fi
   # Idle pane exists
   if [ -n "$PANE_CMD" ] && ! pgrep -P "$PANE_PID" >/dev/null 2>&1; then
-    tmux send-keys -t "$PANE_ID" "claude" C-m
+    tmux send-keys -t "$PANE_ID" "c" C-m
     tmux select-pane -t "$PANE_ID"
     exit
   fi
 done
 
 # Create a pane if none are available
-tmux split-window -h "claude"
+tmux split-window -h "zsh -ic c"

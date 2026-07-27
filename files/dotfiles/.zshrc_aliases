@@ -15,6 +15,42 @@ for i in {2..6}; do
 done
 
 alias n='nvim'
+
+# claude ──HTTP──▶ headroom :8787 ──SigV4──▶ Bedrock.
+# CLAUDE_CODE_USE_BEDROCK is unset so Claude Code speaks HTTP (proxyable) instead
+# of boto3 direct; the proxy signs Bedrock on the outbound leg. `bedrock/` prefix
+# on the ARNs is required by litellm's provider router.
+c() {
+    local port=8787
+    local region="${AWS_REGION:-eu-west-1}"
+    if curl -fsS "http://127.0.0.1:${port}/health" >/dev/null 2>&1; then
+        echo "Reusing Headroom proxy already running on :${port}"
+    else
+        echo "Starting Headroom proxy on :${port} (backend=bedrock region=${region})..."
+        uvx --with boto3 --from 'headroom-ai[proxy]' headroom proxy \
+            --backend bedrock --region "$region" --port "$port" \
+            >/tmp/headroom-proxy.log 2>&1 &
+        local pid=$!
+        for _ in {1..60}; do
+            curl -fsS "http://127.0.0.1:${port}/health" >/dev/null 2>&1 && break
+            sleep 0.5
+        done
+        curl -fsS "http://127.0.0.1:${port}/health" >/dev/null 2>&1 || {
+            echo "Headroom proxy failed to start (see /tmp/headroom-proxy.log)" >&2
+            kill "$pid" 2>/dev/null
+            return 1
+        }
+    fi
+    # Claude Code talks HTTP to the proxy; the proxy signs Bedrock calls with the
+    # inference-profile ARNs below. `bedrock/` prefix is required by litellm's router.
+    CLAUDE_CODE_USE_BEDROCK="" \
+        ANTHROPIC_BASE_URL="http://127.0.0.1:${port}" \
+        ANTHROPIC_API_KEY="${ANTHROPIC_API_KEY:-dummy}" \
+        ANTHROPIC_DEFAULT_OPUS_MODEL="bedrock/arn:aws:bedrock:eu-west-1:843931780115:application-inference-profile/xvfls0cjpliw" \
+        ANTHROPIC_DEFAULT_SONNET_MODEL="bedrock/arn:aws:bedrock:eu-west-1:843931780115:application-inference-profile/qtkbfce6116o" \
+        ANTHROPIC_DEFAULT_HAIKU_MODEL="bedrock/arn:aws:bedrock:eu-west-1:843931780115:application-inference-profile/idzo2cucprm0" \
+        claude "$@"
+}
 alias o='opencode'
 alias lg='lazygit'
 alias dot='zsh $DOT/dot.sh'
@@ -43,7 +79,8 @@ alias grs='git restore --staged'
 alias gR='git restore --staged $(git rev-parse --show-toplevel) && git restore $(git rev-parse --show-toplevel)'
 alias gA='git commit --amend --no-verify --no-edit'
 
-gw() { # fuzzy search through worktrees available in the repo
+# Fuzzy-pick a worktree in the current repo and cd into it.
+gw() {
     git rev-parse --git-dir >/dev/null 2>&1 || {
         echo "Not in a git repo" >&2
         return 1
@@ -56,6 +93,7 @@ gw() { # fuzzy search through worktrees available in the repo
 }
 alias gwl='git worktree list'
 
+# Add a worktree for <branch> (creates it off origin/HEAD if new), cd in, uv sync.
 gwa() {
     local new_branch="$1"
     local new_branch_exists=$(git branch -a --list "$new_branch" "*/$new_branch")
@@ -81,6 +119,7 @@ _gwa_completion() {
     _values 'branches' "${branches[@]}"
 }
 
+# Remove worktree named <name> (defaults to cwd); -f/--force to discard changes.
 gwr() {
     local force=0
     local worktree_name=""
@@ -99,7 +138,11 @@ gwr() {
         return 1
     }
 
-    [ "$force" -eq 1 ] && git worktree remove --force "$worktree_path" || git worktree remove "$worktree_path"
+    if [ "$force" -eq 1 ]; then
+        git worktree remove --force "$worktree_path" || return 1
+    else
+        git worktree remove "$worktree_path" || return 1
+    fi
     [ "$worktree_path" = "$(pwd)" ] && cd "$repo_dir"
 }
 _gwr_completion() {

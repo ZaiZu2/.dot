@@ -45,5 +45,5 @@ tmux select-window -t "$target"
 
 # After central_three_panes.sh (from a 1-pane start): focus is on the right
 # pane, layout is [left 25%][center 50%][right 25%].
-tmux send-keys -t "$target" 'claude' C-m
+tmux send-keys -t "$target" 'c' C-m
 tmux select-pane -t "$target" -L
