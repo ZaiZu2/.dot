@@ -51,6 +51,7 @@ c() {
         ANTHROPIC_DEFAULT_HAIKU_MODEL="bedrock/arn:aws:bedrock:eu-west-1:843931780115:application-inference-profile/idzo2cucprm0" \
         claude "$@"
 }
+alias headroom='uvx --with boto3 --from headroom-ai\[proxy\] headroom'
 alias o='opencode'
 alias lg='lazygit'
 alias dot='zsh $DOT/dot.sh'
