@@ -13,25 +13,35 @@ trap 'rm -rf "$tmp"' EXIT
 list="$tmp/list"
 sel="$tmp/sel"
 
-for d in "$DEV"/*/; do
-  d="${d%/}"
-  if [ -e "$d/.git" ]; then
-    # Regular repo (or worktree checkout). Only fork git if it has linked
-    # worktrees; otherwise the top-level dir is the only entry.
-    if [ -d "$d/.git/worktrees" ] && [ -n "$(ls -A "$d/.git/worktrees" 2>/dev/null)" ]; then
-      git -C "$d" worktree list --porcelain 2>/dev/null |
-        awk '/^worktree /{print $2}'
-    else
+# Walk ~/dev; recurse into anything that isn't itself a repo so nested
+# layouts like ~/dev/<group>/<repo> get picked up. Never descends into a
+# repo's own tree.
+scan_dir() {
+  for d in "$1"/*/; do
+    d="${d%/}"
+    [ -d "$d" ] || continue
+    if [ -e "$d/.git" ]; then
+      # Regular repo (or worktree checkout). Only fork git if it has linked
+      # worktrees; otherwise the top-level dir is the only entry.
+      if [ -d "$d/.git/worktrees" ] && [ -n "$(ls -A "$d/.git/worktrees" 2>/dev/null)" ]; then
+        git -C "$d" worktree list --porcelain 2>/dev/null |
+          awk '/^worktree /{print $2}'
+      else
+        printf '%s\n' "$d"
+      fi
+    elif [ -f "$d/HEAD" ] && [ -f "$d/config" ] && [ -d "$d/refs" ]; then
+      # Bare repo — its worktrees live one level deeper. Emit both the bare
+      # dir itself (for git ops at the top level) and each checked-out worktree.
       printf '%s\n' "$d"
+      git -C "$d" worktree list --porcelain 2>/dev/null |
+        awk -v bare="$d" '/^worktree /{ if ($2 != bare) print $2 }'
+    else
+      scan_dir "$d"
     fi
-  elif [ -f "$d/HEAD" ] && [ -f "$d/config" ] && [ -d "$d/refs" ]; then
-    # Bare repo — its worktrees live one level deeper. Emit both the bare
-    # dir itself (for git ops at the top level) and each checked-out worktree.
-    printf '%s\n' "$d"
-    git -C "$d" worktree list --porcelain 2>/dev/null |
-      awk -v bare="$d" '/^worktree /{ if ($2 != bare) print $2 }'
-  fi
-done | sort -uf |
+  done
+}
+
+scan_dir "$DEV" | sort -uf |
   awk -v dev="$DEV/" '
       { p=$0; if (index(p, dev)==1) p=substr(p, length(dev)+1);
         paths[NR]=$0; rels[NR]=p;

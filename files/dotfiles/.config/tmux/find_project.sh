@@ -33,10 +33,21 @@ tmux list-panes -a \
     fi
   done >>"$dots_file"
 
+# Prefer the middle pane's cwd (pane_index == 2, per the 3-pane layout in
+# `central_three_panes.sh`) — side panes often run auxiliary tools whose cwd
+# doesn't reflect the project. Falls back to the active pane's cwd for
+# windows that don't follow the layout.
+middle_file="$tmp/middle"
+tmux list-panes -a \
+  -F '#{session_name}:#{window_index}	#{pane_index}	#{pane_current_path}' |
+  awk -F'\t' '$2==2 {print $1"\t"$3}' >"$middle_file"
+
 : >"$raw"
 tmux list-windows -a \
   -F '#{session_name}:#{window_index}	#{session_name}	#{pane_current_path}' |
   while IFS='	' read -r target sess abs; do
+    mid=$(awk -F'\t' -v t="$target" '$1==t {print $2; exit}' "$middle_file")
+    [ -n "$mid" ] && abs="$mid"
     dots=$(awk -F'\t' -v t="$target" '
       $1==t {
         if (n++) printf " "
