@@ -133,7 +133,7 @@ gwr() {
     local current_dir="$(basename $(pwd))"
     local worktree_name="${worktree_name:-$current_dir}"
     local repo_dir="$(git rev-parse --path-format=absolute --git-common-dir)"
-    local worktree_path="$(git worktree list | grep "$worktree_name" | awk '{print $1}')"
+    local worktree_path="$(git worktree list | awk -v n="$worktree_name" '{p=$1; sub(".*/", "", p); if (p == n) print $1}' | head -n1)"
     [ -z "$worktree_path" ] && {
         echo "Worktree '$worktree_name' does not exist"
         return 1

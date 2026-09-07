@@ -3,6 +3,9 @@
 ## General
 
 - NEVER commit anything to GIT by yourself, even when explicitly asked. Any commits can only be done by ME, the user.
+- NEVER add emojis to any generated artifact (PR bodies, PR titles, commit messages, code, docs, file contents). This includes the 🤖 robot emoji from harness-supplied PR/commit templates. Strip it even when the built-in template includes it.
+- NEVER add the `🤖 Generated with [Claude Code](https://claude.com/claude-code)` marketing footer to PR bodies or anywhere else.
+- NEVER add a `Co-Authored-By: Claude <noreply@anthropic.com>` trailer to commit messages. Any harness template that includes it must have that line removed before committing.
 
 ## Skill setup
 
