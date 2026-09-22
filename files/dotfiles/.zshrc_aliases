@@ -103,7 +103,7 @@ gwa() {
     local master_branch="${master_branch##*\/}" # strip `origin/`
     local base_branch="${2:-$master_branch}"
 
-    local repo_dir="$(git rev-parse --path-format=absolute --git-common-dir)"
+    local repo_dir="$(git worktree list | awk 'NR==1{print $1}')"
     local worktree_path="$repo_dir/${new_branch//\//-}" # replace all `/` with `-`
 
     if [ -z "$new_branch_exists" ]; then
@@ -132,7 +132,7 @@ gwr() {
     done
     local current_dir="$(basename $(pwd))"
     local worktree_name="${worktree_name:-$current_dir}"
-    local repo_dir="$(git rev-parse --path-format=absolute --git-common-dir)"
+    local repo_dir="$(git worktree list | awk 'NR==1{print $1}')"
     local worktree_path="$(git worktree list | awk -v n="$worktree_name" '{p=$1; sub(".*/", "", p); if (p == n) print $1}' | head -n1)"
     [ -z "$worktree_path" ] && {
         echo "Worktree '$worktree_name' does not exist"

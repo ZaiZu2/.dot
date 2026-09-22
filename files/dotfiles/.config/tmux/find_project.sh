@@ -3,14 +3,16 @@
 # Runs the popup itself; bound directly to a tmux key.
 #
 # One colored dot per claude pane in the window (multiple sessions → multiple
-# dots). Green = idle waiting for input. Red = actively working ("esc to
-# interrupt" visible on screen).
+# dots). Green = running quietly. Red = actively working ("esc to interrupt"
+# visible on screen). Yellow = waiting for user input (marker file dropped by
+# the Notification hook in claude-waiting-mark.sh).
 
 set -eu
 
 DEV="${HOME}/dev"
 MAX_W=160
 MAX_H=25
+WAIT_DIR="${TMPDIR:-/tmp}/claude-waiting"
 
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
@@ -18,16 +20,33 @@ list="$tmp/list"
 sel="$tmp/sel"
 raw="$tmp/raw"
 dots_file="$tmp/dots"
+panes_all="$tmp/panes_all"
 
-# One server-wide list-panes lists every pane running `claude` as its
-# foreground command. Only those panes get a capture-pane check.
-: >"$dots_file"
+# Snapshot every live pane once; drives both the claude-pane loop and stale-
+# marker cleanup below.
 tmux list-panes -a \
-  -F '#{session_name}:#{window_index}	#{pane_id}	#{pane_current_command}' |
-  awk -F'\t' '$3 ~ /^claude(\.exe)?$/' |
+  -F '#{session_name}:#{window_index}	#{pane_id}	#{pane_current_command}' \
+  >"$panes_all"
+
+# Prune waiting markers whose panes no longer exist (Claude crashed / pane
+# closed with the marker still in place).
+if [ -d "$WAIT_DIR" ]; then
+  live_ids=$(awk -F'\t' '{sub(/^%/, "", $2); print $2}' "$panes_all")
+  for marker in "$WAIT_DIR"/*; do
+    [ -e "$marker" ] || continue
+    id=$(basename "$marker")
+    printf '%s\n' "$live_ids" | grep -qx "$id" || rm -f "$marker"
+  done
+fi
+
+# Claude panes only, tagged R / Y / G.
+: >"$dots_file"
+awk -F'\t' '$3 ~ /^claude(\.exe)?$/' "$panes_all" |
   while IFS='	' read -r target pane_id cmd; do
     if tmux capture-pane -p -t "$pane_id" 2>/dev/null | tail -n 5 | grep -q 'esc to interrupt'; then
       printf '%s\tR\n' "$target"
+    elif [ -e "$WAIT_DIR/${pane_id#%}" ]; then
+      printf '%s\tY\n' "$target"
     else
       printf '%s\tG\n' "$target"
     fi
@@ -51,7 +70,9 @@ tmux list-windows -a \
     dots=$(awk -F'\t' -v t="$target" '
       $1==t {
         if (n++) printf " "
-        if ($2=="R") printf "\033[31m●\033[0m"; else printf "\033[32m●\033[0m"
+        if ($2=="R")      printf "\033[31m●\033[0m"
+        else if ($2=="Y") printf "\033[33m●\033[0m"
+        else              printf "\033[32m●\033[0m"
       }' "$dots_file")
     # Collapse deep cwds to the enclosing repo/worktree root so the label
     # reads as "repo" or "repo/worktree" instead of "repo/src/foo/bar".

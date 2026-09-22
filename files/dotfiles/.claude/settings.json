@@ -1,5 +1,47 @@
 {
     "env": {},
+    "model": "opus",
+    "statusLine": {
+        "type": "command",
+        "command": "~/.claude/statusline.sh"
+    },
+    "hooks": {
+        "PreToolUse": [],
+        "Notification": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "/Users/AB0383Q/.claude/hooks/claude-waiting-mark.sh mark"
+                    }
+                ]
+            }
+        ],
+        "UserPromptSubmit": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "/Users/AB0383Q/.claude/hooks/claude-waiting-mark.sh clear"
+                    }
+                ]
+            }
+        ]
+    },
+    "alwaysThinkingEnabled": true,
+    "effortLevel": "medium",
+    "tui": "fullscreen",
+    "autoCompactEnabled": true,
+    "mcpServers": {
+        "rag": {
+            "command": "python3",
+            "args": [
+                "/Users/AB025UL/Documents/programs/ssh_tools/ai/mcp/servers/rag-mcp-server.py"
+            ],
+            "env": {},
+            "description": "Prime Services RAG API — creds from macOS Keychain (service: prime-rag)"
+        }
+    },
     "permissions": {
         "allow": [
             "Bash(git fetch *)",
@@ -130,25 +172,5 @@
             "Bash(mv */ /dev/null*)"
         ],
         "defaultMode": "auto"
-    },
-    "model": "sonnet",
-    "hooks": {},
-    "statusLine": {
-        "type": "command",
-        "command": "~/.claude/statusline.sh"
-    },
-    "alwaysThinkingEnabled": true,
-    "effortLevel": "high",
-    "editorMode": "normal",
-    "autoCompactEnabled": true,
-    "mcpServers": {
-        "rag": {
-            "command": "python3",
-            "args": [
-                "/Users/AB025UL/Documents/programs/ssh_tools/ai/mcp/servers/rag-mcp-server.py"
-            ],
-            "env": {},
-            "description": "Prime Services RAG API — creds from macOS Keychain (service: prime-rag)"
-        }
     }
 }
