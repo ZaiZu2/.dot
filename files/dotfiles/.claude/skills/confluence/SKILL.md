@@ -1,85 +1,38 @@
 ---
 name: confluence
-title: Confluence Documentation Manager
-description: Create and update Confluence documentation pages directly from Claude
-permissions:
-  - bash
+description: "[hitl] Get, search, create and update Confluence pages."
+model: sonnet
 ---
 
-# Confluence Documentation Manager
+# Confluence
 
-This skill enables Claude to create and update Confluence documentation pages.
+Read and write Confluence pages on `https://absa.atlassian.net` as `jakub.kawecki@absa.africa`.
 
-## Capabilities
+## Command
 
-- **Update Documentation Pages**: Update existing Confluence pages with new content
-- **Create Documentation Pages**: Create new Confluence pages in specified spaces
-- **Get Page Content**: Retrieve current content from Confluence pages
-- **Search Pages**: Find pages by title or space
-
-## Usage Examples
-
-### Update Existing Documentation
-"Update the Confluence page 'SFTP Configuration Guide' with the new authentication steps"
-
-"Update page ID 123456 with this content: [content here]"
-
-### Create New Documentation
-"Create a new Confluence page in the TECH space titled 'SSH Key Management'"
-
-### View Current Content
-"Show me the current content of the Confluence page 'API Documentation'"
-
-## Requirements
-
-### User Setup (one-time)
-
-**Store API Token in Keychain**:
 ```bash
-# Save API token to keychain
-security add-generic-password -s "jira-api-token" -a "$USER" -w "YOUR_API_TOKEN_HERE"
-
-# Verify API token is stored (this will print the token)
-security find-generic-password -s "jira-api-token" -a "$USER" -w
+~/.claude/skills/.venv/bin/python ~/.claude/skills/confluence/confluence_manager.py \
+  --url https://absa.atlassian.net --username jakub.kawecki@absa.africa <subcommand> ...
 ```
 
-## Configuration
+| Subcommand | Flags |
+|------------|-------|
+| `get` | `--page-id ID` or `--title T --space KEY` |
+| `search` | `--query Q`, optional `--space KEY` |
+| `create` | `--space KEY --title T --content C`, optional `--parent-id ID`, `--format markdown\|html` |
+| `update` | `--page-id ID --content C`, optional `--title T`, `--format markdown\|html` |
 
-Confluence instance details:
-- **URL**: `https://absa.atlassian.net`
-- **Username**: `jakub.kawecki@absa.africa`
+`--format` defaults to `markdown`.
 
-## Implementation
+## Rules
 
-Uses the shared Python environment at `~/.claude/skills/.venv` to execute `confluence_manager.py`. The script:
-- Retrieves API token from macOS Keychain (service: `jira-api-token`)
-- Accepts URL and username as command-line arguments
+- Before `create` or `update`, show the title, target (space/parent or page) and content, and wait for approval. Pages
+  are shared, so never write without it.
+- `update` replaces the whole page body. Fetch the page first with `get` and merge your changes into it.
+- Resolve a page by title with `get`/`search` when the user gives no ID.
+- After writing, report the page title and URL.
 
-Example commands:
-```bash
-# Get page by ID
-~/.claude/skills/.venv/bin/python ~/.claude/skills/confluence/confluence_manager.py \
-  --url https://absa.atlassian.net \
-  --username jakub.kawecki@absa.africa \
-  get --page-id 123456
+## Auth
 
-# Update page
-~/.claude/skills/.venv/bin/python ~/.claude/skills/confluence/confluence_manager.py \
-  --url https://absa.atlassian.net \
-  --username jakub.kawecki@absa.africa \
-  update --page-id 123456 --content "New content here"
-
-# Create page
-~/.claude/skills/.venv/bin/python ~/.claude/skills/confluence/confluence_manager.py \
-  --url https://absa.atlassian.net \
-  --username jakub.kawecki@absa.africa \
-  create --space TECH --title "New Page" --content "Page content"
-
-# Search pages
-~/.claude/skills/.venv/bin/python ~/.claude/skills/confluence/confluence_manager.py \
-  --url https://absa.atlassian.net \
-  --username jakub.kawecki@absa.africa \
-  search --query "SFTP" --space TECH
-```
-
-**Note:** All skills now share a common Python environment managed at `~/.claude/skills/`. Dependencies are defined in `~/.claude/skills/pyproject.toml`.
+The script reads the API token from the system keyring (service `jira-api-token`, user `$USER`, shared with `/ticket`).
+If auth fails, tell the user to run `~/.claude/skills/.venv/bin/keyring set jira-api-token "$USER"`.

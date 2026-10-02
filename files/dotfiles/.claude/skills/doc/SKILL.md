@@ -1,69 +1,55 @@
 ---
 name: doc
-title: Docstring Generator
 description:
-    Generate docstrings for code objects (functions, methods, classes). Use when the user invokes /doc or asks to add,
-    update, or generate docstrings for code.
+    "[auto] Add or update docstrings for specified files or code objects (functions, methods, classes). Use when the user
+    invokes /doc or asks for docstrings."
+context: fork
+model: sonnet
 ---
 
-# Docstring Generator
+# Docstrings
 
-Generate docstrings for code objects (functions/methods/classes).
+Add or update docstrings in place with the Edit tool.
 
-## Mode of Operation
+## Target
 
-**Detect mode based on context:**
+Document only what the request names: files, or specific functions, classes or methods in them. If the request names
+no target, stop and reply only that files or code objects must be specified.
 
-- If the user provides code in their message (selected text), work with that selection
-- If user provides a file or multiple files, work with these full files
-- If no code is provided in the message, use the current file/buffer
-- Use the Edit tool to add/update the docstring in the file, triggering a diff view for the user to review
+## Rules
 
-## Common Rules (All Variants)
+- Functions and methods: imperative summary line ("Return the sum"), descriptive body. If the docstring is a single
+  merged paragraph, use the imperative.
+- Classes: descriptive form ("Represents a user account").
+- Wrap names of objects and proper names in backticks.
+- No blank line between the docstring and the code that follows.
+- Maximum line width is 100 characters.
+- Omit parameters and attributes whose description would add nothing beyond the name and type.
+- Put information that applies to several parameters or the whole function in a `Note:` block instead of repeating it.
 
-- ALWAYS follow language-specific formatting rules below
-- ALWAYS use imperative form for functions/methods ("Return the sum", "Calculate the result")
-    - Header should use IMPERATIVE form
-    - Body should use DESCRIPTIVE form
-    - If they both are merged, IMPERATIVE form should be used
-- ALWAYS use descriptive form for classes ("A container for...", "Represents a user account").
-- ALWAYS wrap proper names or names of objects in backticks `` when writing a docstring
-- NEVER add empty lines between the docstring and function content
-- Maximum line width is 100 chars
-- Skip listing class attributes / function parameters in the docstring if they are obvious or their description does now
-  introduce any new information
-- Use a `Note:` block for cross-cutting information that applies to multiple parameters or the function as a whole, rather
-  than duplicating it across individual parameter descriptions
+## Python
 
-## Language-Specific Formatting
+- Google style. Opening and closing quotes on their own lines.
+- Leave out types already given by type hints.
+- For simple functions, merge the summary and description into one paragraph, still in Google style.
+- Skip `__init__` docstrings that would only say the attributes get set.
+- For type aliases and complex type assignments (`RootModel[...]`, `TypedDict`, `dict[...]` aliases), add an inline `#`
+  comment explaining the structure and meaning; put it on the line above if it would exceed the line width.
 
-### Python
+```python
+"""
+Brief summary, imperative for functions and methods.
 
-- ALWAYS use Google-style docstrings
-- ALWAYS Skip type hints in docstring if code is already type-hinted
-- In case function is simple, Merge header with description into a single paragraph. You should still keep the
-  Google-style of docstring
-- Docstring quotes MUST be defined on separate line (where applicable)
-- Skip `__init__` docstrings if all they are generic and all they do is setup instance attributes
-- For type aliases and complex type assignments (e.g. `RootModel[...]`, `TypedDict`, `dict[...]` aliases), ALWAYS add an
-  inline `#` comment explaining the structure and semantics of the type. If comment would make the line too long, attach
-  it above
-- **Example structure**:
+Args:
+    param: Description
+    longer_param: Long description which is longer than 100 characters and will wrap into
+                  a new line which is indented deep enough to match the description in
+                  the first line
 
-    ```python
-    """
-    Brief description of function/class. Written in IMPERATIVE form for functions/methods.
+Returns:
+    Description of return value
 
-    Args:
-        param: Description
-        longer_param: Long description which is longer than 100 characters and will wrap into
-                      a new line which is indented deep enough to match the description in
-                      the first line
-
-    Returns:
-        Description of return value
-
-    Raises:
-        ExceptionType: When this exception occurs
-    """
-    ```
+Raises:
+    ExceptionType: When this exception occurs
+"""
+```

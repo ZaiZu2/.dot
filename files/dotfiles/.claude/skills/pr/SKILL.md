@@ -1,144 +1,59 @@
 ---
-name: create-pr
-title: GitHub PR Manager
-description: Automatically create or update a GitHub PR for the current branch with an AI-generated description
-permissions:
-  - bash
+name: pr
+description: "[auto] Create or update the GitHub PR for the current branch with a generated title and description."
+context: fork
+model: sonnet
 ---
 
-# GitHub PR Manager
+# Pull Request
 
-This skill enables Claude to analyze all changes on the current branch and automatically create or update a GitHub Pull Request with a structured, informative description.
+Create a PR for the current branch, or update its existing one, with a description generated from the changes.
 
-## Capabilities
+## 1. Gather changes
 
-- **Smart Create or Update**: Detects if a PR already exists for the branch and updates it, otherwise creates a new one
-- **JIRA Integration**: Extracts ticket ID from branch name, renders it as a header link at the top of the description
-- **AI-Generated Summary**: High-level overview of what the PR achieves
-- **Implementation Section**: Technical description of how the change was implemented
+Run `git branch --show-current`, `git log --oneline master..HEAD` and `git diff master...HEAD`. Check for an existing PR
+with `gh pr view --json number,title,url`: success means update, failure means create.
 
-## Usage Examples
+## 2. Find the ticket
 
-### Basic — auto-generate everything
-`/pr`
+Look for `[A-Z]+-[0-9]+` in the branch name (e.g. `FAPE-1319`). If found, link it as
+`https://absa.atlassian.net/browse/<TICKET>`; if not, omit the ticket header.
 
-### With a title hint
-`/pr FAPE-1319: add FX trade reconciliation for ABSA`
-
-### After pushing new commits — refresh the PR description
-`/pr`
-
-## Implementation
-
-Uses `gh` CLI and `git` — no additional dependencies required.
-
-```bash
-# Get current branch
-git branch --show-current
-
-# Find divergence from master
-git log --oneline master..HEAD
-
-# Full diff for analysis
-git diff master...HEAD
-
-# Check for existing PR
-gh pr view --json number,title,url 2>/dev/null
-
-# Create PR
-gh pr create --base master --title "..." --body "..."
-
-# Update existing PR body
-gh pr edit --body "..."
-```
-
-## Instructions for Claude
-
-When this skill is invoked with `/pr [optional title hint]`:
-
-### 1. Gather branch context
-
-Run these commands and capture their output:
-```bash
-git branch --show-current
-git log --oneline master..HEAD
-git diff master...HEAD
-```
-
-### 2. Extract JIRA ticket
-
-- Scan the branch name for a pattern matching `[A-Z]+-[0-9]+` (e.g. `FAPE-1319`, `JIRA-42`)
-- If found, construct the link: `https://absa.atlassian.net/browse/<TICKET>`
-- If not found, omit the JIRA section from the description silently
-
-### 3. Check for existing PR
-
-```bash
-gh pr view --json number,title,url 2>/dev/null
-```
-
-- If the command succeeds (exit code 0), a PR exists — you will **update** it
-- If it fails (no PR), you will **create** a new one
-
-### 4. Analyze changes and generate PR description
-
-Read through the git log and diff output and write:
+## 3. Write the description
 
 ```markdown
 ### [TICKET](https://absa.atlassian.net/browse/TICKET)
 
 ## Summary
 
-- [Bullet describing one user-facing outcome or business goal the PR achieves]
-- [Additional bullet if the PR bundles more than one outcome]
+- <outcome the PR achieves>
 
 ## Implementation
 
-- [Bullet naming a specific new/changed function, class, or file and what it does]
-- [Bullet for each additional significant technical change — new data structure, refactor, contract, etc.]
-- [Bullet for any notable supporting changes (CI, config, migrations, docs)]
+- <specific changed function, class or file, and what it does>
+- <supporting changes: CI, config, migrations, docs>
 ```
 
-**Rules:**
-- Omit the `### [TICKET]` header entirely if no ticket was found
-- **Prefer bullet lists over prose.** By default both Summary and Implementation are bullet lists, one self-contained point per bullet. Name concrete files, functions, or classes in Implementation bullets.
-- Summary bullets = what it achieves (user-facing / business outcome). Implementation bullets = how it was built (technical, specific).
-- **Exception — small/single-purpose PRs:** when the change is small enough that bullets would feel forced (e.g. a one-line fix, a docstring tweak, a single rename), you may write Summary and/or Implementation as one short sentence of prose instead. Use this sparingly — if in doubt, bullet.
-- Keep bullets tight — one line each where possible, no padding or filler phrases
-- Do not include a "Generated with Claude Code" footer
+- Summary says what the PR achieves; Implementation says how, naming concrete files, functions or classes.
+- One tight point per bullet, no filler. For a trivially small change, one sentence of prose per section is fine.
+- No "Generated with Claude Code" footer.
 
-### 5. Determine PR title
+## 4. Choose the title
 
-Priority order:
-1. If user passed a title hint after `/pr`, use it verbatim
-2. Otherwise: `<TICKET>: <short description>` where description is derived from the most meaningful commit or a one-line summary of the changes
-3. If no ticket: just a short descriptive title from the changes
+Use a title from the request verbatim. Otherwise `<TICKET>: <short description>`, or just the description without a
+ticket.
 
-### 6. Create or update the PR
+## 5. Create or update
 
-**If creating:**
 ```bash
-gh pr create \
-  --base master \
-  --title "<title>" \
-  --body "$(cat <<'PRBODY'
-<generated description>
+gh pr create --base master --title "<title>" --body "$(cat <<'PRBODY'
+<description>
 PRBODY
 )"
 ```
 
-**If updating:**
-```bash
-gh pr edit \
-  --title "<title>" \
-  --body "$(cat <<'PRBODY'
-<generated description>
-PRBODY
-)"
-```
+To update, use `gh pr edit --title "<title>" --body ...` the same way.
 
-### 7. Confirm to user
+## 6. Report
 
-- Print whether the PR was **created** or **updated**
-- Print the PR URL
-- Show a short preview of the summary section
+State whether the PR was created or updated, its URL, and the Summary section.

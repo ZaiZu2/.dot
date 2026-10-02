@@ -1,153 +1,91 @@
 ---
 name: review
-title: PR Review
-description: Review code changes and provide structured feedback. Use when the user invokes /review or asks to review changes, review a diff, or review the current branch.
-permissions:
-  - bash
+description:
+    '[auto] Review a specified PR, commits or changes and give structured feedback. Use when the user invokes /review or
+    asks to review a specific PR, commits or changes.'
+context: fork
+model: claude-opus-5-5
 ---
 
-# PR Review
+# Code Review
 
-Analyze code changes and provide structured, actionable feedback organized by category.
+Review code changes and give specific, actionable feedback. This runs as a separate agent so the review isn't biased by
+the conversation that produced the change: judge it only by the diff, the surrounding code, commit messages and the PR
+description. Your final message must be the complete review, not a summary of it.
 
-## Usage Examples
+## 1. Gather changes
 
-### Review current branch against master
-`/review`
+Review what the request names: a PR (`gh pr diff`, `gh pr view`), commits or a commit range, or files or uncommitted
+changes. For PRs, diff against the PR's base branch. If the request names nothing, stop and reply only that a PR,
+commits or changes must be specified.
 
-### Review against a specific base
-`/review main`
-`/review origin/develop`
+## 2. Analyze
 
-### Review a specific diff range
-`/review HEAD~3 HEAD`
-`/review abc123 def456`
+Work out what the change is trying to achieve, then read every changed file and enough surrounding code to judge it.
 
-## Instructions for Claude
+- Read surrounding code before flagging something; it may be intentional.
+- If a finding depends on how a called function behaves (raises, returns `None`), read that function first.
+- Be proportionate: when there are blocking issues, skip nits.
 
-When this skill is invoked with `/review [base] [head]`:
+## 3. Write the review
 
-### 1. Determine diff range
+Include only sections with findings. Each finding is one bullet: a severity tag, `path:line`, and the issue.
 
-- **No arguments**: `git diff master...HEAD`
-- **One argument** (base branch/ref): `git diff <base>...HEAD`
-- **Two arguments** (base and head): `git diff <base>...<head>`
+- `[MUST]`: bugs, security issues, broken contracts
+- `[SHOULD]`: clearly better, not critical
+- `[NIT]`: style or low-impact
 
-Run the diff and also gather context:
-
-```bash
-# Get the diff
-git diff master...HEAD
-
-# Get list of changed files for orientation
-git diff master...HEAD --name-status
-
-# Get recent commits on this branch
-git log master..HEAD --oneline
-```
-
-### 2. Analyze the changes
-
-Read and understand:
-- What the change is trying to achieve (from commit messages and code intent)
-- All modified, added, and deleted files
-- The broader context around changed lines (read full files if needed using the Read tool)
-
-### 3. Produce the review
-
-Output a structured markdown review directly to the terminal. Use the following section structure, **only including sections where you have findings** — omit empty sections entirely.
-
----
-
-```
+```markdown
 ## Code Review
 
 ### Summary
-[1-2 sentences: what the change does and overall assessment]
 
----
+<1-2 sentences: what the change does and overall assessment>
 
 ### Correctness
-[Logic bugs, incorrect assumptions, off-by-one errors, race conditions, broken edge cases]
 
-Findings use this format:
-**`path/to/file.py:42`** — Description of the issue.
-
----
+- [MUST] `path/to/file.py:42`: <issue>
 
 ### Security
-[Injection risks, authentication/authorization issues, secrets or credentials in code,
- unsafe deserialization, unvalidated input at system boundaries]
-
----
 
 ### Code Quality
-[Unnecessary complexity, duplication, misleading naming, broken abstractions,
- dead code, over-engineering, violation of single responsibility]
-
----
 
 ### Type Safety
-[Missing or incorrect type hints, unsafe casts, ignored type errors, `Any` used where
- a specific type is known]
-
----
 
 ### Documentation
-[Missing or misleading docstrings, outdated comments, undocumented public APIs,
- complex logic with no explanation]
-
----
 
 ### Language-Specific
-[Issues specific to the language(s) used in the diff — see rules below]
-
----
 
 ### Verdict
-[One of: ✅ Looks good | ⚠️ Minor issues | ❌ Needs changes]
-[One sentence justification]
+
+<one-sentence justification>
 ```
 
----
+Section scope:
 
-### 4. Severity labelling
+- **Correctness**: logic bugs, wrong assumptions, off-by-one errors, races, broken edge cases
+- **Security**: injection, authn/authz, secrets in code, unsafe deserialization, unvalidated input at boundaries
+- **Code Quality**: needless complexity, duplication, misleading names, broken abstractions, dead code
+- **Type Safety**: missing or wrong hints, unsafe casts, ignored type errors, `Any` where a type is known
+- **Documentation**: missing or misleading docstrings and comments, undocumented public APIs
+- **Language-Specific**: the checks below
 
-Prefix each finding with a severity tag:
+## Language checks
 
-- `[MUST]` — Must be fixed: bugs, security issues, broken contracts
-- `[SHOULD]` — Strong suggestion: non-critical but clearly better
-- `[NIT]` — Minor: style, preference, low-impact improvements
+Python:
 
-### 5. Language-Specific Rules
-
-Apply these rules in the **Language-Specific** section when the relevant language is detected in the diff.
-
-#### Python
-
-- Mutable default arguments (e.g. `def f(x=[])`) are a bug
+- Mutable default arguments
 - Bare `except:` or `except Exception:` that silences errors
-- Using `type(x) == Foo` instead of `isinstance(x, Foo)`
+- `type(x) == Foo` instead of `isinstance`
 - Missing `__all__` in public modules
-- Blocking I/O inside async functions
-- f-strings used for logging (use `%s` or `extra=` for lazy evaluation)
-- Direct `.format()` on SQL strings (SQL injection risk)
+- Blocking I/O in async functions
+- f-strings in logging calls (use `%s` or `extra=`)
+- `.format()` or interpolation into SQL
 
-#### TypeScript / JavaScript
+TypeScript / JavaScript:
 
-- `any` type used where a specific type is known
+- `any` where a type is known
 - `console.log` left in production code
-- Missing `await` on async calls
-- Direct string interpolation into SQL or shell commands
+- Missing `await`
+- String interpolation into SQL or shell commands
 - `==` instead of `===`
-
----
-
-### General rules
-
-- **Be specific**: always cite file and line number when possible
-- **Be concise**: one finding per bullet, no padding
-- **Be proportionate**: don't flag nits if there are blocking issues — focus attention on what matters
-- **Skip empty sections**: if there are no findings for a category, omit it
-- **Context matters**: read surrounding code before flagging something — it may be intentional
-- **Verify before flagging**: if a finding depends on the behavior of a called function (e.g. whether it raises or returns None), read that function's source before including the finding. Do not assume behavior — trace through to the implementation
