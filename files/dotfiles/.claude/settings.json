@@ -23,6 +23,10 @@
     },
     "alwaysThinkingEnabled": true,
     "effortLevel": "high",
+    "statusLine": {
+        "type": "command",
+        "command": "~/.claude/statusline.sh"
+    },
     "mcpServers": {
         "rag": {
             "command": "python3",

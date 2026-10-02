@@ -55,9 +55,9 @@ Zettelkasten Note Generator - Generate markdown notes from conversation context.
 - Location: `note/`
 - Dependencies: None (uses `zk` CLI)
 
-### `/prd`
-Feature Planning & PRD - Interview-driven feature planning that cross-checks answers against the codebase and outputs a PRD.
-- Location: `prd/`
+### `/spec`
+Feature Spec - Interview-driven feature planning that cross-checks answers against the codebase and outputs a spec.
+- Location: `spec/`
 - Output: `<repo root>/.claude/docs/<feature-slug>.md`
 - Dependencies: None
 
@@ -82,7 +82,7 @@ Keep this list updated as new conventions come up while refining skills.
 - **Model choice.** Set `model` on forked skills and routine inline ones
   (API wrappers, note-taking): `sonnet` (latest Sonnet) for routine work,
   a pinned Opus ID where judgment matters (reviews). Leave it unset on
-  skills that need the session's model, like `prd`.
+  skills that need the session's model, like `spec`.
 - **Supported frontmatter only.** Unknown keys such as `title` or
   `permissions` are ignored locally and rejected by claude.ai. See
   https://code.claude.com/docs/en/skills for the valid fields.
