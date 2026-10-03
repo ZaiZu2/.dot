@@ -47,7 +47,7 @@ symlink_dotfiles() {
 }
 
 # Symlink every file under <src_root> into <dest_root>, keeping the tree structure. A non-empty <prefix> is prepended
-# to the first path component, e.g. prefix 'ps_' maps 'note/SKILL.md' to '<dest_root>/ps_note/SKILL.md'.
+# to the first path component, e.g. prefix 'ps-' maps 'note/SKILL.md' to '<dest_root>/ps-note/SKILL.md'.
 symlink_tree() {
   local src_root=$1
   local dest_root=$2
@@ -94,7 +94,7 @@ symlink_tree() {
 }
 
 # Link skills from an external .claude directory (e.g. a work repo) into ~/.claude/skills. A non-empty <prefix> is
-# joined to each skill name with '_', e.g. prefix 'ps' maps 'note' to 'ps_note'.
+# joined to each skill name with '-', e.g. prefix 'ps' maps 'note' to 'ps-note'.
 link_claude() {
   local claude_dir=$1
   local prefix=${2-}
@@ -107,10 +107,10 @@ link_claude() {
 
   validate_claude_prefix "$prefix" || return 1
 
-  symlink_tree "$(realpath "$claude_dir")/skills" "$HOME/.claude/skills" "$force" "${prefix:+${prefix}_}"
+  symlink_tree "$(realpath "$claude_dir")/skills" "$HOME/.claude/skills" "$force" "${prefix:+${prefix}-}"
 }
 
-# Remove ~/.claude/skills/<prefix>_* symlinks that point into <claude_dir>/skills, then any emptied skill directories
+# Remove ~/.claude/skills/<prefix>-* symlinks that point into <claude_dir>/skills, then any emptied skill directories
 clean_claude() {
   local claude_dir=$1
   local prefix=${2-}
@@ -129,7 +129,7 @@ clean_claude() {
   local src_root="$(realpath "$claude_dir")/skills"
   local removed=0
 
-  for skill_dir in "$HOME/.claude/skills/${prefix}_"*/; do
+  for skill_dir in "$HOME/.claude/skills/${prefix}-"*/; do
     [ -d "$skill_dir" ] || continue
     skill_dir=${skill_dir%/}
 

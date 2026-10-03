@@ -51,7 +51,7 @@ print_help() {
 		  claude <path> [-p|--prefix <prefix>] [-f|--force] [-c|--clean]
 		      Symlink skills from an external .claude directory into ~/.claude/skills.
 		      Options:
-		        -p, --prefix <prefix>    Word joined to each skill name with '_', e.g. 'ps' gives 'ps_note'.
+		        -p, --prefix <prefix>    Word joined to each skill name with '-', e.g. 'ps' gives 'ps-note'.
 		        -f, --force              Overwrite existing files or symlinks.
 		        -c, --clean              Remove the skills previously linked from <path> under the given prefix
 		                                 (prefix required).
