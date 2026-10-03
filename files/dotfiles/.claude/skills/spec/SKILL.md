@@ -1,8 +1,7 @@
 ---
 name: spec
-description:
-    "[hitl] Plan a new feature through a critical, codebase-informed interview and produce a spec. Use when the user
-    asks to plan, scope, spec out or design a new feature before implementing it."
+description: "[hitl] Plan a new feature through a critical, codebase-informed interview and produce a spec."
+disable-model-invocation: true
 ---
 
 # Feature Spec

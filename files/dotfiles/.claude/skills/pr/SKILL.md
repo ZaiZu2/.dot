@@ -1,9 +1,10 @@
 ---
 name: pr
-description: "[auto] Create or update the GitHub PR for the current branch with a generated title and description."
+description:
+    "[auto] Create or update the GitHub PR for the current branch with a generated title and description. Use when the
+    user asks to open, create or update a PR."
 context: fork
 model: sonnet
-disable-model-invocation: true
 ---
 
 # Pull Request

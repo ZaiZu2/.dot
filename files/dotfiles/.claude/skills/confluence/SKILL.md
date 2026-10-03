@@ -2,6 +2,7 @@
 name: confluence
 description: "[hitl] Get, search, create and update Confluence pages through the Atlassian MCP server."
 model: sonnet
+disable-model-invocation: true
 ---
 
 # Confluence

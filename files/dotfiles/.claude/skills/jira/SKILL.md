@@ -2,6 +2,7 @@
 name: jira
 description: "[hitl] Create, update, search, comment on and transition Jira issues through the Atlassian MCP server."
 model: sonnet
+disable-model-invocation: true
 ---
 
 # Jira

@@ -2,6 +2,7 @@
 name: note
 description: "[auto] Write a markdown note from the current conversation and save it to a zk notebook."
 model: sonnet
+disable-model-invocation: true
 ---
 
 # Zettelkasten Note

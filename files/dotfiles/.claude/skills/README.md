@@ -8,16 +8,39 @@ the conventions.
 
 ## Available Skills
 
-| Skill         | Purpose                                                              | Uses                   |
-| ------------- | -------------------------------------------------------------------- | ---------------------- |
-| `/doc`        | Docstrings for files or code objects, matching the project's style   | -                      |
-| `/mkdoc`      | Markdown documentation for a part of a project                       | -                      |
-| `/note`       | Zettelkasten note from the conversation                              | `zk`                   |
-| `/pr`         | Create or update the GitHub PR for the current branch                | `gh`                   |
-| `/review`     | Review a PR, commits or changes                                      | `gh`                   |
-| `/spec`       | Interview-driven feature spec, written to `.claude/docs/<slug>.md`   | -                      |
-| `/jira`       | Create, update, search, comment on and transition Jira issues        | `atlassian` MCP server |
-| `/confluence` | Get, search, create and update Confluence pages                      | `atlassian` MCP server |
+| Skill         | Purpose                                                            | Mode     | Invoked by | Uses                   |
+| ------------- | ------------------------------------------------------------------ | -------- | ---------- | ---------------------- |
+| `/doc`        | Docstrings for files or code objects, matching the project's style | `[auto]` | model      | -                      |
+| `/mkdoc`      | Markdown documentation for a part of a project                     | `[auto]` | model      | -                      |
+| `/note`       | Zettelkasten note from the conversation                            | `[auto]` | user       | `zk`                   |
+| `/pr`         | Create or update the GitHub PR for the current branch              | `[auto]` | model      | `gh`                   |
+| `/review`     | Review a PR, commits or changes                                    | `[auto]` | model      | `gh`                   |
+| `/spec`       | Interview-driven feature spec, written to `.claude/docs/<slug>.md` | `[hitl]` | user       | -                      |
+| `/jira`       | Create, update, search, comment on and transition Jira issues      | `[hitl]` | user       | `atlassian` MCP server |
+| `/confluence` | Get, search, create and update Confluence pages                    | `[hitl]` | user       | `atlassian` MCP server |
+
+See [Invocation and Mode](#invocation-and-mode) for the `Mode` and `Invoked by` columns.
+
+## Invocation and Mode
+
+**Mode**, the prefix of the `description`, is whether the run needs the user:
+
+- `[auto]`: runs to completion on its own. It never asks for confirmation or clarification mid-run; it resolves
+  ambiguity with a stated default, and stops only on a stop condition named under `Target`.
+- `[hitl]`: only works under the user's scrutiny, for an interview or a confirmation before writing to a shared
+  system.
+
+**Invoked by** is who can reach it:
+
+- `model` (the default): Claude starts it on its own when a request matches the `description`, so the description is
+  model-facing. The user can also type `/<name>`.
+- `user` (`disable-model-invocation: true`): only the user starts it, by typing `/<name>`. Claude never runs it
+  unprompted and no other skill can reach it, so the description is human-facing: a one-line summary for someone
+  browsing slash commands.
+
+A `[hitl]` skill is always `user`-invoked, since it can't run without the user. An `[auto]` skill is `model`-invoked
+when the model could usefully reach for it on its own (`review`, `pr`), and `user`-invoked when only the user decides
+it should run (`note`).
 
 ## Directory Structure
 
@@ -38,6 +61,10 @@ this repo, run `dot link` afterwards so the new file is symlinked into `~/.claud
 
 Skills can point Claude at other files: "Before X, read `${CLAUDE_SKILL_DIR}/file.md`". Name the trigger, keep it one
 hop deep, and use resolvable paths. `@file` imports are documented for `CLAUDE.md`; don't rely on them in skills.
+
+To run another skill from a step, name the tool: "Call the Skill tool with `review`", one skill per call. A bare
+`/review` in prose is easily read as a label. This only works for a model-invoked skill; for a user-invoked one,
+write "tell the user to run `/<name>`".
 
 ## MCP Servers
 
@@ -80,17 +107,26 @@ Only symlinks pointing into that repo are removed, so personal skills and other 
 
 Keep this list updated as new conventions come up while refining skills.
 
-- **Mode prefix.** Start every `description` with `[hitl]` (needs the user
-  during the run: interviews, confirmations before writes to shared systems)
-  or `[auto]` (runs to completion on its own). Quote the description, since a
+- **Mode prefix.** Start every `description` with `[hitl]` or `[auto]` (see
+  [Invocation and Mode](#invocation-and-mode)). Quote the description, since a
   leading `[` is otherwise parsed by YAML as a list.
-- **User-only side effects.** An `[auto]` skill may write to a shared system
-  without confirming only if it sets `disable-model-invocation: true`, so
-  that the user's invocation is the approval (`pr`).
-- **Lean descriptions.** Say what the skill does. Add trigger phrases ("Use
-  when the user asks to plan a feature") only when auto-triggering needs
-  them; never "Use when the user invokes /x", since invoking by name always
-  works.
+- **`[hitl]` is user-invoked.** Every `[hitl]` skill sets
+  `disable-model-invocation: true`. An `[auto]` skill sets it only when the
+  user alone decides it should run (`note`).
+- **`[auto]` never asks.** No "confirm before X", "ask if unsure" or "wait
+  for approval" in an `[auto]` skill. Give each such point a safe default
+  instead, and have `Report` list the assumptions made. A skill that can't
+  work without asking is `[hitl]`.
+- **`[hitl]` names its stops.** Say exactly where the skill asks or waits
+  (an `Interview`, a `Confirm` step), so the rest runs without interruption.
+- **Side effects.** An `[auto]` skill may write to a shared system without
+  confirming only when that write is the request itself (`pr`), and its
+  trigger phrases must be narrow enough that it fires on nothing else.
+- **Lean descriptions.** Say what the skill does. On a model-invoked skill, add
+  trigger phrases ("Use when the user asks to review a PR") only when
+  auto-triggering needs them. On a user-invoked skill, never: nothing triggers
+  it but its name. Never "Use when the user invokes /x", since invoking by
+  name always works.
 - **Fork `[auto]` skills** with `context: fork` when their input is the repo,
   files or arguments alone. A forked skill runs in a background subagent
   without the conversation history, so keep skills that rely on the chat
@@ -136,7 +172,7 @@ name: <name>
 description: "[hitl|auto] <what it does>. <trigger phrases, if needed>"
 context: fork                    # see Fork
 model: <sonnet | opus>          # see Model choice
-disable-model-invocation: true   # see User-only side effects
+disable-model-invocation: true   # user-invoked: every [hitl], some [auto]
 ---
 
 # <Title>
