@@ -63,17 +63,33 @@ return {
         'coder/claudecode.nvim',
         dependencies = { 'folke/snacks.nvim' },
         config = function()
+            -- Pass the websocket port, so the script can pick the claude connected to this nvim
+            local function focus_cmd()
+                local port = require('claudecode').state.port
+                return { 'sh', vim.env.XDG_CONFIG_HOME .. '/tmux/focus_claude_pane.sh', port and tostring(port) or '' }
+            end
+
             require('claudecode').setup {
                 terminal = {
                     provider = 'external',
                     provider_opts = {
-                        external_terminal_cmd = function(cmd, env)
-                            return { 'sh', vim.env.XDG_CONFIG_HOME .. '/tmux/focus_claude_pane.sh' }
-                        end,
+                        external_terminal_cmd = function(cmd, env) return focus_cmd() end,
                     },
                 },
-                focus_after_send = true,
             }
+
+            -- Focus the claude pane after a send; fires once per file, so skip while already focusing
+            local focusing = false
+            vim.api.nvim_create_autocmd('User', {
+                pattern = 'ClaudeCodeSendComplete',
+                callback = function()
+                    if focusing then
+                        return
+                    end
+                    focusing = true
+                    vim.system(focus_cmd(), {}, function() focusing = false end)
+                end,
+            })
 
             -- Keymaps
             -- vim.keymap.set({ 'n', 'v' }, '<leader>cc', '<cmd>ClaudeCode<cr>gv', { desc = 'Toggle [c]laude' })
