@@ -9,16 +9,21 @@ model: sonnet
 Turn the conversation into a standalone note and save it with `zk`. Someone finding the note later must understand it
 without the conversation.
 
-## Content
+## Target
 
-- Topic: what the request names; otherwise the conversation's main subject.
+The topic the request names; otherwise the conversation's main subject.
+
+## Actions
+
+### 1. Write the note
+
 - A specific title, never generic ("Python GIL and Threading", not "Note 1").
 - Markdown body only. No frontmatter; the zk template adds it.
 - Suggested structure: Summary, Key Points, Details (code with language-tagged blocks), References (absolute file
   paths, links). Drop sections that don't fit.
 - 2-5 tags: language, domain, pattern (e.g. `python`, `web`, `threading`).
 
-## Notebooks
+### 2. Save it
 
 | Notebook | Env var | Use for |
 |----------|---------|---------|

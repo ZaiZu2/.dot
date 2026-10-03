@@ -81,9 +81,16 @@ Only symlinks pointing into that repo are removed, so personal skills and other 
 Keep this list updated as new conventions come up while refining skills.
 
 - **Mode prefix.** Start every `description` with `[hitl]` (needs the user
-  during the run: interviews, confirmations, writes to shared systems) or
-  `[auto]` (runs to completion on its own). Quote the description, since a
+  during the run: interviews, confirmations before writes to shared systems)
+  or `[auto]` (runs to completion on its own). Quote the description, since a
   leading `[` is otherwise parsed by YAML as a list.
+- **User-only side effects.** An `[auto]` skill may write to a shared system
+  without confirming only if it sets `disable-model-invocation: true`, so
+  that the user's invocation is the approval (`pr`).
+- **Lean descriptions.** Say what the skill does. Add trigger phrases ("Use
+  when the user asks to plan a feature") only when auto-triggering needs
+  them; never "Use when the user invokes /x", since invoking by name always
+  works.
 - **Fork `[auto]` skills** with `context: fork` when their input is the repo,
   files or arguments alone. A forked skill runs in a background subagent
   without the conversation history, so keep skills that rely on the chat
@@ -92,12 +99,13 @@ Keep this list updated as new conventions come up while refining skills.
   Unless its target is fixed (e.g. `pr` always works on the current
   branch), a forked skill must require an explicit target in the request
   (PR, commits, files) and stop if none is given, since it can't see the
-  chat or ask. It also can't confirm mid-run, so replace any "confirm before X"
+  chat or ask; state this under `Target`. It also can't confirm mid-run, so replace any "confirm before X"
   step with a safe default.
 - **Model choice.** Set `model` on forked skills and routine inline ones
-  (API wrappers, note-taking): `sonnet` (latest Sonnet) for routine work,
-  a pinned Opus ID where judgment matters (reviews). Leave it unset on
-  skills that need the session's model, like `spec`.
+  (API wrappers, note-taking): `sonnet` for routine work, `opus` where
+  judgment matters (reviews). Use the aliases, which track the latest
+  version, not pinned model IDs. Leave it unset on skills that need the
+  session's model, like `spec`.
 - **Supported frontmatter only.** Unknown keys such as `title` or
   `permissions` are ignored locally and rejected by claude.ai. See
   https://code.claude.com/docs/en/skills for the valid fields.
@@ -105,7 +113,8 @@ Keep this list updated as new conventions come up while refining skills.
   restatements, explanations of the obvious, and filler intros.
 - **Short, plain headers.** A few straightforward words (`Interview`,
   `Report results`), no sentence-style titles or parenthetical asides.
-  Number them only when the steps must run in a strict order.
+  Number only the `###` steps under `Actions`; see
+  [Structure](#structure).
 - **No Capabilities sections.** They repeat the frontmatter description.
 - **No personas.** Don't open with "You are a senior engineer…" or similar
   role-play. State the skill's purpose (what it's for and what a good
@@ -115,3 +124,56 @@ Keep this list updated as new conventions come up while refining skills.
   free-form request. State the default behavior and let the request
   override it ("review against `master` unless the request names other
   changes"), instead of documenting positional arguments or flags.
+
+### Structure
+
+Every skill uses these sections, in this order. Leave out a section that doesn't apply, but never reorder them. The
+names `Target`, `Tools`, `Actions`, `Rules` and `Report` are fixed.
+
+```markdown
+---
+name: <name>
+description: "[hitl|auto] <what it does>. <trigger phrases, if needed>"
+context: fork                    # see Fork
+model: <sonnet | opus>          # see Model choice
+disable-model-invocation: true   # see User-only side effects
+---
+
+# <Title>
+
+<Purpose: what the skill is for and what a good result looks like, in 1-3 sentences. Constraints that hold for the
+whole run go here too ("Read-only: don't modify files").>
+
+## Target
+
+<What it works on: the default, how the request overrides it, and every stop condition (nothing named, ambiguous
+match, wrong branch). Forked skills stop with a one-line reason; inline skills ask.>
+
+## Tools
+
+<Only when an MCP server or CLI needs non-obvious handling: how to pick tools, what to do when they are missing.>
+
+## Actions
+
+<What the skill does. One numbered `###` header per step when the steps are distinct and run in a strict order:>
+
+### 1. <Step>
+
+### 2. <Step>
+
+<A short paragraph instead, when the skill is too simple for steps (`doc`) or its flow depends on the request
+(`jira`).>
+
+## Rules
+
+<Rules that aren't tied to one step.>
+
+## <Topic>
+
+<Reference sections (`Python`, `Project tags`, `Notebooks`). An output template lives in the step or topic that
+produces it.>
+
+## Report
+
+<What the final message contains. Always last.>
+```

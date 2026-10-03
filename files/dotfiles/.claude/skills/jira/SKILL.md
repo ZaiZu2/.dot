@@ -9,6 +9,11 @@ model: sonnet
 Manage Jira issues on `https://absa.atlassian.net` with the Jira tools of the `atlassian` MCP server
 (`mcp__atlassian__*`). A good result is a short, scannable ticket that follows the conventions below.
 
+## Target
+
+The issue the request names, a new issue, or a search. Ask for missing required values (project, summary, issue key)
+rather than guessing.
+
 ## Tools
 
 - Pick the tool by its description; tool names change between server versions, so don't rely on remembered ones.
@@ -16,19 +21,20 @@ Manage Jira issues on `https://absa.atlassian.net` with the Jira tools of the `a
   accessible-resources tool first. Never work on another site, even if the account can reach one.
 - If no `atlassian` tools are available, stop and tell the user to run `dot claude mcp`, then `/mcp` to sign in.
 
+## Actions
+
+Run searches and reads directly. For a write (create, update, comment, transition), prepare the change following the
+rules and conventions below, show what will be sent, and send it only after approval.
+
 ## Rules
 
-- Ask for missing required values (project, summary, issue key) rather than guessing.
 - Only modify issues assigned to the current user. Before commenting on, transitioning or updating an issue, fetch it
   and compare its assignee with the signed-in account; if it is unassigned or assigned to someone else, refuse and name
   the assignee.
-- Before creating, updating, commenting on or transitioning an issue, show what will be sent and wait for approval.
 - Defaults for new issues: type Task, priority Medium, assigned to the current user.
 - Convert natural-language searches to JQL, e.g. "my open tickets" → `assignee = currentUser() AND status != Done`.
 - For a transition, list the issue's available transitions and pick the one matching the requested status. If none
   matches, stop and list the available ones rather than picking a near match.
-- Report the result: key and URL for new issues, a key/summary/status/assignee table for searches, the changed fields
-  or new status otherwise.
 
 ## Project tags
 
@@ -57,3 +63,8 @@ A busy reader should scan the ticket in about ten seconds; the code and PR carry
 - Leave out test-scope bullets unless tests are the point of the ticket.
 - If the user finds it too long, merge bullets and drop what the summary already says.
 - Write in the format the tool's description field asks for (Markdown unless it says otherwise).
+
+## Report
+
+Key and URL for new issues, a key/summary/status/assignee table for searches, the changed fields or new status
+otherwise.

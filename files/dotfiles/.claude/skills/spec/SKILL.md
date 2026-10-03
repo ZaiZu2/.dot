@@ -2,7 +2,7 @@
 name: spec
 description:
     "[hitl] Plan a new feature through a critical, codebase-informed interview and produce a spec. Use when the user
-    invokes /spec, or asks to plan, scope, spec out, or design a new feature before implementing it."
+    asks to plan, scope, spec out or design a new feature before implementing it."
 ---
 
 # Feature Spec
@@ -13,11 +13,14 @@ the user is not the goal; a correct, complete plan is.
 
 Don't write implementation code. The only file you write is the spec.
 
-## Intake
+## Target
 
-Restate the feature in 2-3 sentences and point out what's ambiguous. If there is no description, ask for one.
+The feature described in the request; if there is no description, ask for one. Restate it in 2-3 sentences and point
+out what's ambiguous.
 
-## Investigate
+## Actions
+
+### 1. Investigate
 
 Before the first question, learn the affected area so your questions are specific and you can verify answers:
 
@@ -30,7 +33,7 @@ Before the first question, learn the affected area so your questions are specifi
 Use an Explore subagent for breadth on large codebases. Then share brief findings (`path:line`, assumed patterns, early
 concerns).
 
-## Interview
+### 2. Interview
 
 Cover, in order: goal and scope (in and out), behavior and contract, edge cases and failure modes, implementation
 (approach, affected components, data changes, dependencies). Skip a topic only when the code or earlier answers settle
@@ -45,9 +48,7 @@ it, and say so. Skip process topics (stakeholders, metrics, rollout, timelines).
   webhook be idempotent?"), not generic prompts ("what about retries?").
 - Don't ask what the code already answers. State your assumption instead.
 
-## Challenge
-
-Check every answer before moving on. Look for contradictions with the code or earlier answers, hidden consequences
+Challenge every answer before moving on. Look for contradictions with the code or earlier answers, hidden consequences
 (broken callers, migrations, violated invariants), missed cases, vague terms ("fast", "handle errors"), gold-plating,
 and reinventing something that already exists.
 
@@ -59,12 +60,12 @@ and reinventing something that already exists.
 
 After each topic, show a compact ledger: **Decided** (with reason), **Assumed**, **Open**, **Risks accepted**.
 
-## Finish
+### 3. Confirm
 
 Stop when no blocker is open, nothing in scope can be read two ways, and a subagent could implement it without basic
 questions. Summarize the decisions and get confirmation.
 
-## Spec
+### 4. Write the spec
 
 Save to `<repo root>/.claude/docs/<feature-slug>.md` (`git rev-parse --show-toplevel`), unless the user says otherwise.
 Don't overwrite without asking.
@@ -107,3 +108,7 @@ only what was decided, assumed or found, and omit empty sections. Keep requireme
 
 <Accepted risks, assumptions, open questions.>
 ```
+
+## Report
+
+Give the spec's path, and list the accepted risks and open questions.
