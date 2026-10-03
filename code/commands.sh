@@ -43,12 +43,21 @@ open_sudo_session() {
 }
 
 symlink_dotfiles() {
-  local force=${1-false}
+  symlink_tree "$DOTFILES_DIR" "$HOME" "${1-false}"
+}
+
+# Symlink every file under <src_root> into <dest_root>, keeping the tree structure. A non-empty <prefix> is prepended
+# to the first path component, e.g. prefix 'ps_' maps 'note/SKILL.md' to '<dest_root>/ps_note/SKILL.md'.
+symlink_tree() {
+  local src_root=$1
+  local dest_root=$2
+  local force=${3-false}
+  local prefix=${4-}
   local correct_links=0
 
-  for dot_path in "$DOTFILES_DIR"/**/*; do
-    local rel_path=${dot_path##"$DOTFILES_DIR/"}
-    local target_path="$HOME/$rel_path"
+  for dot_path in "$src_root"/**/*; do
+    local rel_path=${dot_path##"$src_root/"}
+    local target_path="$dest_root/$prefix$rel_path"
 
     if [ -d "$dot_path" ]; then
       # Remove any broken links from target directories - handles situation in which some files
@@ -82,6 +91,69 @@ symlink_dotfiles() {
 
   done
   [ "$correct_links" -ne 0 ] && multi "$GREEN" "Skipped $correct_links correct symlinks"
+}
+
+# Link skills from an external .claude directory (e.g. a work repo) into ~/.claude/skills. A non-empty <prefix> is
+# joined to each skill name with '_', e.g. prefix 'ps' maps 'note' to 'ps_note'.
+link_claude() {
+  local claude_dir=$1
+  local prefix=${2-}
+  local force=${3-false}
+
+  if [ ! -d "$claude_dir/skills" ]; then
+    multi "$RED" "No skills directory found in " "$BLUE" "$claude_dir"
+    return 1
+  fi
+
+  validate_claude_prefix "$prefix" || return 1
+
+  symlink_tree "$(realpath "$claude_dir")/skills" "$HOME/.claude/skills" "$force" "${prefix:+${prefix}_}"
+}
+
+# Remove ~/.claude/skills/<prefix>_* symlinks that point into <claude_dir>/skills, then any emptied skill directories
+clean_claude() {
+  local claude_dir=$1
+  local prefix=${2-}
+
+  if [ -z "$prefix" ]; then
+    red "Cleaning requires a prefix"
+    return 1
+  fi
+  validate_claude_prefix "$prefix" || return 1
+
+  if [ ! -d "$claude_dir" ]; then
+    multi "$RED" "Directory not found: " "$BLUE" "$claude_dir"
+    return 1
+  fi
+
+  local src_root="$(realpath "$claude_dir")/skills"
+  local removed=0
+
+  for skill_dir in "$HOME/.claude/skills/${prefix}_"*/; do
+    [ -d "$skill_dir" ] || continue
+    skill_dir=${skill_dir%/}
+
+    while IFS= read -r entry; do
+      [[ $(readlink "$entry") == "$src_root/"* ]] || continue
+      rm "$entry"
+      removed=$((removed + 1))
+      multi "$GREEN" "Removed symlink " "$BLUE" "$entry"
+    done < <(find "$skill_dir" -type l)
+
+    # Prune directories left empty, deepest first; non-empty ones (foreign files) are kept
+    find "$skill_dir" -depth -type d -empty -delete
+  done
+
+  multi "$GREEN" "Removed $removed symlinks"
+}
+
+validate_claude_prefix() {
+  local prefix=$1
+
+  if [[ -n $prefix && ! $prefix =~ ^[a-z0-9]+$ ]]; then
+    multi "$RED" "Invalid prefix " "$BLUE" "$prefix" "$RED" ", use a single lowercase word (letters and digits)"
+    return 1
+  fi
 }
 
 create_tool_template() {

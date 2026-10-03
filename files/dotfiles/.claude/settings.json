@@ -12,7 +12,7 @@
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "/Users/AB0383Q/.claude/hooks/claude-waiting-mark.sh mark"
+                        "command": "$HOME/.claude/hooks/claude-waiting-mark.sh mark"
                     }
                 ]
             }
@@ -22,7 +22,7 @@
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "/Users/AB0383Q/.claude/hooks/claude-waiting-mark.sh clear"
+                        "command": "$HOME/.claude/hooks/claude-waiting-mark.sh clear"
                     }
                 ]
             }

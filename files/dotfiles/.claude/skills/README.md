@@ -45,11 +45,6 @@ JIRA Ticket Manager - Create, update, search, and transition JIRA issues.
 - Script: `jira_ticket_manager.py`
 - Dependencies: atlassian-python-api, keyring
 
-### `/memorize`
-CLAUDE.md Updater - Persist session insights, conventions, and solved problems into project or global CLAUDE.md.
-- Location: `memorize/`
-- Dependencies: None
-
 ### `/note`
 Zettelkasten Note Generator - Generate markdown notes from conversation context.
 - Location: `note/`
@@ -60,6 +55,40 @@ Feature Spec - Interview-driven feature planning that cross-checks answers again
 - Location: `spec/`
 - Output: `<repo root>/.claude/docs/<feature-slug>.md`
 - Dependencies: None
+
+### `/doc`, `/mkdoc`
+Docstrings and markdown documentation for code, matching the project's existing style.
+- Location: `doc/`, `mkdoc/`
+- Dependencies: None
+
+### `/pr`, `/review`
+Create or update the GitHub PR for the current branch; review a PR, commits or changes.
+- Location: `pr/`, `review/`
+- Dependencies: None (uses `gh`)
+
+## Work Skills
+
+Skills are discovered exactly one level deep (`skills/<name>/SKILL.md`); grouping them in subfolders does not work.
+To use skills from another repo (e.g. work), link them in with a prefix to keep the namespaces apart:
+
+```bash
+dot claude <path-to-.claude-dir> --prefix ps
+```
+
+This symlinks `<path>/skills/<name>/...` to `~/.claude/skills/ps_<name>/...`; the prefix is one lowercase word, joined
+to the skill name with `_`. Re-run it after adding files; use `--force` to overwrite existing files. To unlink them
+again:
+
+```bash
+dot claude <path-to-.claude-dir> --prefix ps --clean
+```
+
+Only symlinks pointing into that repo are removed, so personal skills and other prefixes are untouched.
+
+## Cross-file References
+
+Skills can point Claude at other files: "Before X, read `${CLAUDE_SKILL_DIR}/file.md`". Name the trigger, keep it one
+hop deep, and use resolvable paths. `@file` imports are documented for `CLAUDE.md`; don't rely on them in skills.
 
 ## Writing SKILL.md Instructions
 
@@ -143,10 +172,7 @@ Keep this list updated as new conventions come up while refining skills.
 ├── ticket/            # JIRA ticket management skill
 │   ├── SKILL.md
 │   └── jira_ticket_manager.py
-├── memorize/          # CLAUDE.md updater skill
-│   └── SKILL.md
-└── note/              # Note-taking skill
-    └── SKILL.md
+└── doc/, mkdoc/, pr/, review/, spec/, note/   # SKILL.md only
 ```
 
 ## Maintenance

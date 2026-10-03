@@ -48,6 +48,14 @@ print_help() {
 		      Options:
 		        -f, --force    Overwrite existing files or symlinks.
 		
+		  claude <path> [-p|--prefix <prefix>] [-f|--force] [-c|--clean]
+		      Symlink skills from an external .claude directory into ~/.claude/skills.
+		      Options:
+		        -p, --prefix <prefix>    Word joined to each skill name with '_', e.g. 'ps' gives 'ps_note'.
+		        -f, --force              Overwrite existing files or symlinks.
+		        -c, --clean              Remove the skills previously linked from <path> under the given prefix
+		                                 (prefix required).
+
 		  setup [-e|--exclude <tools>] [-o|--only <tools>] [-f|--force] [-s|--skip-pkg-mgr]
 		      Set up environment: symlink dotfiles, install fonts, packages, and tools.
 		      Options:
