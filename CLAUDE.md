@@ -11,7 +11,7 @@ macOS + Linux.
 ## Commands
 
 Invoke via `./dot.sh <cmd>` or the `dot` alias
-(`files/dotfiles/.zshrc_aliases:42` → `zsh $DOT/dot.sh`). `dot --help` lists
+(`files/dotfiles/.zshrc_aliases:21` → `zsh $DOT/dot.sh`). `dot --help` lists
 every subcommand; the ones with non-obvious behavior:
 
 - `dot link` — symlink dotfiles into `$HOME`. **Required after adding any
