@@ -160,52 +160,73 @@ entrypoint() {
 
     claude)
       shift
-      local claude_dir=''
-      local prefix=''
-      local force=false
-      local clean=false
+      case ${1-} in
+      skills)
+        shift
+        local claude_dir=''
+        local prefix=''
+        local force=false
+        local clean=false
 
-      while [[ $# -gt 0 ]]; do
-        case $1 in
-        -c | --clean)
-          clean=true
-          shift
-          ;;
-        -p | --prefix)
-          if [[ $# -lt 2 ]]; then
-            red "-p/--prefix requires a value"
+        while [[ $# -gt 0 ]]; do
+          case $1 in
+          -c | --clean)
+            clean=true
+            shift
+            ;;
+          -p | --prefix)
+            if [[ $# -lt 2 ]]; then
+              red "-p/--prefix requires a value"
+              exit 1
+            fi
+            prefix=$2
+            shift 2
+            ;;
+          -f | --force)
+            force=true
+            shift
+            ;;
+          -*)
+            multi "$RED" "Unknown option: " "$BLUE" "$1"
             exit 1
-          fi
-          prefix=$2
-          shift 2
-          ;;
-        -f | --force)
-          force=true
-          shift
-          ;;
-        -*)
+            ;;
+          *)
+            claude_dir=$1
+            shift
+            ;;
+          esac
+        done
+
+        if [ -z "$claude_dir" ]; then
+          red "Provide the path to a .claude directory"
+          exit 1
+        fi
+
+        if [ "$clean" = true ]; then
+          blue "Removing Claude skills linked from $claude_dir"
+          clean_claude "$claude_dir" "$prefix" || exit 1
+        else
+          blue "Symlinking Claude skills from $claude_dir"
+          link_claude "$claude_dir" "$prefix" "$force" || exit 1
+        fi
+        ;;
+
+      mcp)
+        shift
+        if [[ $# -gt 0 ]]; then
           multi "$RED" "Unknown option: " "$BLUE" "$1"
           exit 1
-          ;;
-        *)
-          claude_dir=$1
-          shift
-          ;;
-        esac
-      done
+        fi
 
-      if [ -z "$claude_dir" ]; then
-        red "Provide the path to a .claude directory"
+        blue "Registering Claude MCP servers from $CLAUDE_MCP_FILE"
+        sync_claude_mcp || exit 1
+        ;;
+
+      *)
+        multi "$RED" "Unknown claude subcommand: " "$BLUE" "${1-}" "$RED" ", use 'skills' or 'mcp'"
         exit 1
-      fi
-
-      if [ "$clean" = true ]; then
-        blue "Removing Claude skills linked from $claude_dir"
-        clean_claude "$claude_dir" "$prefix" || exit 1
-      else
-        blue "Symlinking Claude skills from $claude_dir"
-        link_claude "$claude_dir" "$prefix" "$force" || exit 1
-      fi
+        ;;
+      esac
       exit
       ;;
 

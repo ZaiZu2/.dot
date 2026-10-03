@@ -17,10 +17,14 @@ every subcommand; the ones with non-obvious behavior:
 - `dot link` — symlink dotfiles into `$HOME`. **Required after adding any
   new file under `files/dotfiles/`**; existing tracked files update in place
   through the symlink and need no re-link.
-- `dot claude <path> [-p <prefix>] [-f] [-c]` — symlink skills from an
+- `dot claude skills <path> [-p <prefix>] [-f] [-c]` — symlink skills from an
   external `.claude` dir (e.g. a work repo) into
   `~/.claude/skills/<prefix>-<name>`; `-c` removes them again (prefix
   required). Reuses `symlink_tree`, the walker behind `dot link`.
+- `dot claude mcp` — register the MCP servers declared in
+  `files/dotfiles/.claude/mcp.json` in Claude Code's user scope
+  (`~/.claude.json`, which holds Claude's own state and so is not tracked).
+  Re-run after editing the file; unchanged servers are skipped.
 - `dot setup` — full bootstrap (link + font + package mgr + all tools).
   Accepts `--only <tools>`, `--exclude <tools>`, `--force`, `--skip-pkg-mgr`.
 - `dot export [patch.zip]` / `dot import [patch.zip]` — package/apply

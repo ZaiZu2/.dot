@@ -156,6 +156,48 @@ validate_claude_prefix() {
   fi
 }
 
+# Register every server from the tracked MCP config in Claude Code's user scope. Claude keeps user-scope servers in
+# ~/.claude.json next to its own state, so that file cannot be symlinked. Servers missing from the tracked config are
+# left alone, and unchanged ones are skipped so that their stored OAuth sessions survive.
+sync_claude_mcp() {
+  local user_conf="$HOME/.claude.json"
+  local unchanged=0
+
+  for cmd in claude jq; do
+    command -v "$cmd" >/dev/null 2>&1 || {
+      multi "$RED" "Required command not found: " "$BLUE" "$cmd"
+      return 1
+    }
+  done
+
+  if [ ! -f "$CLAUDE_MCP_FILE" ]; then
+    multi "$RED" "MCP config not found: " "$BLUE" "$CLAUDE_MCP_FILE"
+    return 1
+  fi
+
+  while IFS= read -r name; do
+    local wanted="$(jq -cS --arg name "$name" '.mcpServers[$name]' "$CLAUDE_MCP_FILE")"
+    local current="$(jq -cS --arg name "$name" '.mcpServers[$name] // empty' "$user_conf" 2>/dev/null)"
+
+    if [ "$wanted" = "$current" ]; then
+      unchanged=$((unchanged + 1))
+      continue
+    fi
+
+    if [ -n "$current" ]; then
+      claude mcp remove --scope user "$name" >/dev/null || return 1
+    fi
+    claude mcp add-json --scope user "$name" "$wanted" >/dev/null || {
+      multi "$RED" "Failed to register MCP server " "$BLUE" "$name"
+      return 1
+    }
+    multi "$GREEN" "Registered MCP server " "$BLUE" "$name"
+  done < <(jq -r '.mcpServers | keys[]' "$CLAUDE_MCP_FILE")
+
+  [ "$unchanged" -ne 0 ] && multi "$GREEN" "Skipped $unchanged unchanged MCP servers"
+  return 0
+}
+
 create_tool_template() {
   local tool=$1
   local cap_tool="$(cap "$tool")"

@@ -1,78 +1,125 @@
 # Claude Code Skills
 
-This directory contains custom skills for Claude Code with a shared Python environment.
+Custom skills for Claude Code. A skill is one of two kinds:
 
-## Shared Python Environment
+- **Markdown skill** — a directory with only a `SKILL.md`. The instructions drive Claude's built-in tools, CLIs
+  already on the machine (`gh`, `zk`, `git`) and tools from [MCP servers](#mcp-servers). This is the default.
+- **Integration skill** — a `SKILL.md` plus a Python script that talks to an external system. These run in the
+  shared Python environment described under [Integration skills](#integration-skills).
 
-All Python-based skills share a single virtual environment located at `.venv/` to:
-- Reduce disk space usage
-- Simplify dependency management
-- Ensure consistent package versions across skills
+Start with a markdown skill. To reach an external system, prefer an MCP server: it brings the client and the
+authentication, and the skill keeps only the conventions. Write a script only when no suitable server exists or the
+logic is unreliable as prose instructions.
 
-### Setup
+## Available Skills
 
-The shared environment is managed with `uv` and configured in `pyproject.toml`:
+| Skill         | Kind        | Purpose                                                              | Uses                          |
+| ------------- | ----------- | -------------------------------------------------------------------- | ----------------------------- |
+| `/doc`        | markdown    | Docstrings for files or code objects, matching the project's style   | -                             |
+| `/mkdoc`      | markdown    | Markdown documentation for a part of a project                       | -                             |
+| `/note`       | markdown    | Zettelkasten note from the conversation                              | `zk`                          |
+| `/pr`         | markdown    | Create or update the GitHub PR for the current branch                | `gh`                          |
+| `/review`     | markdown    | Review a PR, commits or changes                                      | `gh`                          |
+| `/spec`       | markdown    | Interview-driven feature spec, written to `.claude/docs/<slug>.md`   | -                             |
+| `/jira`       | markdown    | Create, update, search, comment on and transition Jira issues        | `atlassian` MCP server        |
+| `/confluence` | integration | Get, search, create and update Confluence pages                      | `confluence_manager.py`       |
+| `/ticket`     | integration | Jira issues through the Python client; superseded by `/jira`         | `jira_ticket_manager.py`      |
 
-```bash
-# Install/update dependencies
-cd ~/.claude/skills
-uv sync
+## Directory Structure
 
-# Add new dependencies
-# Edit pyproject.toml, then run:
-uv sync
+```
+~/.claude/skills/
+├── README.md
+├── doc/, jira/, mkdoc/, note/, pr/, review/, spec/   # markdown skills: SKILL.md only
+├── confluence/                                # integration skills: SKILL.md + script
+│   ├── SKILL.md
+│   └── confluence_manager.py
+├── ticket/
+│   ├── SKILL.md
+│   └── jira_ticket_manager.py
+├── pyproject.toml                             # shared dependencies (integration skills only)
+├── uv.lock
+└── .venv/                                     # shared virtual environment, created by `uv sync`
 ```
 
-### Using the Shared Environment
+Skills are discovered exactly one level deep (`skills/<name>/SKILL.md`); grouping them in subfolders does not work.
 
-Python skills should invoke scripts using the shared interpreter:
+## Markdown Skills
+
+To add one, create `<name>/SKILL.md` and follow [Writing SKILL.md Instructions](#writing-skillmd-instructions). In
+this repo, run `dot link` afterwards so the new file is symlinked into `~/.claude/skills/`.
+
+### Cross-file References
+
+Skills can point Claude at other files: "Before X, read `${CLAUDE_SKILL_DIR}/file.md`". Name the trigger, keep it one
+hop deep, and use resolvable paths. `@file` imports are documented for `CLAUDE.md`; don't rely on them in skills.
+
+## MCP Servers
+
+Claude Code keeps user-scope MCP servers in `~/.claude.json`, mixed with its own state, so that file can't be tracked.
+The servers are declared in `~/.claude/mcp.json` instead (tracked in the dotfiles repo, same `mcpServers` format as a
+project `.mcp.json`) and registered with:
+
+```bash
+dot claude mcp   # register new or changed servers in user scope; unchanged ones are skipped
+/mcp             # inside Claude Code: sign in to servers that use OAuth
+```
+
+Claude Code does not read `~/.claude/mcp.json` itself, so re-run `dot claude mcp` after editing it. Servers registered by
+hand (`claude mcp add`) are left alone, and removing an entry from the file does not unregister it; use
+`claude mcp remove <name> -s user`. Keep secrets out of the file: use OAuth or `${VAR}` expansion.
+
+In a skill, refer to the server's tools as `mcp__<server>__*` and tell Claude what to do when they are missing (see
+`jira/SKILL.md`).
+
+## Integration Skills
+
+Everything in this section applies only to skills that ship a Python script.
+
+### Shared Environment
+
+All integration skills share one virtual environment at `~/.claude/skills/.venv/`, managed with `uv` and declared in
+`pyproject.toml`. One environment keeps package versions consistent across skills and avoids a venv per skill.
+
+```bash
+cd ~/.claude/skills
+uv sync              # create the environment / install dependencies
+uv sync --upgrade    # upgrade dependencies
+rm -rf .venv uv.lock && uv sync   # rebuild from scratch
+```
+
+Current dependencies: `atlassian-python-api`, `keyring` (both skills), `markdown` (`/confluence`).
+
+### Invoking Scripts
+
+`SKILL.md` calls the script through the shared interpreter, with absolute paths:
 
 ```bash
 ~/.claude/skills/.venv/bin/python ~/.claude/skills/<skill-name>/script.py [args]
 ```
 
-## Available Skills
+### Credentials
 
-### `/confluence`
-Confluence Documentation Manager - Create and update Confluence pages directly from Claude.
-- Location: `confluence/`
-- Script: `confluence_manager.py`
-- Dependencies: atlassian-python-api, markdown, keyring
+Scripts read secrets from the system keyring, never from files in this repo. `/confluence` and `/ticket` share one
+Atlassian token:
 
-### `/ticket`
-JIRA Ticket Manager - Create, update, search, and transition JIRA issues.
-- Location: `ticket/`
-- Script: `jira_ticket_manager.py`
-- Dependencies: atlassian-python-api, keyring
+```bash
+~/.claude/skills/.venv/bin/keyring set jira-api-token "$USER"
+```
 
-### `/note`
-Zettelkasten Note Generator - Generate markdown notes from conversation context.
-- Location: `note/`
-- Dependencies: None (uses `zk` CLI)
+### Adding an Integration Skill
 
-### `/spec`
-Feature Spec - Interview-driven feature planning that cross-checks answers against the codebase and outputs a spec.
-- Location: `spec/`
-- Output: `<repo root>/.claude/docs/<feature-slug>.md`
-- Dependencies: None
-
-### `/doc`, `/mkdoc`
-Docstrings and markdown documentation for code, matching the project's existing style.
-- Location: `doc/`, `mkdoc/`
-- Dependencies: None
-
-### `/pr`, `/review`
-Create or update the GitHub PR for the current branch; review a PR, commits or changes.
-- Location: `pr/`, `review/`
-- Dependencies: None (uses `gh`)
+1. Create `<name>/SKILL.md` as for a markdown skill.
+2. Add the script next to it and invoke it from `SKILL.md` as shown above.
+3. Add any new dependencies to `pyproject.toml`, then run `uv sync` in `~/.claude/skills`.
+4. Run `dot link` so the new files are symlinked into `~/.claude/skills/`.
 
 ## Work Skills
 
-Skills are discovered exactly one level deep (`skills/<name>/SKILL.md`); grouping them in subfolders does not work.
 To use skills from another repo (e.g. work), link them in with a prefix to keep the namespaces apart:
 
 ```bash
-dot claude <path-to-.claude-dir> --prefix ps
+dot claude skills <path-to-.claude-dir> --prefix ps
 ```
 
 This symlinks `<path>/skills/<name>/...` to `~/.claude/skills/ps-<name>/...`; the prefix is one lowercase word, joined
@@ -80,19 +127,14 @@ to the skill name with `-`. Re-run it after adding files; use `--force` to overw
 again:
 
 ```bash
-dot claude <path-to-.claude-dir> --prefix ps --clean
+dot claude skills <path-to-.claude-dir> --prefix ps --clean
 ```
 
 Only symlinks pointing into that repo are removed, so personal skills and other prefixes are untouched.
 
-## Cross-file References
-
-Skills can point Claude at other files: "Before X, read `${CLAUDE_SKILL_DIR}/file.md`". Name the trigger, keep it one
-hop deep, and use resolvable paths. `@file` imports are documented for `CLAUDE.md`; don't rely on them in skills.
-
 ## Writing SKILL.md Instructions
 
-Keep this list updated as new conventions come up while refining skills.
+These apply to both kinds of skill. Keep this list updated as new conventions come up while refining skills.
 
 - **Mode prefix.** Start every `description` with `[hitl]` (needs the user
   during the run: interviews, confirmations, writes to shared systems) or
@@ -129,63 +171,3 @@ Keep this list updated as new conventions come up while refining skills.
   free-form request. State the default behavior and let the request
   override it ("review against `master` unless the request names other
   changes"), instead of documenting positional arguments or flags.
-
-## Adding New Python Skills
-
-1. Create a new skill directory:
-   ```bash
-   mkdir ~/.claude/skills/my-skill
-   ```
-
-2. Create `SKILL.md` with skill metadata (see existing skills for examples)
-
-3. Add Python scripts that use the shared venv:
-   ```python
-   #!/usr/bin/env python3
-   # Use: ~/.claude/skills/.venv/bin/python this_script.py
-   ```
-
-4. Add any new dependencies to `pyproject.toml`:
-   ```toml
-   dependencies = [
-       "existing-package>=1.0.0",
-       "new-package>=2.0.0",  # Add here
-   ]
-   ```
-
-5. Sync dependencies:
-   ```bash
-   cd ~/.claude/skills && uv sync
-   ```
-
-## Directory Structure
-
-```
-~/.claude/skills/
-├── .venv/              # Shared virtual environment
-├── pyproject.toml      # Shared dependencies
-├── uv.lock            # Lock file
-├── README.md          # This file
-├── confluence/        # Confluence documentation skill
-│   ├── SKILL.md
-│   └── confluence_manager.py
-├── ticket/            # JIRA ticket management skill
-│   ├── SKILL.md
-│   └── jira_ticket_manager.py
-└── doc/, mkdoc/, pr/, review/, spec/, note/   # SKILL.md only
-```
-
-## Maintenance
-
-### Update Dependencies
-```bash
-cd ~/.claude/skills
-uv sync --upgrade
-```
-
-### Rebuild Environment
-```bash
-cd ~/.claude/skills
-rm -rf .venv uv.lock
-uv sync
-```
