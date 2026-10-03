@@ -32,16 +32,6 @@
     "effortLevel": "medium",
     "tui": "fullscreen",
     "autoCompactEnabled": true,
-    "mcpServers": {
-        "rag": {
-            "command": "python3",
-            "args": [
-                "/Users/AB025UL/Documents/programs/ssh_tools/ai/mcp/servers/rag-mcp-server.py"
-            ],
-            "env": {},
-            "description": "Prime Services RAG API — creds from macOS Keychain (service: prime-rag)"
-        }
-    },
     "permissions": {
         "allow": [
             "Bash(git fetch *)",

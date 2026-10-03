@@ -1,38 +1,30 @@
 ---
 name: confluence
-description: "[hitl] Get, search, create and update Confluence pages."
+description: "[hitl] Get, search, create and update Confluence pages through the Atlassian MCP server."
 model: sonnet
 ---
 
 # Confluence
 
-Read and write Confluence pages on `https://absa.atlassian.net` as `jakub.kawecki@absa.africa`.
+Read and write Confluence pages on `https://absa.atlassian.net` with the Confluence tools of the `atlassian` MCP server
+(`mcp__atlassian__*`). A good result is a page that reads as before plus the requested change, with nothing lost.
 
-## Command
+## Tools
 
-```bash
-~/.claude/skills/.venv/bin/python ~/.claude/skills/confluence/confluence_manager.py \
-  --url https://absa.atlassian.net --username jakub.kawecki@absa.africa <subcommand> ...
-```
-
-| Subcommand | Flags |
-|------------|-------|
-| `get` | `--page-id ID` or `--title T --space KEY` |
-| `search` | `--query Q`, optional `--space KEY` |
-| `create` | `--space KEY --title T --content C`, optional `--parent-id ID`, `--format markdown\|html` |
-| `update` | `--page-id ID --content C`, optional `--title T`, `--format markdown\|html` |
-
-`--format` defaults to `markdown`.
+- Pick the tool by its description; tool names change between server versions, so don't rely on remembered ones.
+- Pass `absa.atlassian.net` where a tool asks for the site, or resolve its cloud ID with the server's
+  accessible-resources tool first. Never work on another site, even if the account can reach one.
+- If no `atlassian` tools are available, stop and tell the user to run `dot claude mcp`, then `/mcp` to sign in.
 
 ## Rules
 
-- Before `create` or `update`, show the title, target (space/parent or page) and content, and wait for approval. Pages
-  are shared, so never write without it.
-- `update` replaces the whole page body. Fetch the page first with `get` and merge your changes into it.
-- Resolve a page by title with `get`/`search` when the user gives no ID.
-- After writing, report the page title and URL.
-
-## Auth
-
-The script reads the API token from the system keyring (service `jira-api-token`, user `$USER`, shared with `/ticket`).
-If auth fails, tell the user to run `~/.claude/skills/.venv/bin/keyring set jira-api-token "$USER"`.
+- Ask for missing required values (space, title, page) rather than guessing.
+- Resolve a page by title with a search when the user gives no ID. If several pages match, ask which one.
+- Before creating or updating a page, show the title, target (space/parent or page) and content, and wait for approval.
+  Pages are shared, so never write without it.
+- An update replaces the whole page body. Fetch the page first and merge your changes into its current content; keep
+  the title unless asked to change it.
+- If the fetched body holds macros or markup the write format can't express, say so before updating instead of dropping
+  them.
+- Write in the format the tool's body field asks for (Markdown unless it says otherwise).
+- Report the result: page title and URL after a write, a title/space/URL table for searches.
