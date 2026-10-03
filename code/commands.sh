@@ -46,18 +46,16 @@ symlink_dotfiles() {
   symlink_tree "$DOTFILES_DIR" "$HOME" "${1-false}"
 }
 
-# Symlink every file under <src_root> into <dest_root>, keeping the tree structure. A non-empty <prefix> is prepended
-# to the first path component, e.g. prefix 'ps-' maps 'note/SKILL.md' to '<dest_root>/ps-note/SKILL.md'.
+# Symlink every file under <src_root> into <dest_root>, keeping the tree structure
 symlink_tree() {
   local src_root=$1
   local dest_root=$2
   local force=${3-false}
-  local prefix=${4-}
   local correct_links=0
 
   for dot_path in "$src_root"/**/*; do
     local rel_path=${dot_path##"$src_root/"}
-    local target_path="$dest_root/$prefix$rel_path"
+    local target_path="$dest_root/$rel_path"
 
     if [ -d "$dot_path" ]; then
       # Remove any broken links from target directories - handles situation in which some files
@@ -93,12 +91,13 @@ symlink_tree() {
   [ "$correct_links" -ne 0 ] && multi "$GREEN" "Skipped $correct_links correct symlinks"
 }
 
-# Link skills from an external .claude directory (e.g. a work repo) into ~/.claude/skills. A non-empty <prefix> is
-# joined to each skill name with '-', e.g. prefix 'ps' maps 'note' to 'ps-note'.
+# Link every skill directory of an external .claude directory (e.g. a work repo) into ~/.claude/skills, one symlink
+# per skill. A non-empty <prefix> is joined to each skill name with '-', e.g. prefix 'ps' maps 'note' to 'ps-note'.
 link_claude() {
   local claude_dir=$1
   local prefix=${2-}
   local force=${3-false}
+  local correct_links=0
 
   if [ ! -d "$claude_dir/skills" ]; then
     multi "$RED" "No skills directory found in " "$BLUE" "$claude_dir"
@@ -107,10 +106,40 @@ link_claude() {
 
   validate_claude_prefix "$prefix" || return 1
 
-  symlink_tree "$(realpath "$claude_dir")/skills" "$HOME/.claude/skills" "$force" "${prefix:+${prefix}-}"
+  local src_root="$(realpath "$claude_dir")/skills"
+  local dest_root="$HOME/.claude/skills"
+  mkdir -p "$dest_root"
+
+  for skill_src in "$src_root"/*/; do
+    skill_src=${skill_src%/}
+    local target_path="$dest_root/${prefix:+${prefix}-}${skill_src##*/}"
+
+    # Skip already existing, correct symlinks
+    if [[ -L "$target_path" && $(readlink "$target_path") = "$skill_src" ]]; then
+      correct_links=$((correct_links + 1))
+      continue
+    fi
+
+    # Earlier versions linked skills file by file - drop those links so the directory itself can be linked
+    if [[ -d "$target_path" && ! -L "$target_path" ]]; then
+      unlink_claude_files "$target_path" "$skill_src"
+    fi
+
+    if [[ -L "$target_path" && "$force" = false ]]; then
+      multi "$YELLOW" "Skipping " "$BLUE" "$target_path" "$YELLOW" ", symlink already exists"
+    elif [[ -e "$target_path" && ! -L "$target_path" ]]; then
+      # Never replaced, even when forced - it holds files which do not come from <claude_dir>
+      multi "$YELLOW" "Skipping " "$BLUE" "$target_path" "$YELLOW" ", it is not a symlink"
+    else
+      multi "$GREEN" "Created symlink " "$BLUE" "$target_path" "$GREEN" " -> " "$BLUE" "$skill_src"
+      ln -sfn "$skill_src" "$target_path"
+    fi
+  done
+  [ "$correct_links" -ne 0 ] && multi "$GREEN" "Skipped $correct_links correct symlinks"
+  return 0
 }
 
-# Remove ~/.claude/skills/<prefix>-* symlinks that point into <claude_dir>/skills, then any emptied skill directories
+# Remove ~/.claude/skills/<prefix>-* symlinks that point into <claude_dir>/skills
 clean_claude() {
   local claude_dir=$1
   local prefix=${2-}
@@ -129,22 +158,37 @@ clean_claude() {
   local src_root="$(realpath "$claude_dir")/skills"
   local removed=0
 
-  for skill_dir in "$HOME/.claude/skills/${prefix}-"*/; do
-    [ -d "$skill_dir" ] || continue
-    skill_dir=${skill_dir%/}
-
-    while IFS= read -r entry; do
-      [[ $(readlink "$entry") == "$src_root/"* ]] || continue
-      rm "$entry"
-      removed=$((removed + 1))
-      multi "$GREEN" "Removed symlink " "$BLUE" "$entry"
-    done < <(find "$skill_dir" -type l)
-
-    # Prune directories left empty, deepest first; non-empty ones (foreign files) are kept
-    find "$skill_dir" -depth -type d -empty -delete
+  for skill_path in "$HOME/.claude/skills/${prefix}-"*; do
+    if [ -L "$skill_path" ]; then
+      [[ $(readlink "$skill_path") == "$src_root/"* ]] || continue
+      rm "$skill_path"
+      multi "$GREEN" "Removed symlink " "$BLUE" "$skill_path"
+    elif [ -d "$skill_path" ]; then
+      unlink_claude_files "$skill_path" "$src_root"
+      [ -e "$skill_path" ] && continue
+    else
+      continue
+    fi
+    removed=$((removed + 1))
   done
 
-  multi "$GREEN" "Removed $removed symlinks"
+  multi "$GREEN" "Removed $removed skills"
+}
+
+# Remove symlinks under <skill_dir> that point into <src_dir>, then any directories left empty. Handles skills that
+# earlier versions linked file by file.
+unlink_claude_files() {
+  local skill_dir=$1
+  local src_dir=$2
+
+  while IFS= read -r entry; do
+    [[ $(readlink "$entry") == "$src_dir/"* ]] || continue
+    rm "$entry"
+    multi "$GREEN" "Removed symlink " "$BLUE" "$entry"
+  done < <(find "$skill_dir" -type l)
+
+  # Prune directories left empty, deepest first; non-empty ones (foreign files) are kept
+  find "$skill_dir" -depth -type d -empty -delete
 }
 
 validate_claude_prefix() {

@@ -122,9 +122,10 @@ To use skills from another repo (e.g. work), link them in with a prefix to keep 
 dot claude skills <path-to-.claude-dir> --prefix ps
 ```
 
-This symlinks `<path>/skills/<name>/...` to `~/.claude/skills/ps-<name>/...`; the prefix is one lowercase word, joined
-to the skill name with `-`. Re-run it after adding files; use `--force` to overwrite existing files. To unlink them
-again:
+This creates one symlink per skill, `~/.claude/skills/ps-<name>` -> `<path>/skills/<name>`; the prefix is one
+lowercase word, joined to the skill name with `-`. Files added to a linked skill show up on their own, so re-run it
+only for new skills. `--force` repoints a symlink that leads elsewhere; a real directory is never replaced. To unlink
+them again:
 
 ```bash
 dot claude skills <path-to-.claude-dir> --prefix ps --clean

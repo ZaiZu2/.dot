@@ -49,10 +49,10 @@ print_help() {
 		        -f, --force    Overwrite existing files or symlinks.
 		
 		  claude skills <path> [-p|--prefix <prefix>] [-f|--force] [-c|--clean]
-		      Symlink skills from an external .claude directory into ~/.claude/skills.
+		      Symlink each skill directory of an external .claude directory into ~/.claude/skills.
 		      Options:
 		        -p, --prefix <prefix>    Word joined to each skill name with '-', e.g. 'ps' gives 'ps-note'.
-		        -f, --force              Overwrite existing files or symlinks.
+		        -f, --force              Repoint existing symlinks; real directories are never replaced.
 		        -c, --clean              Remove the skills previously linked from <path> under the given prefix
 		                                 (prefix required).
 
