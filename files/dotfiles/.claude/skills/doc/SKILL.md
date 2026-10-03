@@ -38,7 +38,7 @@ update the docstrings with Edit, following the rules below. Change nothing but d
   one-line helpers) where names and types say it all; never list `self` or `cls`.
 - Put information that applies to several parameters or the whole function in a `Note:` block instead of repeating it.
 
-## Python
+### Python
 
 - Google style. Opening and closing quotes on their own lines.
 - Leave out types already given by type hints.

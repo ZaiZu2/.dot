@@ -15,6 +15,7 @@ the conventions.
 | `/note`       | Zettelkasten note from the conversation                            | `[auto]` | user       | `zk`                   |
 | `/pr`         | Create or update the GitHub PR for the current branch              | `[auto]` | model      | `gh`                   |
 | `/review`     | Review a PR, commits or changes                                    | `[auto]` | model      | `gh`                   |
+| `/test`       | Unit tests for files, code objects or changes                      | `[auto]` | model      | -                      |
 | `/spec`       | Interview-driven feature spec, written to `.claude/docs/<slug>.md` | `[hitl]` | user       | -                      |
 | `/jira`       | Create, update, search, comment on and transition Jira issues      | `[hitl]` | user       | `atlassian` MCP server |
 | `/confluence` | Get, search, create and update Confluence pages                    | `[hitl]` | user       | `atlassian` MCP server |
@@ -47,7 +48,7 @@ it should run (`note`).
 ```
 ~/.claude/skills/
 ├── README.md
-└── confluence/, doc/, jira/, mkdoc/, note/, pr/, review/, spec/   # one SKILL.md each
+└── confluence/, doc/, jira/, mkdoc/, note/, pr/, review/, spec/, test/   # one SKILL.md each
 ```
 
 Skills are discovered exactly one level deep (`skills/<name>/SKILL.md`); grouping them in subfolders does not work.
@@ -151,6 +152,9 @@ Keep this list updated as new conventions come up while refining skills.
   `Report results`), no sentence-style titles or parenthetical asides.
   Number only the `###` steps under `Actions`; see
   [Structure](#structure).
+- **Language rules under `Rules`.** Rules that apply to one language go in
+  an unnumbered `### <Language>` subsection of `## Rules` (`### Python`),
+  after the general rules, never in a top-level section.
 - **No Capabilities sections.** They repeat the frontmatter description.
 - **No personas.** Don't open with "You are a senior engineer…" or similar
   role-play. State the skill's purpose (what it's for and what a good
@@ -204,9 +208,13 @@ match, wrong branch). Forked skills stop with a one-line reason; inline skills a
 
 <Rules that aren't tied to one step.>
 
+### <Language>
+
+<Rules for one language (`Python`), after the general ones.>
+
 ## <Topic>
 
-<Reference sections (`Python`, `Project tags`, `Notebooks`). An output template lives in the step or topic that
+<Reference sections (`Project tags`, `Notebooks`). An output template lives in the step or topic that
 produces it.>
 
 ## Report
