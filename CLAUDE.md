@@ -17,6 +17,9 @@ every subcommand; the ones with non-obvious behavior:
 - `dot link` — symlink dotfiles into `$HOME`. **Required after adding any
   new file under `files/dotfiles/`**; existing tracked files update in place
   through the symlink and need no re-link.
+- `dot update [-f]` — `git pull` this repo, then `dot link` (`-f` is passed
+  on to it). Linking is re-executed through the pulled `dot.sh`, so it runs
+  the new code. A failed pull stops before linking.
 - `dot claude skills <path> [-p <prefix>] [-f] [-c]` — symlink each skill
   directory of an external `.claude` dir (e.g. a work repo) as
   `~/.claude/skills/<prefix>-<name>`; `-c` removes them again (prefix
@@ -31,10 +34,12 @@ every subcommand; the ones with non-obvious behavior:
   `files/dotfiles/.claude/hooks/context-index.sh` prints the index of all
   three kinds. Rules for writing concepts are in
   `files/dotfiles/.claude/CLAUDE.md`.
-- `dot claude mcp` — register the MCP servers declared in
-  `files/dotfiles/.claude/mcp.json` in Claude Code's user scope
-  (`~/.claude.json`, which holds Claude's own state and so is not tracked).
-  Re-run after editing the file; unchanged servers are skipped.
+- `dot claude mcp [<path>]` — register the MCP servers declared in an
+  `mcp.json` file in Claude Code's user scope (`~/.claude.json`, which holds
+  Claude's own state and so is not tracked). Without `<path>` the tracked
+  `files/dotfiles/.claude/mcp.json` is used; pass the `mcp.json` of another
+  repo (e.g. a work repo) to add its servers. Re-run after editing the file;
+  unchanged servers are skipped.
 - `dot setup` — full bootstrap (link + font + package mgr + all tools).
   Accepts `--only <tools>`, `--exclude <tools>`, `--force`, `--skip-pkg-mgr`.
 - `dot export [patch.zip]` / `dot import [patch.zip]` — package/apply

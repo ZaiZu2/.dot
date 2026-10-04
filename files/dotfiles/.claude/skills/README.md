@@ -74,9 +74,13 @@ The servers are declared in `~/.claude/mcp.json` instead (tracked in the dotfile
 project `.mcp.json`) and registered with:
 
 ```bash
-dot claude mcp   # register new or changed servers in user scope; unchanged ones are skipped
-/mcp             # inside Claude Code: sign in to servers that use OAuth
+dot claude mcp          # register new or changed servers in user scope; unchanged ones are skipped
+dot claude mcp <path>   # same, from the mcp.json of another repo (e.g. a work repo)
+/mcp                    # inside Claude Code: sign in to servers that use OAuth
 ```
+
+Servers from another repo's file are added next to the tracked ones; a server with the same name as an already
+registered one is replaced by the config registered last.
 
 Claude Code does not read `~/.claude/mcp.json` itself, so re-run `dot claude mcp` after editing it. Servers registered by
 hand (`claude mcp add`) are left alone, and removing an entry from the file does not unregister it; use

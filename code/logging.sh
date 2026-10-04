@@ -47,6 +47,11 @@ print_help() {
 		      Create symlinks for dotfiles.
 		      Options:
 		        -f, --force    Overwrite existing files or symlinks.
+
+		  update [-f|--force]
+		      Pull the latest changes of the dot repository, then create symlinks for dotfiles.
+		      Options:
+		        -f, --force    Overwrite existing files or symlinks.
 		
 		  claude skills <path> [-p|--prefix <prefix>] [-f|--force] [-c|--clean]
 		      Symlink each skill directory of an external .claude directory into ~/.claude/skills.
@@ -63,8 +68,9 @@ print_help() {
 		        -f, --force              Repoint an existing symlink; a real directory is never replaced.
 		        -c, --clean              Remove the bundle previously linked from <path> under the given prefix.
 
-		  claude mcp
-		      Register the MCP servers from files/dotfiles/.claude/mcp.json in Claude Code's user scope.
+		  claude mcp [<path>]
+		      Register the MCP servers from an mcp.json file in Claude Code's user scope. Without <path> the
+		      tracked files/dotfiles/.claude/mcp.json is used; pass the mcp.json of another repo to add its servers.
 		      Servers already registered with the same config are skipped.
 
 		  setup [-e|--exclude <tools>] [-o|--only <tools>] [-f|--force] [-s|--skip-pkg-mgr]

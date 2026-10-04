@@ -269,10 +269,12 @@ clean_claude_context() {
   fi
 }
 
-# Register every server from the tracked MCP config in Claude Code's user scope. Claude keeps user-scope servers in
-# ~/.claude.json next to its own state, so that file cannot be symlinked. Servers missing from the tracked config are
-# left alone, and unchanged ones are skipped so that their stored OAuth sessions survive.
+# Register every server from an MCP config (the tracked one unless a path to another mcp.json, e.g. of a work repo, is
+# given) in Claude Code's user scope. Claude keeps user-scope servers in ~/.claude.json next to its own state, so that
+# file cannot be symlinked. Servers missing from the config are left alone, and unchanged ones are skipped so that
+# their stored OAuth sessions survive.
 sync_claude_mcp() {
+  local mcp_file=${1:-$CLAUDE_MCP_FILE}
   local user_conf="$HOME/.claude.json"
   local unchanged=0
 
@@ -283,13 +285,18 @@ sync_claude_mcp() {
     }
   done
 
-  if [ ! -f "$CLAUDE_MCP_FILE" ]; then
-    multi "$RED" "MCP config not found: " "$BLUE" "$CLAUDE_MCP_FILE"
+  if [ ! -f "$mcp_file" ]; then
+    multi "$RED" "MCP config not found: " "$BLUE" "$mcp_file"
+    return 1
+  fi
+
+  if ! jq -e '.mcpServers | type == "object"' "$mcp_file" >/dev/null 2>&1; then
+    multi "$RED" "No " "$BLUE" "mcpServers" "$RED" " object found in " "$BLUE" "$mcp_file"
     return 1
   fi
 
   while IFS= read -r name; do
-    local wanted="$(jq -cS --arg name "$name" '.mcpServers[$name]' "$CLAUDE_MCP_FILE")"
+    local wanted="$(jq -cS --arg name "$name" '.mcpServers[$name]' "$mcp_file")"
     local current="$(jq -cS --arg name "$name" '.mcpServers[$name] // empty' "$user_conf" 2>/dev/null)"
 
     if [ "$wanted" = "$current" ]; then
@@ -305,7 +312,7 @@ sync_claude_mcp() {
       return 1
     }
     multi "$GREEN" "Registered MCP server " "$BLUE" "$name"
-  done < <(jq -r '.mcpServers | keys[]' "$CLAUDE_MCP_FILE")
+  done < <(jq -r '.mcpServers | keys[]' "$mcp_file")
 
   [ "$unchanged" -ne 0 ] && multi "$GREEN" "Skipped $unchanged unchanged MCP servers"
   return 0

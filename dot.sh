@@ -158,6 +158,33 @@ entrypoint() {
       symlink_dotfiles "$force"
       ;;
 
+    update)
+      shift
+      local link_args=()
+
+      while [[ $# -gt 0 ]]; do
+        case $1 in
+        -f | --force)
+          link_args+=(--force)
+          shift
+          ;;
+        *)
+          multi "$RED" "Unknown option: " "$BLUE" "$1"
+          exit 1
+          ;;
+        esac
+      done
+
+      blue "Pulling the latest changes into $SCRIPT_DIR"
+      git -C "$SCRIPT_DIR" pull || {
+        red "Pull failed, files were not symlinked"
+        exit 1
+      }
+
+      # Re-run through the pulled script, so that linking uses the new code rather than the one already loaded
+      exec "$USED_SHELL" "$SCRIPT_DIR/dot.sh" link "${link_args[@]}"
+      ;;
+
     claude)
       shift
       case ${1-} in
@@ -263,13 +290,16 @@ entrypoint() {
 
       mcp)
         shift
-        if [[ $# -gt 0 ]]; then
-          multi "$RED" "Unknown option: " "$BLUE" "$1"
+        local mcp_file="$CLAUDE_MCP_FILE"
+
+        if [[ $# -gt 1 || ${1-} == -* ]]; then
+          multi "$RED" "Unknown option: " "$BLUE" "${2-$1}"
           exit 1
         fi
+        [[ $# -eq 1 ]] && mcp_file=$1
 
-        blue "Registering Claude MCP servers from $CLAUDE_MCP_FILE"
-        sync_claude_mcp || exit 1
+        blue "Registering Claude MCP servers from $mcp_file"
+        sync_claude_mcp "$mcp_file" || exit 1
         ;;
 
       *)
