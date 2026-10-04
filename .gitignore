@@ -3,3 +3,7 @@ temp
 .DS_Store
 .patch
 patch.zip
+
+# Only the personal context bundle is tracked; other bundles are mounted with `dot claude context`
+files/dotfiles/.claude/context/*
+!files/dotfiles/.claude/context/personal/

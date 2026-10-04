@@ -22,6 +22,15 @@ every subcommand; the ones with non-obvious behavior:
   `~/.claude/skills/<prefix>-<name>`; `-c` removes them again (prefix
   required). One symlink per skill directory, unlike `dot link`, which
   links file by file.
+- `dot claude context <path> -p <prefix> [-f] [-c]` — mount the OKF context
+  bundle of an external `.claude` dir (e.g. a work repo) as the symlink
+  `~/.claude/context/<prefix>`; `-c` removes it again. The personal bundle
+  is tracked in `files/dotfiles/.claude/context/personal/` (prefix
+  `personal` is reserved for it), project bundles live in
+  each project's `.claude/context/`; the `SessionStart` hook
+  `files/dotfiles/.claude/hooks/context-index.sh` prints the index of all
+  three kinds. Rules for writing concepts are in
+  `files/dotfiles/.claude/CLAUDE.md`.
 - `dot claude mcp` — register the MCP servers declared in
   `files/dotfiles/.claude/mcp.json` in Claude Code's user scope
   (`~/.claude.json`, which holds Claude's own state and so is not tracked).

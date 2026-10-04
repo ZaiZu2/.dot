@@ -1,170 +1,178 @@
 {
-    "env": {},
-    "model": "opus",
-    "attribution": {
-        "commit": "",
-        "pr": ""
-    },
-    "statusLine": {
-        "type": "command",
-        "command": "~/.claude/statusline.sh"
-    },
-    "hooks": {
-        "PreToolUse": [],
-        "Notification": [
-            {
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "$HOME/.claude/hooks/claude-waiting-mark.sh mark"
-                    }
-                ]
-            }
-        ],
-        "UserPromptSubmit": [
-            {
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "$HOME/.claude/hooks/claude-waiting-mark.sh clear"
-                    }
-                ]
-            }
+  "env": {},
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "permissions": {
+    "allow": [
+      "Bash(git fetch *)",
+      "Bash(git worktree *)",
+      "Bash(git add *)",
+      "Bash(git status *)",
+      "Bash(git show *)",
+      "Bash(git log *)",
+      "Bash(git diff *)",
+      "Bash(git checkout *)",
+      "Bash(git branch *)",
+      "Bash(uv sync *)",
+      "Bash(uv lock *)",
+      "Bash(uv run pytest *)",
+      "Bash(uv run ruff *)",
+      "Bash(make *)",
+      "Bash(grep *)",
+      "Bash(egrep *)",
+      "Bash(fgrep *)",
+      "Bash(rg *)",
+      "Bash(cat *)",
+      "Bash(ls *)",
+      "Bash(ll *)",
+      "Bash(find *)",
+      "Bash(fd *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(wc *)",
+      "Bash(sort *)",
+      "Bash(uniq *)",
+      "Bash(cut *)",
+      "Bash(awk *)",
+      "Bash(sed *)",
+      "Bash(tr *)",
+      "Bash(echo *)",
+      "Bash(printf *)",
+      "Bash(jq *)",
+      "Bash(yq *)",
+      "Bash(xargs *)",
+      "Bash(tee *)",
+      "Bash(column *)",
+      "Bash(basename *)",
+      "Bash(dirname *)",
+      "Bash(realpath *)",
+      "Bash(readlink *)",
+      "Bash(stat *)",
+      "Bash(file *)",
+      "Bash(which *)",
+      "Bash(type *)",
+      "Bash(command -v *)",
+      "Bash(env)",
+      "Bash(pwd)",
+      "Bash(date *)",
+      "Bash(gh pr *)",
+      "Bash(gh run *)",
+      "Bash(kubectl get *)",
+      "Bash(kubectl describe *)",
+      "Bash(kubectl logs *)",
+      "Bash(kubectl top *)",
+      "Bash(kubectl explain *)",
+      "Bash(kubectl events *)",
+      "Bash(kubectl cluster-info)",
+      "Bash(kubectl cluster-info dump*)",
+      "Bash(kubectl api-resources *)",
+      "Bash(kubectl api-versions)",
+      "Bash(kubectl version *)",
+      "Bash(kubectl config view *)",
+      "Bash(kubectl config get-contexts *)",
+      "Bash(kubectl config current-context)",
+      "Bash(kubectl config get-clusters)",
+      "Bash(kubectl auth can-i *)",
+      "WebFetch",
+      "WebSearch"
+    ],
+    "deny": [
+      "Bash(git checkout -- *)",
+      "Bash(git checkout .)",
+      "Bash(git branch -D *)",
+      "Bash(git clean *)",
+      "Bash(git reset --hard *)",
+      "Bash(git push --force*)",
+      "Bash(git push -f *)",
+      "Bash(rm -rf *)",
+      "Bash(rm -fr *)",
+      "Bash(rm -r *)",
+      "Bash(rm -f *)",
+      "Bash(rm  *)",
+      "Bash(rm\t*)",
+      "Bash(rm --recursive*)",
+      "Bash(rm --force*)",
+      "Bash(rm -R*)",
+      "Bash(/bin/rm *)",
+      "Bash(/usr/bin/rm *)",
+      "Bash(sudo rm *)",
+      "Bash(sudo /bin/rm *)",
+      "Bash(sudo /usr/bin/rm *)",
+      "Bash(* rm -rf *)",
+      "Bash(*&& rm *)",
+      "Bash(*; rm *)",
+      "Bash(*| rm *)",
+      "Bash(*`rm *)",
+      "Bash(xargs rm*)",
+      "Bash(*xargs rm*)",
+      "Bash(find * -delete*)",
+      "Bash(find * -exec rm*)",
+      "Bash(dd *)",
+      "Bash(sudo dd *)",
+      "Bash(/bin/dd *)",
+      "Bash(mkfs*)",
+      "Bash(sudo mkfs*)",
+      "Bash(shred *)",
+      "Bash(sudo shred *)",
+      "Bash(chmod -R *)",
+      "Bash(chmod --recursive*)",
+      "Bash(sudo chmod -R *)",
+      "Bash(chown -R *)",
+      "Bash(chown --recursive*)",
+      "Bash(sudo chown -R *)",
+      "Bash(> /dev/sda*)",
+      "Bash(> /dev/nvme*)",
+      "Bash(> /dev/disk*)",
+      "Bash(mv * /dev/null*)",
+      "Bash(mv */ /dev/null*)"
+    ],
+    "defaultMode": "auto"
+  },
+  "model": "opus",
+  "hooks": {
+    "PreToolUse": [],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/context-index.sh"
+          }
         ]
-    },
-    "alwaysThinkingEnabled": true,
-    "effortLevel": "medium",
-    "tui": "fullscreen",
-    "autoCompactEnabled": true,
-    "permissions": {
-        "allow": [
-            "Bash(git fetch *)",
-            "Bash(git worktree *)",
-            "Bash(git add *)",
-            "Bash(git status *)",
-            "Bash(git show *)",
-            "Bash(git log *)",
-            "Bash(git diff *)",
-            "Bash(git checkout *)",
-            "Bash(git branch *)",
-            "Bash(uv sync *)",
-            "Bash(uv lock *)",
-            "Bash(uv run pytest *)",
-            "Bash(uv run ruff *)",
-            "Bash(make *)",
-
-            "Bash(grep *)",
-            "Bash(egrep *)",
-            "Bash(fgrep *)",
-            "Bash(rg *)",
-            "Bash(cat *)",
-            "Bash(ls *)",
-            "Bash(ll *)",
-            "Bash(find *)",
-            "Bash(fd *)",
-            "Bash(head *)",
-            "Bash(tail *)",
-            "Bash(wc *)",
-            "Bash(sort *)",
-            "Bash(uniq *)",
-            "Bash(cut *)",
-            "Bash(awk *)",
-            "Bash(sed *)",
-            "Bash(tr *)",
-            "Bash(echo *)",
-            "Bash(printf *)",
-            "Bash(jq *)",
-            "Bash(yq *)",
-            "Bash(xargs *)",
-            "Bash(tee *)",
-            "Bash(column *)",
-            "Bash(basename *)",
-            "Bash(dirname *)",
-            "Bash(realpath *)",
-            "Bash(readlink *)",
-            "Bash(stat *)",
-            "Bash(file *)",
-            "Bash(which *)",
-            "Bash(type *)",
-            "Bash(command -v *)",
-            "Bash(env)",
-            "Bash(pwd)",
-            "Bash(date *)",
-
-            "Bash(gh pr *)",
-            "Bash(gh run *)",
-
-            "Bash(kubectl get *)",
-            "Bash(kubectl describe *)",
-            "Bash(kubectl logs *)",
-            "Bash(kubectl top *)",
-            "Bash(kubectl explain *)",
-            "Bash(kubectl events *)",
-            "Bash(kubectl cluster-info)",
-            "Bash(kubectl cluster-info dump*)",
-            "Bash(kubectl api-resources *)",
-            "Bash(kubectl api-versions)",
-            "Bash(kubectl version *)",
-            "Bash(kubectl config view *)",
-            "Bash(kubectl config get-contexts *)",
-            "Bash(kubectl config current-context)",
-            "Bash(kubectl config get-clusters)",
-            "Bash(kubectl auth can-i *)",
-
-            "WebFetch",
-            "WebSearch"
-        ],
-        "deny": [
-            "Bash(git checkout -- *)",
-            "Bash(git checkout .)",
-            "Bash(git branch -D *)",
-            "Bash(git clean *)",
-            "Bash(git reset --hard *)",
-            "Bash(git push --force*)",
-            "Bash(git push -f *)",
-            "Bash(rm -rf *)",
-            "Bash(rm -fr *)",
-            "Bash(rm -r *)",
-            "Bash(rm -f *)",
-            "Bash(rm  *)",
-            "Bash(rm\t*)",
-            "Bash(rm --recursive*)",
-            "Bash(rm --force*)",
-            "Bash(rm -R*)",
-            "Bash(/bin/rm *)",
-            "Bash(/usr/bin/rm *)",
-            "Bash(sudo rm *)",
-            "Bash(sudo /bin/rm *)",
-            "Bash(sudo /usr/bin/rm *)",
-            "Bash(* rm -rf *)",
-            "Bash(*&& rm *)",
-            "Bash(*; rm *)",
-            "Bash(*| rm *)",
-            "Bash(*`rm *)",
-            "Bash(xargs rm*)",
-            "Bash(*xargs rm*)",
-            "Bash(find * -delete*)",
-            "Bash(find * -exec rm*)",
-            "Bash(dd *)",
-            "Bash(sudo dd *)",
-            "Bash(/bin/dd *)",
-            "Bash(mkfs*)",
-            "Bash(sudo mkfs*)",
-            "Bash(shred *)",
-            "Bash(sudo shred *)",
-            "Bash(chmod -R *)",
-            "Bash(chmod --recursive*)",
-            "Bash(sudo chmod -R *)",
-            "Bash(chown -R *)",
-            "Bash(chown --recursive*)",
-            "Bash(sudo chown -R *)",
-
-            "Bash(> /dev/sda*)",
-            "Bash(> /dev/nvme*)",
-            "Bash(> /dev/disk*)",
-            "Bash(mv * /dev/null*)",
-            "Bash(mv */ /dev/null*)"
-        ],
-        "defaultMode": "auto"
-    }
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/claude-waiting-mark.sh mark"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/claude-waiting-mark.sh clear"
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh"
+  },
+  "alwaysThinkingEnabled": true,
+  "effortLevel": "medium",
+  "tui": "fullscreen",
+  "theme": "auto",
+  "editorMode": "normal",
+  "verbose": true,
+  "autoCompactEnabled": true
 }

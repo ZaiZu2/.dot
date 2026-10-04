@@ -56,6 +56,13 @@ print_help() {
 		        -c, --clean              Remove the skills previously linked from <path> under the given prefix
 		                                 (prefix required).
 
+		  claude context <path> -p|--prefix <prefix> [-f|--force] [-c|--clean]
+		      Symlink the OKF context bundle of an external .claude directory as ~/.claude/context/<prefix>.
+		      Options:
+		        -p, --prefix <prefix>    Name of the mounted bundle (required).
+		        -f, --force              Repoint an existing symlink; a real directory is never replaced.
+		        -c, --clean              Remove the bundle previously linked from <path> under the given prefix.
+
 		  claude mcp
 		      Register the MCP servers from files/dotfiles/.claude/mcp.json in Claude Code's user scope.
 		      Servers already registered with the same config are skipped.

@@ -106,7 +106,8 @@ Only symlinks pointing into that repo are removed, so personal skills and other 
 
 ## Writing SKILL.md Instructions
 
-Keep this list updated as new conventions come up while refining skills.
+Read this list before creating or editing a skill. Whenever a writing preference is stated while refining one, add
+it here without being asked, so later skills don't repeat a mistake that was already fixed.
 
 - **Mode prefix.** Start every `description` with `[hitl]` or `[auto]` (see
   [Invocation and Mode](#invocation-and-mode)). Quote the description, since a

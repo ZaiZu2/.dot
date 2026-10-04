@@ -200,6 +200,75 @@ validate_claude_prefix() {
   fi
 }
 
+# Mount the OKF context bundle of an external .claude directory (e.g. a work repo) as ~/.claude/context/<prefix>, one
+# symlink for the whole bundle, next to the personal bundle in ~/.claude/context/personal. The context-index.sh hook lists every mounted bundle at session start.
+link_claude_context() {
+  local claude_dir=$1
+  local prefix=${2-}
+  local force=${3-false}
+
+  if [ ! -d "$claude_dir/context" ]; then
+    multi "$RED" "No context directory found in " "$BLUE" "$claude_dir"
+    return 1
+  fi
+
+  if [ -z "$prefix" ]; then
+    red "Mounting a context bundle requires a prefix"
+    return 1
+  fi
+  validate_claude_prefix "$prefix" || return 1
+
+  local src="$(realpath "$claude_dir")/context"
+  local dest_root="$HOME/.claude/context"
+  local target_path="$dest_root/$prefix"
+  mkdir -p "$dest_root"
+
+  if [ "$prefix" = personal ]; then
+    multi "$RED" "Prefix " "$BLUE" "personal" "$RED" " is reserved for the bundle tracked in the dot repo"
+    return 1
+  fi
+
+  if [[ -L "$target_path" && $(readlink "$target_path") = "$src" ]]; then
+    multi "$GREEN" "Skipped 1 correct symlink"
+  elif [[ -L "$target_path" && "$force" = false ]]; then
+    multi "$YELLOW" "Skipping " "$BLUE" "$target_path" "$YELLOW" ", symlink already exists"
+  elif [[ -e "$target_path" && ! -L "$target_path" ]]; then
+    # Never replaced, even when forced - it holds files which do not come from <claude_dir>
+    multi "$YELLOW" "Skipping " "$BLUE" "$target_path" "$YELLOW" ", it is not a symlink"
+  else
+    multi "$GREEN" "Created symlink " "$BLUE" "$target_path" "$GREEN" " -> " "$BLUE" "$src"
+    ln -sfn "$src" "$target_path"
+  fi
+  return 0
+}
+
+# Remove the ~/.claude/context/<prefix> symlink if it points at <claude_dir>/context
+clean_claude_context() {
+  local claude_dir=$1
+  local prefix=${2-}
+
+  if [ -z "$prefix" ]; then
+    red "Cleaning requires a prefix"
+    return 1
+  fi
+  validate_claude_prefix "$prefix" || return 1
+
+  if [ ! -d "$claude_dir" ]; then
+    multi "$RED" "Directory not found: " "$BLUE" "$claude_dir"
+    return 1
+  fi
+
+  local src="$(realpath "$claude_dir")/context"
+  local target_path="$HOME/.claude/context/$prefix"
+
+  if [[ -L "$target_path" && $(readlink "$target_path") = "$src" ]]; then
+    rm "$target_path"
+    multi "$GREEN" "Removed symlink " "$BLUE" "$target_path"
+  else
+    multi "$YELLOW" "No context bundle linked from " "$BLUE" "$claude_dir" "$YELLOW" " under " "$BLUE" "$prefix"
+  fi
+}
+
 # Register every server from the tracked MCP config in Claude Code's user scope. Claude keeps user-scope servers in
 # ~/.claude.json next to its own state, so that file cannot be symlinked. Servers missing from the tracked config are
 # left alone, and unchanged ones are skipped so that their stored OAuth sessions survive.
