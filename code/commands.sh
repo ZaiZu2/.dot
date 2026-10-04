@@ -71,8 +71,15 @@ symlink_tree() {
       continue # Do not symlink directories
     fi
 
-    # Skip already existing, correct symlinks
-    if [[ -L "$target_path" && $(realpath "$target_path") = "$dot_path" ]]; then
+    # A tracked symlink whose own target is gone would only produce a broken link, removed again on the next run
+    if [[ -L "$dot_path" && ! -e "$dot_path" ]]; then
+      multi "$YELLOW" "Skipping " "$BLUE" "$dot_path" "$YELLOW" ", it is a broken symlink"
+      continue
+    fi
+
+    # Skip already existing, correct symlinks - readlink, as realpath would resolve through tracked files which are
+    # symlinks themselves and never match
+    if [[ -L "$target_path" && $(readlink "$target_path") = "$dot_path" ]]; then
       correct_links=$((correct_links + 1))
       continue
     fi
