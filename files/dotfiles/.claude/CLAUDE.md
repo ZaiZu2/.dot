@@ -1,4 +1,4 @@
-# Global CLAUDE settings
+# Personal CLAUDE settings
 
 ## General
 
@@ -38,57 +38,55 @@ adding/updating/removing skills. Read its "Writing SKILL.md Instructions" sectio
 
 ## Context
 
-Knowledge I want you to keep is stored as bundles in
-[Open Knowledge Format 0.2](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md). Whenever
-you would save a memory, or create any other standalone context/knowledge file, write it as an OKF concept into one of
-these bundles instead of into `~/.claude/projects/<project>/memory/`. Files with a format fixed by Claude Code
-(`CLAUDE.md`, `SKILL.md`, agent definitions) are exempt. Whenever you are unsure how to write such a file, read the spec
-under the link above first; it is the authority, the rules below only summarise it.
+Knowledge I want you to keep is stored as bundles in Open Knowledge Format (OKF) 0.2. Whenever you would save a memory,
+or create any other standalone context/knowledge file, write it as an OKF concept into one of these bundles instead of
+into `~/.claude/projects/<project>/memory/`. Files with a format fixed by Claude Code (`CLAUDE.md`, `SKILL.md`, agent
+definitions) are exempt.
 
-The `SessionStart` hook `~/.claude/hooks/context-index.sh` prints the index of every bundle that applies to the session;
-read a concept when its line is relevant to the task. Pick the bundle by what the concept is about:
+Before creating or updating any file in a bundle (concept, `index.md`, `log.md`), read the spec at
+`~/.claude/context/personal/references/okf-spec-0-2.md` and follow it; it is the authority for format and rules. It
+also outranks me: when a request of mine, or one of my conventions below, conflicts with the spec or departs from one of
+its conventions, push back, quote the section, and wait for my decision before acting.
+
+The index of every bundle under `~/.claude/context/` is imported below, through a file `dot` generates; links in an
+index are relative to the directory of that `index.md`. Read a concept when its line is relevant to the task. Mounted
+bundles are symlinks, so search them with `grep -R` / `find -L` (never `grep -r`) before concluding a fact is not
+recorded.
+
+@~/.claude/context/imports.md
+
+Pick the bundle by what the concept is about:
 
 - **Personal** (`~/.claude/context/personal/`, tracked in the dot repo under
   `files/dotfiles/.claude/context/personal/`): facts about me and preferences that hold across projects. Write into the
   dot repo directory, then run `dot link` (`zsh ~/.dot/dot.sh link`) so the new file surfaces under
   `~/.claude/context/personal/`.
 - **Project** (`<project root>/.claude/context/`): facts about the current project. Create the bundle on first use: an
-  `index.md` starting with an `okf_version: "0.2"` frontmatter block, and a `log.md`.
+  `index.md` starting with an `okf_version: "0.2"` frontmatter block, and a `log.md`, and import the index from the
+  project's `CLAUDE.md` with `@.claude/context/index.md`.
 - **Mounted** (`~/.claude/context/<prefix>/`, symlinked from another repo by `dot claude context`): knowledge shared
-  across the projects of one scope, e.g. a work repo. Write there whatever belongs to that scope rather than to me or
-  to a single project; the symlink resolves into the other repo, so new files need no `dot link`.
+  across the projects of one scope, e.g. a work repo. Write there whatever belongs to that scope rather than to me or to
+  a single project; the symlink resolves into the other repo, so new files need no `dot link`. Mounting or removing
+  a bundle with `dot claude context` updates the imports above.
 
-Rules for every bundle:
+My conventions on top of the spec:
 
-- **Concept**: one fact per file, named `<kebab-case-slug>.md`, with this frontmatter:
-
-    ```yaml
-    ---
-    type: user | feedback | project | reference
-    title: <display name>
-    description: <one-sentence summary>
-    tags: [<tag>, ...]
-    status: draft | stable | deprecated
-    generated: { by: claude-code/<model id>, at: <ISO 8601 UTC datetime> }
-    sources:
-        - id: <stable key>
-          resource: <URL, path, or scope descriptor such as "Claude Code session <id>">
-          author: human:jakub
-    ---
-    ```
-
-- **Trust**: `generated.at` is the last meaningful content change. Add `verified: { by: human:jakub, at: ... }` only
-  after I confirm the content in conversation, never on your own. Set `stale_after` on anything time-bound (project
-  state, deadlines).
-- **Lifecycle**: mark a superseded concept `status: deprecated` and link its replacement. Delete only concepts that were
-  wrong.
-- **Body**: structural markdown. Link other concepts with bundle-relative markdown links (`[title](/slug.md)`), not
-  `[[slug]]`. Attribute individual claims with footnotes keyed to `sources[].id`.
-- **Index**: `index.md` must always list every concept of its bundle, grouped under one heading per `type`, one
-  `* [title](slug.md) - description` line per concept. Keeping it complete is your job: update it in the same change
-  that creates, renames, re-describes or removes a concept, and fix any drift you notice between the index and the
-  files. The session-start hook shows only what the index lists.
-- **Log**: record every creation, update and deprecation in `log.md`, newest first, under `## YYYY-MM-DD` headings.
+- One fact per concept file, named `<kebab-case-slug>.md`, with `type` one of `user`, `feedback`, `project`,
+  `reference`, and `title`, `description`, `tags`, `status`, `generated` and `sources` always set.
+- Write `description` as a verbless phrase naming what the concept covers (e.g. "The `dot` CLI: deployment of my
+  dotfiles into $HOME"), not as a sentence with a verb.
+- I am `human:jakub` (as `sources[].author`, and in `verified`). Add `verified` only after I confirm the content in
+  conversation, never on your own. Set `stale_after` on anything time-bound.
+- Deprecate superseded concepts; delete only concepts that were wrong.
+- Keep concepts at the bundle root by default. Create a subdirectory only to group several concepts about the same
+  context (a system, tool or area). The one exception is `references/` (OKF §6.3), which holds mirrored external
+  material such as copied docs.
+- Each bundle has a single `index.md`, at its root; never create one in a subdirectory. It lists every concept of the
+  bundle, subdirectories included, grouped by `type` under capitalized top-level headings (`# User`, `# Feedback`,
+  `# Project`, `# Reference`), optionally split by subdirectory under `## <subdir>` headings, with links relative to the
+  bundle root. Update it in the same change as the concepts; fix any drift you notice. Only what the index lists is
+  loaded into the session.
+- Record every creation, update and deprecation in `log.md`.
 
 ## MCPs
 

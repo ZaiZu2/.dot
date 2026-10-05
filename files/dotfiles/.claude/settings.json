@@ -140,16 +140,6 @@
   "model": "opus",
   "hooks": {
     "PreToolUse": [],
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/context-index.sh"
-          }
-        ]
-      }
-    ],
     "Notification": [
       {
         "hooks": [

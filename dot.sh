@@ -286,6 +286,7 @@ entrypoint() {
           blue "Symlinking Claude context bundle from $claude_dir"
           link_claude_context "$claude_dir" "$prefix" "$force" || exit 1
         fi
+        write_claude_context_imports
         ;;
 
       mcp)
