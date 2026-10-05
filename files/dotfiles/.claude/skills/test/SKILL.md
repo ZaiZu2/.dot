@@ -19,6 +19,8 @@ What the request names: files or modules, specific functions or classes, or chan
 changes, test the code they add or modify. If the request names nothing, stop and reply only that files, code objects or
 changes must be specified.
 
+If the request names a directory, work there: `cd` into it first, as a command of its own.
+
 ## Actions
 
 ### 1. Learn the conventions

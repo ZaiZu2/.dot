@@ -16,8 +16,10 @@ the conventions.
 | `/pr`         | Create or update the GitHub PR for the current branch              | `[auto]` | model      | `gh`                   |
 | `/review`     | Review a PR, commits or changes                                    | `[auto]` | model      | `gh`                   |
 | `/test`       | Unit tests for files, code objects or changes                      | `[auto]` | model      | -                      |
-| `/spec`       | Interview-driven feature spec, written to `.claude/docs/<slug>.md` | `[hitl]` | user       | -                      |
-| `/jira`       | Create, update, search, comment on and transition Jira issues      | `[hitl]` | user       | `atlassian` MCP server |
+| `/implement`  | Implement a ticket, spec or described change                       | `[auto]` | model      | `atlassian` MCP server |
+| `/spec`       | Interview-driven feature spec, written to `.claude/spec/<slug>.md` | `[hitl]` | user       | -                      |
+| `/feature`    | Feature end to end: tickets, implementation, PR and review         | `[hitl]` | user       | `gh`, `atlassian` MCP  |
+| `/ticket`     | Create, update, search, comment on and transition Jira issues      | `[hitl]` | user       | `atlassian` MCP server |
 | `/confluence` | Get, search, create and update Confluence pages                    | `[hitl]` | user       | `atlassian` MCP server |
 
 See [Invocation and Mode](#invocation-and-mode) for the `Mode` and `Invoked by` columns.
@@ -48,7 +50,7 @@ it should run (`note`).
 ```
 ~/.claude/skills/
 ├── README.md
-└── confluence/, doc/, jira/, mkdoc/, note/, pr/, review/, spec/, test/   # one SKILL.md each
+└── confluence/, doc/, feature/, implement/, mkdoc/, note/, pr/, review/, spec/, test/, ticket/   # one SKILL.md each
 ```
 
 Skills are discovered exactly one level deep (`skills/<name>/SKILL.md`); grouping them in subfolders does not work.
@@ -65,7 +67,12 @@ hop deep, and use resolvable paths. `@file` imports are documented for `CLAUDE.m
 
 To run another skill from a step, name the tool: "Call the Skill tool with `review`", one skill per call. A bare
 `/review` in prose is easily read as a label. This only works for a model-invoked skill; for a user-invoked one,
-write "tell the user to run `/<name>`".
+write "tell the user to run `/<name>`". A skill that needs the conventions of a user-invoked skill reads its `SKILL.md`
+by path instead (`feature` reads `ticket/SKILL.md`).
+
+A forked skill runs as a subagent, which can't ask the user anything, so a skill with a `Confirm` or `Interview` stop
+must be inline (`feature`). A skill that should run either in the session or delegated also stays inline; the caller
+delegates by starting a subagent told to read its `SKILL.md` (`feature` does this with `implement`).
 
 ## MCP Servers
 
@@ -87,7 +94,7 @@ hand (`claude mcp add`) are left alone, and removing an entry from the file does
 `claude mcp remove <name> -s user`. Keep secrets out of the file: use OAuth or `${VAR}` expansion.
 
 In a skill, refer to the server's tools as `mcp__<server>__*` and tell Claude what to do when they are missing (see
-`jira/SKILL.md`).
+`ticket/SKILL.md`).
 
 ## Work Skills
 
@@ -207,7 +214,7 @@ match, wrong branch). Forked skills stop with a one-line reason; inline skills a
 ### 2. <Step>
 
 <A short paragraph instead, when the skill is too simple for steps (`doc`) or its flow depends on the request
-(`jira`).>
+(`ticket`).>
 
 ## Rules
 

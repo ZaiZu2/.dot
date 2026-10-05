@@ -58,9 +58,22 @@ gw() {
 }
 alias gwl='git worktree list'
 
-# Add a worktree for <branch> (creates it off origin/HEAD if new), cd in, uv sync.
+# Fast-forward local <branch> to origin/<branch>: pull where it is checked out, otherwise update the ref.
+_git_pull_branch() {
+    local branch="$1"
+    local checked_out_in="$(git worktree list --porcelain |
+        awk -v b="refs/heads/$branch" '/^worktree /{p=substr($0,10)} $1=="branch" && $2==b {print p}')"
+    if [ -n "$checked_out_in" ]; then
+        git -C "$checked_out_in" pull --ff-only --quiet
+    else
+        git fetch --quiet origin "$branch:$branch"
+    fi
+}
+
+# Add a worktree for <branch> (creates it off the freshly pulled default branch if new), cd in, uv sync.
 gwa() {
     local new_branch="$1"
+    git fetch --quiet || return 1 # so the lookup below sees branches pushed by others
     local new_branch_exists=$(git branch -a --list "$new_branch" "*/$new_branch")
 
     local master_branch=$(git symbolic-ref --short refs/remotes/origin/HEAD)
@@ -71,6 +84,13 @@ gwa() {
     local worktree_path="$repo_dir/${new_branch//\//-}" # replace all `/` with `-`
 
     if [ -z "$new_branch_exists" ]; then
+        # An explicit base is used as it is; the default one is pulled first, so the new branch isn't cut from a stale one
+        if [ -z "$2" ]; then
+            _git_pull_branch "$master_branch" || {
+                echo "Could not pull '$master_branch', worktree not created"
+                return 1
+            }
+        fi
         git worktree add "$worktree_path" -b "$new_branch" "$base_branch" || return 1
     else
         git worktree add "$worktree_path" "$new_branch" || return 1

@@ -58,6 +58,7 @@
       "Bash(pwd)",
       "Bash(date *)",
       "Bash(gh pr *)",
+      "Bash(gh repo view *)",
       "Bash(gh run *)",
       "Bash(kubectl get *)",
       "Bash(kubectl describe *)",

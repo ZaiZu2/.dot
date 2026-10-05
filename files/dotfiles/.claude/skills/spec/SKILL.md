@@ -66,47 +66,10 @@ questions. Summarize the decisions and get confirmation.
 
 ### 4. Write the spec
 
-Save to `<repo root>/.claude/docs/<feature-slug>.md` (`git rev-parse --show-toplevel`), unless the user says otherwise.
+Save to `<repo root>/.claude/spec/<feature-slug>.md` (`git rev-parse --show-toplevel`), unless the user says otherwise.
 Don't overwrite without asking.
 
-It must stand alone for an implementer (the user, a fresh session or a subagent) who never saw the interview. Include
-only what was decided, assumed or found, and omit empty sections. Keep requirements concrete and reference code with
-`path:line`.
-
-```markdown
-# <Feature name>
-
-## Summary
-
-<2-3 sentences: what changes and why.>
-
-## Context
-
-<How the affected area works today, with file references. Patterns and constraints to follow.>
-
-## Scope
-
-- **In**: ...
-- **Out**: ...
-
-## Requirements
-
-1. ...
-
-## Edge Cases
-
-- <case> → <expected behavior>
-
-## Implementation
-
-- **Approach**: ...
-- **Changes**: `path/to/file` → what changes
-- **Rejected alternatives**: <option> → why
-
-## Notes
-
-<Accepted risks, assumptions, open questions.>
-```
+Read `${CLAUDE_SKILL_DIR}/brief.md` and write the spec in that layout, following its rules.
 
 ## Report
 

@@ -90,7 +90,8 @@ tracked file needs no re-link — the symlink already points here.
 ## Repository conventions
 
 - Never commit to git — user does that (from
-  `files/dotfiles/.claude/CLAUDE.md`).
+  `files/dotfiles/.claude/CLAUDE.md`). The one exception named there is a
+  `/feature` run, on the feature branch it created.
 - New files under `files/dotfiles/` require `dot link` before they surface
   in `$HOME`.
 

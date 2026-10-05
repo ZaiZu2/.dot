@@ -1,11 +1,11 @@
 ---
-name: jira
-description: "[hitl] Create, update, search, comment on and transition Jira issues through the Atlassian MCP server."
+name: ticket
+description: '[hitl] Create, update, search, comment on and transition Jira issues through the Atlassian MCP server.'
 model: sonnet
 disable-model-invocation: true
 ---
 
-# Jira
+# Ticket
 
 Manage Jira issues on `https://absa.atlassian.net` with the Jira tools of the `atlassian` MCP server
 (`mcp__atlassian__*`). A good result is a short, scannable ticket that follows the conventions below.
@@ -41,18 +41,13 @@ rules and conventions below, show what will be sent, and send it only after appr
 
 Prefix new ticket summaries with a project tag and add its label, keeping any other labels:
 
-| Prefix | Label | Area |
-|--------|-------|------|
-| `[fa]` | `front-arena` | File automation, SFTP, Front Arena |
-| `[prime]` | `prime-portal` | Prime Portal |
-| `[ps_rep]` | `ps-reporting` | PS Reporting |
+| Prefix     | Label          | Area                               |
+| ---------- | -------------- | ---------------------------------- |
+| `[fa]`     | `front-arena`  | File automation, SFTP, Front Arena |
+| `[prime]`  | `prime-portal` | Prime Portal                       |
+| `[ps_rep]` | `ps-reporting` | PS Reporting                       |
 
 Example: `[fa] Add retry logic to SFTP connector` with label `front-arena`. Infer the tag from context; ask if unsure.
-
-## Deprecation dates
-
-For `Deprecate old transfers for <Client>` tickets, set the due date and append it to the summary in the same update:
-`Deprecate old transfers for Fairtree (2026-06-29)`.
 
 ## Descriptions
 
@@ -64,6 +59,8 @@ A busy reader should scan the ticket in about ten seconds; the code and PR carry
 - Leave out test-scope bullets unless tests are the point of the ticket.
 - If the user finds it too long, merge bullets and drop what the summary already says.
 - Write in the format the tool's description field asks for (Markdown unless it says otherwise).
+- Tickets created by `/feature` are work briefs in its longer `Ticket brief` format. Keep that format when updating one;
+  don't shorten it to Objective and Scope.
 
 ## Report
 

@@ -19,6 +19,8 @@ The current branch, against the repo's default branch
 reason if the current branch is `<base>`, has no commits ahead of it, or is not pushed (`git status -sb` shows no
 upstream or unpushed commits). Don't push.
 
+If the request names a directory, work there: `cd` into it first, as a command of its own.
+
 ## Actions
 
 ### 1. Gather changes
