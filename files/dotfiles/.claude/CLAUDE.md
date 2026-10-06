@@ -3,7 +3,7 @@
 ## General
 
 - NEVER commit anything to GIT by yourself, even when explicitly asked. Any commits can only be done by ME, the user.
-  The only exception is a `/feature` run, which commits and pushes on the feature branch it created for that run, and
+  The only exception is a `/feature` run, which commits and pushes on the feature branches it created for that run, and
   on no other branch.
 - When a Bash command (or set of commands) is denied by the permission system, do NOT silently retry with a variant.
   Stop, tell the user what was denied, and ASK whether to proceed — the denial may be an intentional safeguard rather
@@ -108,7 +108,7 @@ Jira and Confluence access - Atlassian MCP reads and writes Jira issues and Conf
 Use it to read whenever a request refers to a Jira issue (a key such as `FAPE-1319`) or a Confluence page, without me
 having to explicitly ask. Never create, update, comment on or transition anything with it directly: writes go through
 the `ticket` and `confluence` skills, which are user-invoked, so tell me to run `/ticket` or `/confluence` instead.
-The only exception is a `/feature` run, which creates the Jira issues I approved at its `Confirm` step.
+The only exception is a `/scope` run, which creates and updates the Jira issues I approved at its `Confirm` step.
 
 Never work on another site, even if the account can reach one. If no `atlassian` tools are available, tell me to run
 `dot claude mcp`, then `/mcp` to sign in.

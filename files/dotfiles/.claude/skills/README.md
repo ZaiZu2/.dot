@@ -18,9 +18,15 @@ the conventions.
 | `/test`       | Unit tests for files, code objects or changes                      | `[auto]` | model      | -                      |
 | `/implement`  | Implement a ticket, spec or described change                       | `[auto]` | model      | `atlassian` MCP server |
 | `/spec`       | Interview-driven feature spec, written to `.claude/spec/<slug>.md` | `[hitl]` | user       | -                      |
-| `/feature`    | Feature end to end: tickets, implementation, PR and review         | `[hitl]` | user       | `gh`, `atlassian` MCP  |
+| `/scope`      | Split a spec into Jira tickets and record them in the spec         | `[hitl]` | user       | `gh`, `atlassian` MCP  |
+| `/feature`    | Implement a scoped spec in each of its repositories, resumable     | `[auto]` | user       | `gh`, `atlassian` MCP  |
 | `/ticket`     | Create, update, search, comment on and transition Jira issues      | `[hitl]` | user       | `atlassian` MCP server |
 | `/confluence` | Get, search, create and update Confluence pages                    | `[hitl]` | user       | `atlassian` MCP server |
+
+`/spec`, `/scope` and `/feature` run in sequence, each started by the user: `/spec` writes the spec, `/scope` adds its
+`Tickets` section, and `/feature <spec>` implements it, one worktree and PR per repository, handing independent
+tickets to `implement` subagents that run at the same time. `/feature` runs forked in the `feature-runner` agent
+(`~/.claude/agents/feature-runner.md`), whose `tools` list limits what the unattended run can reach.
 
 See [Invocation and Mode](#invocation-and-mode) for the `Mode` and `Invoked by` columns.
 
@@ -50,7 +56,7 @@ it should run (`note`).
 ```
 ~/.claude/skills/
 ├── README.md
-└── confluence/, doc/, feature/, implement/, mkdoc/, note/, pr/, review/, spec/, test/, ticket/   # one SKILL.md each
+└── confluence/, doc/, feature/, implement/, mkdoc/, note/, pr/, review/, scope/, spec/, test/, ticket/   # one SKILL.md each
 ```
 
 Skills are discovered exactly one level deep (`skills/<name>/SKILL.md`); grouping them in subfolders does not work.
@@ -68,10 +74,10 @@ hop deep, and use resolvable paths. `@file` imports are documented for `CLAUDE.m
 To run another skill from a step, name the tool: "Call the Skill tool with `review`", one skill per call. A bare
 `/review` in prose is easily read as a label. This only works for a model-invoked skill; for a user-invoked one,
 write "tell the user to run `/<name>`". A skill that needs the conventions of a user-invoked skill reads its `SKILL.md`
-by path instead (`feature` reads `ticket/SKILL.md`).
+by path instead (`scope` reads `ticket/SKILL.md`).
 
 A forked skill runs as a subagent, which can't ask the user anything, so a skill with a `Confirm` or `Interview` stop
-must be inline (`feature`). A skill that should run either in the session or delegated also stays inline; the caller
+must be inline (`scope`). A skill that should run either in the session or delegated also stays inline; the caller
 delegates by starting a subagent told to read its `SKILL.md` (`feature` does this with `implement`).
 
 ## MCP Servers

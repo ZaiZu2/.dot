@@ -14,7 +14,7 @@ description lets a reviewer see what the PR achieves and where to look, without 
 
 ## Target
 
-The current branch, against the repo's default branch
+The current branch, against the base branch the request names, else the repo's default branch
 (`gh repo view --json defaultBranchRef -q .defaultBranchRef.name`), called `<base>` below. Stop and reply only with the
 reason if the current branch is `<base>`, has no commits ahead of it, or is not pushed (`git status -sb` shows no
 upstream or unpushed commits). Don't push.
@@ -46,11 +46,16 @@ Look for `[A-Z]+-[0-9]+` in the branch name (e.g. `FAPE-1319`). If found, link i
 
 - <specific changed function, class or file, and what it does>
 - <supporting changes: CI, config, migrations, docs>
+
+## Related
+
+- <URL of a related PR the request names>
 ```
 
 - Summary says what the PR achieves; Implementation says how, naming concrete files, functions or classes.
 - One tight point per bullet, no filler. For a trivially small change, one sentence of prose per section is fine.
 - No "Generated with Claude Code" footer.
+- Include `Related` only when the request names related PRs.
 
 ### 4. Choose the title
 

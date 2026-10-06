@@ -4,6 +4,7 @@ input=$(cat)
 dir=$(jq -r '.workspace.current_dir // .cwd' <<<"$input")
 used=$(jq -r '.context_window.total_input_tokens // empty' <<<"$input")
 pct=$(jq -r '.context_window.used_percentage // empty' <<<"$input")
+model=$(jq -r '.model.display_name // empty' <<<"$input")
 
 reset=$'\e[0m' dim=$'\e[2m' magenta=$'\e[35m' blue=$'\e[34m'
 green=$'\e[32m' yellow=$'\e[33m' red=$'\e[31m' cyan=$'\e[36m'
@@ -51,8 +52,8 @@ if [ -n "$used" ]; then
   elif [ "$used" -gt 100000 ]; then col=$yellow
   else col=$green; fi
   tokens=$(human "$used")
-  right="$tokens (${p}%)"
-  right_c="${col}${right}${reset}"
+  right="${model:+$model }$tokens (${p}%)"
+  right_c="${model:+${dim}${model}${reset} }${col}${tokens} (${p}%)${reset}"
 fi
 
 # Claude Code pads the status line, so leave a small right margin.
