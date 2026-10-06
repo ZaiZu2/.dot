@@ -66,6 +66,14 @@ symlink_tree() {
           if [[ -L $target_dotfile && ! -e $target_dotfile ]]; then
             rm "$target_dotfile"
             multi "$GREEN" "Removing broken symlink " "$BLUE" "$target_dotfile"
+          elif [[ -d $target_dotfile && ! -d "$dot_path/${target_dotfile##*/}" ]]; then
+            # The matching source directory was removed/renamed - any symlinks left behind one or
+            # more levels down are now broken; clean them up and prune the directory if now empty
+            while IFS= read -r -d '' stale_link; do
+              rm "$stale_link"
+              multi "$GREEN" "Removing broken symlink " "$BLUE" "$stale_link"
+            done < <(find "$target_dotfile" -type l ! -exec test -e {} \; -print0)
+            find "$target_dotfile" -type d -empty -delete
           fi
         done
       fi
