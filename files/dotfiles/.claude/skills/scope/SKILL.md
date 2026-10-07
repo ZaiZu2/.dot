@@ -9,6 +9,7 @@ allowed-tools:
     - mcp__atlassian__atlassianUserInfo
     - mcp__atlassian__createJiraIssue
     - mcp__atlassian__editJiraIssue
+    - mcp__atlassian__executeWrite
 ---
 
 # Scope
@@ -100,8 +101,9 @@ Read `${CLAUDE_SKILL_DIR}/../ticket/SKILL.md`. Its rules, project tags, labels a
 description format doesn't, since these follow [Ticket brief](#ticket-brief).
 
 Show the ticket tree with the full text of every new ticket, the current and the new text of every field an update
-changes, the `Tickets` section that will be added to the spec, each repository with its base and test suite command, and
-any shape or sizing choice that was close. Wait for approval, and apply requested changes before continuing.
+changes, the `Tickets` section that will be added to the spec, each repository with its base and test suite command,
+the parent ticket the spec file will be attached to, and any shape or sizing choice that was close. Wait for approval,
+and apply requested changes before continuing.
 
 ### 5. Write tickets
 
@@ -115,17 +117,28 @@ per repository holding its checkout, base, branch, worktree, test suite and leav
 after and the files it changes. Write every value out in full (absolute paths, the real key), so `/feature` reads it
 instead of working anything out.
 
+### 7. Attach the spec
+
+Attach the now-finished spec file (with its new `Tickets` section) to the parent ticket — the one holding the context
+for the whole change: the Story, the parent Task, or the single leaf when there is no split; the existing issue itself
+under [Implement under it](#existing-issue) or [Extend it](#existing-issue). The spec stays the single file `/feature`
+reads from the repository; the Jira attachment is a synced copy for anyone working from the ticket.
+
+Use `mcp__atlassian__executeWrite` with operation `uploadAttachmentToJiraIssue`: call it with `filePath` set to the
+spec's path to get `uploadCommand`, run that command, then call it again with the returned `fileId` to attach the file
+to the parent's key. If the upload fails, report it; it doesn't undo steps 5 or 6.
+
 ## Rules
 
-- Write to Jira only in step 5, and only what was approved in step 4. Never change an existing issue's status, assignee
-  or fields other than those its mode allows.
+- Write to Jira only in steps 5 and 7, and only what was approved in step 4. Never change an existing issue's status,
+  assignee or fields other than those its mode allows.
 
 ## Existing issue
 
 The request says which mode applies; it may also narrow it (e.g. "keep the description, only add sub-tasks"):
 
-- **Implement under it**: no Jira writes for it. It is the single leaf, and the parent, of the `Tickets` section, marked
-  `(brief: spec)`, since its own description isn't a brief.
+- **Implement under it**: no field writes for it in step 5 (step 7 still attaches the spec to it). It is the single
+  leaf, and the parent, of the `Tickets` section, marked `(brief: spec)`, since its own description isn't a brief.
 - **Update it**: rewrite its description (and its summary, if the request says so) as a brief. It becomes the leaf, or
   the parent when the plan splits the work, and its children are created under it.
 - **Extend it**: keep it as the parent and create the planned children under it: Sub-tasks under a Task, Tasks under a
@@ -145,7 +158,8 @@ A parent holds only Summary, Scope, the spec's path and the list of its children
 
 ## Report
 
-Give the tickets with their keys and URLs, marked created, updated or unchanged, and the spec's path. Then give the
-`/feature <spec path>` that implements every repository in one run, and say to add `resume` if it stops part-way. For a
-repository recorded to run on its own, give its `/feature <spec path> <repository>` and the checkout to start it in, and
-name the repositories the main run gets instead.
+Give the tickets with their keys and URLs, marked created, updated or unchanged, the spec's path, and whether the spec
+attached to the parent ticket, with the reason when it didn't. Then give the `/feature <spec path>` that implements
+every repository in one run, and say to add `resume` if it stops part-way. For a repository recorded to run on its own,
+give its `/feature <spec path> <repository>` and the checkout to start it in, and name the repositories the main run
+gets instead.

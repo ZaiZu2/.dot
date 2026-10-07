@@ -40,7 +40,7 @@ update the docstrings with Edit, following the rules below. Change nothing but d
 
 ### Python
 
-- Google style. Opening and closing quotes on their own lines.
+- Google style.
 - Leave out types already given by type hints.
 - For simple functions, merge the summary and description into one paragraph, still in Google style.
 - Skip `__init__` docstrings that would only say the attributes get set.
@@ -48,8 +48,7 @@ update the docstrings with Edit, following the rules below. Change nothing but d
   comment explaining the structure and meaning; put it on the line above if it would exceed the line width.
 
 ```python
-"""
-Brief summary, imperative for functions and methods.
+"""Brief summary, imperative for functions and methods.
 
 Args:
     param: Description
