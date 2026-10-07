@@ -179,7 +179,37 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$HOME/.claude/hooks/claude-waiting-mark.sh clear"
+            "command": "$HOME/.claude/hooks/claude-waiting-mark.sh work"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/claude-waiting-mark.sh resume"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/claude-waiting-mark.sh idle"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/claude-waiting-mark.sh idle"
           }
         ]
       }
