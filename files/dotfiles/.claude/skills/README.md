@@ -13,6 +13,7 @@ the conventions.
 | `/doc`        | Docstrings for files or code objects, matching the project's style | `[auto]` | model      | -                      |
 | `/mkdoc`      | Markdown documentation for a part of a project                     | `[auto]` | model      | -                      |
 | `/note`       | Zettelkasten note from the conversation                            | `[auto]` | user       | `zk`                   |
+| `/commit`     | Commit staged or named changes with a Conventional Commits message | `[auto]` | model      | `git`                  |
 | `/pr`         | Create or update the GitHub PR for the current branch              | `[auto]` | model      | `gh`                   |
 | `/review`     | Review a PR, commits or changes                                    | `[auto]` | model      | `gh`                   |
 | `/test`       | Unit tests for files, code objects or changes                      | `[auto]` | model      | -                      |
@@ -27,6 +28,11 @@ the conventions.
 `Tickets` section, and `/feature <spec>` implements it, one worktree and PR per repository, handing independent
 tickets to `implement` subagents that run at the same time. `/feature` runs forked in the `feature-runner` agent
 (`~/.claude/agents/feature-runner.md`), whose `tools` list limits what the unattended run can reach.
+
+Every commit goes through `/commit`, and `git commit` is an `ask` rule in `settings.json`, so it asks the user unless
+the caller's permissions allow it: `/feature` does, through `Bash(git commit -m *)` in its `allowed-tools`. A project
+defines its commit scopes with a `Commit scopes` list in its `CLAUDE.md` (or commitlint's `scope-enum`); without one,
+scopes are free-form.
 
 See [Invocation and Mode](#invocation-and-mode) for the `Mode` and `Invoked by` columns.
 
@@ -56,7 +62,7 @@ it should run (`note`).
 ```
 ~/.claude/skills/
 ├── README.md
-└── confluence/, doc/, feature/, implement/, mkdoc/, note/, pr/, review/, scope/, spec/, test/, ticket/   # one SKILL.md each
+└── commit/, confluence/, doc/, feature/, implement/, mkdoc/, note/, pr/, review/, scope/, spec/, test/, ticket/   # one SKILL.md each
 ```
 
 Skills are discovered exactly one level deep (`skills/<name>/SKILL.md`); grouping them in subfolders does not work.

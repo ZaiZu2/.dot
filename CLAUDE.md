@@ -7,6 +7,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Personal cross-platform dotfiles manager. The `dot` shell program symlinks configuration into `$HOME` and installs a
 curated tool set declaratively. macOS + Linux.
 
+## Commit scopes
+
+- `dot` — the `dot` program: `dot.sh`, `code/`
+- `tools` — `tools/*.sh`
+- `claude` — `files/dotfiles/.claude/` (skills, agents, settings, context)
+- `nvim` — `files/dotfiles/.config/nvim/`
+- `tmux` — `files/dotfiles/.config/tmux/`
+- `zsh` — zsh config and aliases under `files/dotfiles/`
+
 ## Commands
 
 Invoke via `./dot.sh <cmd>` or the `dot` alias (`files/dotfiles/.zshrc_aliases:21` → `zsh $DOT/dot.sh`). `dot --help`

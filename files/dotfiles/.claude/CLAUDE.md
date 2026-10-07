@@ -2,9 +2,8 @@
 
 ## General
 
-- NEVER commit anything to GIT by yourself, even when explicitly asked. Any commits can only be done by ME, the user.
-  The only exception is a `/feature` run, which commits and pushes on the feature branches it created for that run, and
-  on no other branch.
+- Commit only through the `commit` skill, never with a hand-written `git commit`, so every commit follows its
+  Conventional Commits format and the project's scopes.
 - When a Bash command (or set of commands) is denied by the permission system, do NOT silently retry with a variant.
   Stop, tell the user what was denied, and ASK whether to proceed — the denial may be an intentional safeguard rather
   than a permission-list gap. Only re-invoke the same action after the user confirms in-conversation.

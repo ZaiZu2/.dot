@@ -97,6 +97,7 @@
       "WebSearch"
     ],
     "ask": [
+      "Bash(git commit *)",
       "Bash(git checkout -- *)",
       "Bash(git checkout .)",
       "Bash(git branch -D *)",

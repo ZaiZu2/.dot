@@ -1,8 +1,8 @@
 ---
 name: feature
 description:
-    '[auto] Implement a scoped spec unattended in each of its repositories, or resume a stopped run: code, review, PRs
-    and CI fixes.'
+    '[auto] Implement a scoped spec unattended in each of its repositories, or resume a stopped run: code, review,
+    local checks and PRs.'
 context: fork
 agent: feature-runner
 disable-model-invocation: true
@@ -12,7 +12,6 @@ allowed-tools:
     - Bash(git push)
     - Bash(git push -u origin *)
     - Bash(git stash push *)
-    - Bash(sleep *)
 ---
 
 # Feature
@@ -43,7 +42,7 @@ run:
 - Without "resume": stop if `<branch>` or `<worktree>` already exists, and tell the user to rerun with "resume".
 - With "resume": a block whose `<branch>` exists resumes; one whose branch doesn't starts fresh.
 - A leaf that comes after a leaf of a block outside this run: stop unless that leaf is done on its block's branch (a
-  subject starting with `<KEY>:` in `git log --format=%s <base>..<branch>`, run in its `<main>`).
+  commit with a `Refs: <KEY>` trailer in `<base>..<branch>`, read as in [Commits](#commits) in its `<main>`).
 - A block outside this run that merges before one inside it, and has no open PR (`gh pr list --head <branch>` in its
   `<main>` finds none): continue, and report it as an ordering risk.
 
@@ -80,11 +79,10 @@ unfinished phase.
 **Worktree.** If `<worktree>` exists, `cd` into it. If only the branch exists, `cd <main>`, then
 `git worktree add <worktree> <branch>`, then `cd` into it. Run `uv sync --quiet` if there is a `pyproject.toml`.
 
-**Progress**, from `git log --format=%s <base>..HEAD` and the subjects of [Commits](#commits):
+**Progress**, from the commits of `<base>..HEAD`, read as in [Commits](#commits):
 
-- A leaf ticket is done when a commit subject starts with `<KEY>:`.
-- The review is done when an `address review` commit exists, or a PR exists.
-- The CI rounds used are the number of `fix CI` commits.
+- A leaf ticket is done when a commit has a `Refs: <KEY>` trailer.
+- The review is done when a commit subject ends with `: address review`, or a PR exists.
 - A PR exists when `gh pr view --json url,state` succeeds. If it is closed or merged, stop that block and report.
 - The branch is pushed when `git status -sb` shows an upstream and nothing ahead of it.
 
@@ -105,7 +103,7 @@ implementing anything:
 - A ticket isn't done: step 3, from that ticket.
 - All tickets are done, the review isn't: the test suite run at the end of step 3, then step 4.
 - The review is done, but the branch isn't pushed or has no PR: step 6.
-- A PR exists: step 7, counting the CI rounds already used against its limit.
+- A PR exists: only the cross-linking at the end of step 6 is left.
 
 ### 3. Implement
 
@@ -121,13 +119,13 @@ repository, is committed. Hand out the ready leaves:
   Delegate a single leaf too when it is so large that reading its files would crowd out the context needed for step 5.
 
 For a leaf marked `(brief: spec)`, name the spec's path as the brief instead of the key, and the repository it is for;
-the key is only for the commit subject.
+the key is only for the commit's `Refs:` trailer.
 
 For a ticket with leftovers from step 2, add the list made there to the request: the work already in the tree, which
 requirements are still open to finish, and which changes to correct; keep the rest instead of redoing it.
 
 When a leaf finishes, `cd` to its worktree, read its diff, run its verification yourself (checks marked `(manual)` go
-to the report instead), stage only its files with `git add <paths>`, and commit it. If the ticket asks for tests and
+to the report instead), and commit only its files as in [Commits](#commits). If the ticket asks for tests and
 none were written, call the Skill tool with `test` first, naming the changed files and the worktree path. Then hand out
 the leaves it made ready, without waiting for the others still running.
 
@@ -151,7 +149,10 @@ Check every finding against the code, then fix it or contest it:
 - `[SHOULD]` and `[NIT]`: fix when correct and cheap, otherwise contest.
 - A contested finding needs evidence (`path:line`, a test, the spec), not a preference.
 
-Rerun the block's test suite and the checks the review reported, then commit the fixes. Don't request a second review.
+Then run the block's final local checks: its test suite, and the repository's linters, static checks and format checks
+(the ones the review ran, or those its Makefile, `pyproject.toml` or CI workflow define). Fix what the branch broke;
+failures in the baseline or in files the branch doesn't touch are the base's, so leave them. Commit the fixes. Don't
+request a second review.
 
 ### 6. Open the PRs
 
@@ -159,17 +160,8 @@ For each block, in merge order: `git push -u origin <branch>` from its worktree,
 naming the worktree path, `<base>`, and the URLs of the PRs already open for the spec's other blocks, as related. Wait
 for its result. Once every block has its PR, call `pr` again for each earlier one, so that every PR names the others.
 
-### 7. Fix CI
-
-Wait for the checks of every PR to finish with `gh pr checks --watch`, one per PR, run in the background so a long
-pipeline doesn't time out. There is no limit on how long they take to finish. Only if no check of a PR has even started
-a minute after its push does that repository have no CI: skip this step for it and say so in the report.
-
-For each failed check, read its log with `gh run view <run id> --log-failed` and fix the cause in that worktree. Rerun
-locally what the fix touches, commit, push, and wait for the checks again. At most two rounds of fixes per PR.
-
-Call the Skill tool with `pr` again, naming the worktree path and `<base>`, if the fixes made the description
-inaccurate.
+The local checks of step 5 are the run's last verification. Don't watch, read or rerun CI after pushing; the run ends
+once every PR is open and linked.
 
 ## Rules
 
@@ -177,8 +169,8 @@ inaccurate.
   force-push, never an amend or rebase of pushed commits. Never merge a PR.
 - Never write to a repository or PR outside this run; list the PRs that should link to this run's in the report
   instead.
-- Only this skill commits. A commit holds one verified ticket, one block's round of review fixes or one round of CI
-  fixes, and only its own files. Leftovers reach a commit only as part of a verified ticket.
+- Only the run commits, never its subagents. A commit holds one verified ticket or one block's review fixes, and only
+  its own files. Leftovers reach a commit only as part of a verified ticket.
 - Never write to Jira.
 - If a ticket still fails after two attempts in this run, stop that block and every leaf that comes after it, finish
   the others, and report the state. Don't open a PR for a block with a failed ticket.
@@ -187,11 +179,13 @@ inaccurate.
 
 ### Commits
 
-Each kind of commit has a fixed subject, so a resumed run can read its progress back:
+Commit by calling the Skill tool with `commit`, naming the worktree path, the files, and the key for the `Refs:`
+trailer. Its Conventional Commits format leaves the subject to the change, so a resumed run reads its progress from the
+trailers (`git log --format='%(trailers:key=Refs,valueonly)' <range>`) and the subjects (`git log --format=%s
+<range>`):
 
-- a ticket: `<KEY>: <summary>`, with the Sub-task's key where there is one;
-- review fixes: `<PARENT-KEY>: address review`;
-- CI fixes: `<PARENT-KEY>: fix CI (round <n>)`.
+- a ticket: key of the Sub-task where there is one, else of the ticket;
+- review fixes: key `<PARENT-KEY>`, and the subject `<type>(<scope>): address review`, which the request gives verbatim.
 
 ### Working directory
 
@@ -202,9 +196,13 @@ rules match a command by how it starts, so where and how a command runs decides 
   own; the shell keeps its directory between commands.
 - Never write `cd <path> && <command>`, `git -C <path> ...` or `VAR=... <command>`; a compound or prefixed command
   matches no rule.
-- Commit with a single `git commit -m "<subject>"`, never a heredoc or `$(...)`.
-- A subagent or forked skill starts in the session's working directory, not in a worktree. Give the worktree's absolute
-  path in every Skill and Agent call (`implement`, `test`, `review`, `pr`), and name files by absolute path.
+- Commit only through the `commit` skill, which writes the single `git commit -m` command the permission rules allow.
+- Never delete files or directories with `rm` or `find -delete`; every form of it asks the user, whatever auto mode
+  allows. Put scratch output in a new directory instead of clearing an old one; `pytest --basetemp <dir>` empties
+  `<dir>` itself.
+- A subagent or forked skill starts in the session's working directory, not in a worktree, and does not see this
+  section. Give the worktree's absolute path in every Skill and Agent call (`implement`, `test`, `review`, `pr`), name
+  files by absolute path, and copy the rules of this section into the prompt.
 - Check `git branch --show-current` before every commit and push; if it isn't that block's `<branch>`, stop and
   report.
 
@@ -215,11 +213,8 @@ Never ask. Where a question comes up, take the default and list it in the report
 - A detail the tickets leave open: take the reading that changes least, and record it as an assumption.
 - A leftover change that could belong to two tickets: give it to the earlier one.
 - Two ready leaves whose files turn out to overlap: run them one after the other, in the order of `Leaves`.
-- A check that already fails on the base branch, locally or in CI: leave it, report it, continue.
-- A CI check that fails for a reason outside the change (runner, network, a flaky test): rerun it once with
-  `gh run rerun <run id> --failed`, then report it and continue.
-- CI still failing after two rounds of fixes: stop fixing and report the failing checks with their logs' cause. Never
-  disable, skip or loosen a check to get it green.
+- A check that already fails on the base branch: leave it, report it, continue. Never disable, skip or loosen a check
+  to get it green.
 - A review finding that can be read two ways: contest it, and say which reading you rejected and why.
 - A rejected push, or a pull that fails: stop that block and report the state. Never force.
 - A denied command: stop and report it, as the global rules require.
@@ -227,9 +222,9 @@ Never ask. Where a question comes up, take the default and list it in the report
 ## Report
 
 For each block: the repository, the PR URL and its base, the worktree path with the `gwr <name>` that removes it, each
-ticket with its URL, status and commit, the result of the final local checks with the baseline failures left alone,
-the state of every CI check with the fixes made for it, and every review finding marked fixed (with the commit) or
-contested (with the reason). When a block was resumed, say from which phase, and how the leftovers were handled: the
+ticket with its URL, status and commit, the result of the final local checks (tests, linters, static and format
+checks) with the base's failures left alone, and every review finding marked fixed (with the commit) or contested (with
+the reason). When a block was resumed, say from which phase, and how the leftovers were handled: the
 ticket each was mapped to, and any stash.
 
 Then say how the leaves were handed out: which ran in this run, which in subagents, and which ran at the same time. End

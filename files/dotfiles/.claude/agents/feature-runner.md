@@ -1,6 +1,6 @@
 ---
 name: feature-runner
-description: 'Unattended feature run for the `feature` skill: implementation, review, PRs and CI fixes in a worktree per repository.'
+description: 'Unattended feature run for the `feature` skill: implementation, review, local checks and PRs in a worktree per repository.'
 model: opus
 color: blue
 tools:
