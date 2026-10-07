@@ -30,14 +30,13 @@ Run `git log --oneline <base>..HEAD` and `git diff <base>...HEAD`. Check for an 
 
 ### 2. Find the ticket
 
-Look for `[A-Z]+-[0-9]+` in the branch name (e.g. `FAPE-1319`). If found, link it as
-`https://absa.atlassian.net/browse/<TICKET>`; if not, omit the ticket header.
+Look for `[A-Z]+-[0-9]+` in the branch name (e.g. `FAPE-1319`). If found, fetch its summary with the Atlassian MCP
+(`getJiraIssue`) and link it as `https://absa.atlassian.net/browse/<TICKET>`, with the link text `<TICKET>: <summary>`.
+If the ticket isn't found in the branch name, or the fetch fails, omit it rather than guessing a summary.
 
 ### 3. Write the description
 
 ```markdown
-### [TICKET](https://absa.atlassian.net/browse/TICKET)
-
 ## Summary
 
 - <outcome the PR achieves>
@@ -49,13 +48,14 @@ Look for `[A-Z]+-[0-9]+` in the branch name (e.g. `FAPE-1319`). If found, link i
 
 ## Related
 
+- [TICKET: Summary](https://absa.atlassian.net/browse/TICKET)
 - <URL of a related PR the request names>
 ```
 
 - Summary says what the PR achieves; Implementation says how, naming concrete files, functions or classes.
 - One tight point per bullet, no filler. For a trivially small change, one sentence of prose per section is fine.
 - No "Generated with Claude Code" footer.
-- Include `Related` only when the request names related PRs.
+- Include `Related` only when there's a ticket link or the request names related PRs.
 
 ### 4. Choose the title
 
