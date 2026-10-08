@@ -60,8 +60,9 @@ Refs: <KEY>
 - **Scope**: optional; leave out the parentheses with it.
 - **`!`**: only for a breaking change, which also gets a `BREAKING CHANGE: <what breaks>` trailer after the body.
 - **Summary**: imperative, lowercase, no period; the whole subject at most 72 characters.
-- **Body**: optional; why the change was made, as a `-` list of concise, verbless sentences, wrapped at 72 characters.
-  Never restate the diff.
+- **Body**: omit it when the subject plus diff already says why; add it only when the why is non-obvious. When
+  present, at most 2 short `-` bullets, each a terse verbless phrase (not a sentence), wrapped at 72 characters. Never
+  restate the diff or repeat the subject.
 - **Refs**: one `Refs: <KEY>` trailer per ticket, last. Ticket keys never go in the subject.
 
 ## Scopes
