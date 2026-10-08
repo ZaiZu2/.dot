@@ -5,6 +5,25 @@ dir=$(jq -r '.workspace.current_dir // .cwd' <<<"$input")
 used=$(jq -r '.context_window.total_input_tokens // empty' <<<"$input")
 pct=$(jq -r '.context_window.used_percentage // empty' <<<"$input")
 model=$(jq -r '.model.display_name // empty' <<<"$input")
+model_id=$(jq -r '.model.id // empty' <<<"$input")
+
+# Bedrock inference-profile ARNs resolve to opaque IDs rather than a model
+# name, so if display_name didn't already give us one, cast the ARN back to
+# its underlying model via the mapping in settings.json's env block.
+if [ -z "$model" ] && [ -n "$model_id" ]; then
+  settings="$HOME/.claude/settings.json"
+  if [ -f "$settings" ]; then
+    model=$(jq -r --arg id "$model_id" '
+      {OPUS: "Opus", SONNET: "Sonnet", HAIKU: "Haiku"} as $names
+      | .env // {}
+      | to_entries[]
+      | select(.key | test("^ANTHROPIC_DEFAULT_(OPUS|SONNET|HAIKU)_MODEL$"))
+      | select(.value as $v | $id | contains($v))
+      | .key | capture("ANTHROPIC_DEFAULT_(?<name>OPUS|SONNET|HAIKU)_MODEL").name
+      | $names[.]
+    ' "$settings" | head -n1)
+  fi
+fi
 
 reset=$'\e[0m' dim=$'\e[2m' magenta=$'\e[35m' blue=$'\e[34m'
 green=$'\e[32m' yellow=$'\e[33m' red=$'\e[31m' cyan=$'\e[36m'
