@@ -58,6 +58,10 @@ rest at the same time. Then pick the smallest ticket shape that fits:
 When two shapes fit, take the smaller one. Ask about a split or shape only when the spec and the code don't settle it,
 using `AskUserQuestion` with your recommended option first. With an existing issue, its mode fixes part of the shape.
 
+Pick a short, kebab-case slug for the branch and worktree names: 2-3 words that let a human recognize the change at a
+glance (e.g. `cache-ttl-fix`), not the spec's file name, which can be longer and more descriptive. One slug per
+repository block; reuse it everywhere `<slug>` appears below.
+
 ### 3. Preflight
 
 Check what would otherwise fail in the `/feature` run. Stop with the reason on any failure:
@@ -71,7 +75,7 @@ Then in each repository, after a `cd` to its path as a command of its own:
 
 - `gh repo view --json viewerPermission -q .viewerPermission` is `WRITE`, `MAINTAIN` or `ADMIN`.
 - `git fetch origin` succeeds, the base exists on the remote (`git ls-remote --exit-code --heads origin <base>`), and no
-  branch matches `git branch -a --list '*-<slug>'`, where `<slug>` is the spec's file name without `.md`.
+  branch matches `git branch -a --list '*-<slug>'`, using the slug picked in step 2.
 - The local base has no unpushed commits (`git rev-list --count origin/<base>..<base>` is `0`, when it exists locally);
   `/feature` stops on them, so tell the user to push.
 - The worktree path `<checkout>/<PARENT-KEY>-<slug>` doesn't exist. Before the tickets exist, check that no directory of

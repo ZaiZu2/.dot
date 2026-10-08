@@ -53,8 +53,8 @@ update the docstrings with Edit, following the rules below. Change nothing but d
 Args:
     param: Description
     longer_param: Long description which is longer than 100 characters and will wrap into
-                  a new line which is indented deep enough to match the description in
-                  the first line
+        a new line, indented one regular level deeper than `longer_param`, not aligned to
+        the description text
 
 Returns:
     Description of return value

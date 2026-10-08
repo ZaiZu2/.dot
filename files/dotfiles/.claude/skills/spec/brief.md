@@ -74,7 +74,8 @@ stand alone for an implementer (the user, a fresh session or a subagent) who has
 
 - **Checkout**: `<absolute path of the main checkout>`
 - **Base**: `<branch the PR targets>`
-- **Branch**: `<PARENT-KEY>-<slug>`
+- **Branch**: `<PARENT-KEY>-<slug>` (`<slug>`: the short 2-3-word kebab-case description `scope` picked, not the spec's
+  file name)
 - **Worktree**: `<checkout>/<branch>`
 - **Test suite**: `<command>`, or `none` (its leaves' `Verification` stands in)
 - **Leaves**, in dependency order:
