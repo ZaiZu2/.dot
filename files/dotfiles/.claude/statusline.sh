@@ -12,23 +12,31 @@ model_id=$(jq -r '.model.id // empty' <<<"$input")
 cache_ttl=$(jq -r '.prompt_cache.ttl // empty' <<<"$input")
 cache_exp=$(jq -r '.prompt_cache.expires_at // empty' <<<"$input")
 
-# Bedrock inference-profile ARNs resolve to opaque IDs rather than a model
-# name, so if display_name didn't already give us one, cast the ARN back to
-# its underlying model via the mapping in settings.json's env block.
-if [ -z "$model" ] && [ -n "$model_id" ]; then
-  settings="$HOME/.claude/settings.json"
-  if [ -f "$settings" ]; then
-    model=$(jq -r --arg id "$model_id" '
-      {OPUS: "Opus", SONNET: "Sonnet", HAIKU: "Haiku"} as $names
-      | .env // {}
-      | to_entries[]
-      | select(.key | test("^ANTHROPIC_DEFAULT_(OPUS|SONNET|HAIKU)_MODEL$"))
-      | select(.value as $v | $id | contains($v))
-      | .key | capture("ANTHROPIC_DEFAULT_(?<name>OPUS|SONNET|HAIKU)_MODEL").name
-      | $names[.]
-    ' "$settings" | head -n1)
-  fi
-fi
+# For a Bedrock inference-profile ARN, display_name only reflects the alias it was picked through (the latest model of
+# that family), not the model the profile routes to. Ask Bedrock instead, once per ARN: the answer never changes, and
+# the lookup runs in the background so the status line never waits on `aws`. Until it lands, display_name stands.
+# anthropic.claude-haiku-4-5-20251001-v1:0 -> Haiku 4.5, anthropic.claude-sonnet-5 -> Sonnet 5.
+case $model_id in
+  arn:aws:bedrock:*inference-profile/*)
+    if command -v aws >/dev/null; then
+      cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/claude-statusline"
+      cache="$cache_dir/model-$(printf '%s' "$model_id" | md5sum | cut -c1-16)"
+      if [ -s "$cache" ]; then
+        model=$(<"$cache")
+      elif [ -z "$(find "$cache" -mmin -5 2>/dev/null)" ]; then
+        mkdir -p "$cache_dir"
+        touch "$cache"
+        region=$(cut -d: -f4 <<<"$model_id")
+        ( arn=$(aws bedrock get-inference-profile --region "$region" --inference-profile-identifier "$model_id" \
+            --query 'models[0].modelArn' --output text 2>/dev/null)
+          name=$(sed -E 's|.*/||; s/^[a-z]+\.claude-//; s/-[0-9]{8}//; s/-v[0-9]+:[0-9]+$//' <<<"$arn" |
+            awk -F- '$1 ~ /^[a-z]+$/ && NF > 1 { v = $2; for (i = 3; i <= NF; i++) v = v "." $i
+              printf "%s %s", toupper(substr($1, 1, 1)) substr($1, 2), v }')
+          [ -n "$name" ] && printf '%s' "$name" >"$cache" ) >/dev/null 2>&1 &
+      fi
+    fi
+    ;;
+esac
 
 reset=$'\e[0m' dim=$'\e[2m' magenta=$'\e[35m' blue=$'\e[34m'
 green=$'\e[32m' yellow=$'\e[33m' red=$'\e[31m' cyan=$'\e[36m'
