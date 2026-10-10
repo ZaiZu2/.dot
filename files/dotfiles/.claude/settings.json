@@ -96,6 +96,31 @@
       "WebFetch",
       "WebSearch"
     ],
+    "deny": [
+      "Bash(git push * master)",
+      "Bash(git push * main)",
+      "Bash(rm -rf /)",
+      "Bash(rm -rf ~)",
+      "Bash(rm -rf ~/)",
+      "Bash(rm -rf $HOME)",
+      "Bash(sudo rm *)",
+      "Bash(sudo /bin/rm *)",
+      "Bash(sudo /usr/bin/rm *)",
+      "Bash(dd *)",
+      "Bash(sudo dd *)",
+      "Bash(/bin/dd *)",
+      "Bash(mkfs*)",
+      "Bash(sudo mkfs*)",
+      "Bash(shred *)",
+      "Bash(sudo shred *)",
+      "Bash(sudo chmod -R *)",
+      "Bash(sudo chown -R *)",
+      "Bash(> /dev/sda*)",
+      "Bash(> /dev/nvme*)",
+      "Bash(> /dev/disk*)",
+      "Bash(mv * /dev/null*)",
+      "Bash(mv */ /dev/null*)"
+    ],
     "ask": [
       "Bash(git commit *)",
       "Bash(git checkout -- *)",
@@ -133,31 +158,6 @@
       "Bash(chmod --recursive*)",
       "Bash(chown -R *)",
       "Bash(chown --recursive*)"
-    ],
-    "deny": [
-      "Bash(git push * master)",
-      "Bash(git push * main)",
-      "Bash(rm -rf /)",
-      "Bash(rm -rf ~)",
-      "Bash(rm -rf ~/)",
-      "Bash(rm -rf $HOME)",
-      "Bash(sudo rm *)",
-      "Bash(sudo /bin/rm *)",
-      "Bash(sudo /usr/bin/rm *)",
-      "Bash(dd *)",
-      "Bash(sudo dd *)",
-      "Bash(/bin/dd *)",
-      "Bash(mkfs*)",
-      "Bash(sudo mkfs*)",
-      "Bash(shred *)",
-      "Bash(sudo shred *)",
-      "Bash(sudo chmod -R *)",
-      "Bash(sudo chown -R *)",
-      "Bash(> /dev/sda*)",
-      "Bash(> /dev/nvme*)",
-      "Bash(> /dev/disk*)",
-      "Bash(mv * /dev/null*)",
-      "Bash(mv */ /dev/null*)"
     ],
     "defaultMode": "auto"
   },
@@ -217,13 +217,14 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "~/.claude/statusline.sh"
+    "command": "~/.claude/statusline.sh",
+    "refreshInterval": 10
   },
   "alwaysThinkingEnabled": true,
   "effortLevel": "medium",
   "tui": "fullscreen",
   "theme": "auto",
   "editorMode": "normal",
-  "verbose": true,
+  "verbose": false,
   "autoCompactEnabled": true
 }

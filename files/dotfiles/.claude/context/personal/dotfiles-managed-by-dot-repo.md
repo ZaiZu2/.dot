@@ -1,7 +1,7 @@
 ---
 type: reference
 title: Dotfiles managed by the dot repo
-description:
+description: >-
     The ~/.dot repo and its `dot` CLI: deployment of my dotfiles, tools and Claude Code config into $HOME, plus the
     mounting and loading of my personal, mounted and project OKF knowledge bundles.
 tags: [dotfiles, dot, configuration, claude-code, setup]
