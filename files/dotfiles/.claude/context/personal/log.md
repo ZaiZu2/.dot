@@ -4,6 +4,8 @@
 
 - Updated [My tmux setup](tmux-setup.md): the Claude integration now lists sessions from `claude agents --json` and
   keys its state files by session id instead of tmux pane, so sessions moved to the background are tracked too.
+- Updated [My tmux setup](tmux-setup.md): a client pane is now merged with the background session it shows when its
+  title and cwd match that session uniquely.
 
 ## 2026-10-10
 

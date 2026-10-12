@@ -3,9 +3,9 @@
 # Runs the popup itself; bound to `prefix C-c` in tmux.conf.
 #
 # Rows come from claude_sessions.sh: every session `claude agents --json`
-# lists, tied to its tmux pane where the process tree allows, plus every pane
-# running a Claude client no session was tied to (one showing a background
-# session in agent view or `claude attach`). Nothing is left out.
+# lists, tied to its tmux pane where the process tree or a unique title and
+# cwd match allows, plus every pane running a Claude client no session was
+# tied to (agent view or `claude attach`). Nothing is left out.
 #
 # Columns: state dot, time left on the prompt cache, title, project, cwd and
 # tmux session, with a live preview of the pane's screen.
@@ -15,8 +15,8 @@
 # session: minutes until the cache goes cold, "cold" after that, "-" if
 # unknown.
 # A session with no pane found shows "◌ bg <id>" as its tmux session: it runs
-# in the background and may still be on screen in one of the "?" panes, which
-# cannot be told apart. Enter does nothing on it.
+# in the background and may still be on screen in one of the "?" panes, when
+# the match was ambiguous. Enter does nothing on it.
 
 set -eu
 

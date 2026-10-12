@@ -21,9 +21,12 @@
 #
 # A session is tied to the pane whose shell is an ancestor of its pid: plain
 # `claude` sessions. A session moved to the background (← or /background)
-# runs in a daemon worker outside any pane; it is listed without one, while
-# the pane that shows it (agent view, `claude attach`) is listed on its own,
-# without a session. Nothing documented links the two, so they stay apart.
+# runs in a daemon worker outside any pane; the pane that shows it (agent
+# view, `claude attach`) runs only a client. Claude sets that pane's title to
+# the session's name, so a client pane is merged with the one background
+# session whose name and cwd match its title and cwd, if no other pane or
+# session matches too. Otherwise both are listed apart: the session without a
+# pane, the pane without a session.
 
 CLAUDE_CACHE_DIR="${CLAUDE_CACHE_DIR:-${TMPDIR:-/tmp}/claude-cache}"
 CLAUDE_SEP=$(printf '\037')
@@ -47,6 +50,16 @@ claude_sessions() {
   ps -A -o pid=,ppid= >"$_cs_tmp/ps" 2>/dev/null || : >"$_cs_tmp/ps"
 
   awk -F'\t' -v OFS="$CLAUDE_SEP" -v cache_dir="$CLAUDE_CACHE_DIR" '
+    BEGIN {
+      # Longest "glyph + space" prefix: one character, or its bytes when awk
+      # is not counting in UTF-8.
+      glyph = (length("●") == 1) ? 2 : 5
+    }
+    function bare(t) {
+      # Drop the status glyph Claude prefixes its title with.
+      if (match(t, /^[^ -~]+ /) && RLENGTH <= glyph) return substr(t, RLENGTH + 1)
+      return t
+    }
     function expiry(sid,   file, line, w) {
       if (sid == "") return ""
       file = cache_dir "/" sid
@@ -79,13 +92,28 @@ claude_sessions() {
         title = (ptitle[at] != "") ? ptitle[at] : $7
         print st, pid_of[at], $1, $2, tsess[at], title, pcwd[at], expiry($1)
       } else {
-        print st, "", $1, $2, "", $7, $8, expiry($1)
+        nb++; bst[nb] = st; bsid[nb] = $1; bshort[nb] = $2; bname[nb] = $7; bcwd[nb] = $8
+        if ($7 != "") skeys[$8 SUBSEP $7]++
       }
     }
     END {
       for (i = 1; i <= np; i++)
-        if (!(i in claimed) && (cmd[i] == "claude" || cmd[i] == "claude.exe"))
-          print 3, pid_of[i], "", "", tsess[i], ptitle[i], pcwd[i], ""
+        if (!(i in claimed) && (cmd[i] == "claude" || cmd[i] == "claude.exe")) {
+          client[i] = 1
+          k = pcwd[i] SUBSEP bare(ptitle[i])
+          pkeys[k]++; pane_at[k] = i
+        }
+      for (j = 1; j <= nb; j++) {
+        k = bcwd[j] SUBSEP bname[j]
+        if (bname[j] != "" && skeys[k] == 1 && pkeys[k] == 1) {
+          i = pane_at[k]; delete client[i]
+          print bst[j], pid_of[i], bsid[j], bshort[j], tsess[i], ptitle[i], pcwd[i], expiry(bsid[j])
+        } else {
+          print bst[j], "", bsid[j], bshort[j], "", bname[j], bcwd[j], expiry(bsid[j])
+        }
+      }
+      for (i = 1; i <= np; i++)
+        if (i in client) print 3, pid_of[i], "", "", tsess[i], ptitle[i], pcwd[i], ""
     }' "$_cs_tmp/ps" "$_cs_tmp/panes" "$_cs_tmp/sessions" >"$1"
 
   rm -rf "$_cs_tmp"

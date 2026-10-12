@@ -6,7 +6,7 @@ description: >-
     through `claude agents --json` and per-session state files, and where to look for the details.
 tags: [tmux, dotfiles, workflow, claude-code]
 status: stable
-generated: { by: claude-code/claude-opus-5-5, at: 2026-10-12T14:47:08Z }
+generated: { by: claude-code/claude-opus-5-5, at: 2026-10-12T15:56:25Z }
 sources:
     - id: tmux-dir
       resource: ~/.dot/files/dotfiles/.config/tmux/
@@ -50,8 +50,9 @@ ancestor of the session's pid[^tmux-dir]. That leaves three kinds of rows in the
 - a pane running a Claude client with no session (`?`): agent view or `claude attach`, showing one of the background
   sessions.
 
-Nothing documented says which background session such a pane shows, so the last two are listed apart rather than
-guessed at.
+Nothing documented says which background session such a pane shows. The client sets the pane title to the session's
+name, so a client pane whose title and cwd match exactly one background session, and no other pane, is merged into
+that session's row. Any ambiguity, or a release that changes the title, leaves the two listed apart.
 
 Per-session state files under `$TMPDIR/claude-cache/`, named after the session id, carry what the session list does
 not:
@@ -68,8 +69,8 @@ left and starts the reminder shortly before a cache expires[^claude-dir].
 Decisions that the code alone does not explain:
 
 - State is keyed by session, never by `$TMUX_PANE`: a background session's status line and hooks run without it.
-- Nothing reads Claude Code's undocumented internals (`~/.claude/sessions/`, the daemon roster, pane titles), which
-  could change in any release.
+- Nothing reads Claude Code's undocumented internals (`~/.claude/sessions/`, the daemon roster), which could change in
+  any release. The pane title is used only for the merge above, where a mismatch fails safe.
 - Reminders are only for the 1h cache; a 5m cache would remind after every short break.
 - Several expiring sessions share one popup rather than a popup each.
 - No desktop notification on Windows/WSL, by choice; macOS and Linux desktops get one.
