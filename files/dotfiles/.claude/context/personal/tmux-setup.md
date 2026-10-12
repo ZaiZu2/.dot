@@ -3,10 +3,10 @@ type: reference
 title: My tmux setup
 description: >-
     High-level map of my tmux setup in the dot repo: the session and project window model, the Claude Code integration
-    through per-pane state files, and where to look for the details.
+    through `claude agents --json` and per-session state files, and where to look for the details.
 tags: [tmux, dotfiles, workflow, claude-code]
 status: stable
-generated: { by: claude-code/claude-opus-5-5, at: 2026-10-10T13:43:09Z }
+generated: { by: claude-code/claude-opus-5-5, at: 2026-10-12T14:47:08Z }
 sources:
     - id: tmux-dir
       resource: ~/.dot/files/dotfiles/.config/tmux/
@@ -36,27 +36,42 @@ An overview to orient by. Key bindings, options, plugins and the behavior of eac
 - One window per project, in a three-pane layout: utility | code | Claude. Scripts rely on that shape, e.g. the middle
   pane's cwd is what identifies a window's project[^tmux-dir].
 - Navigation goes through fzf popups ("pickers") instead of tmux's own choosers: one for project windows, one for
-  Claude panes across all sessions.
+  every Claude across all sessions.
 
 ## Claude Code integration
 
-Claude Code and tmux talk through small per-pane state files under `$TMPDIR`, named after the tmux pane id. Claude's
-side writes them, tmux's side reads them:
+The list of Claudes comes from `claude agents --json`, the documented list of every live session with its kind, pid
+and status (busy / waiting / idle). `claude_sessions.sh` ties each session to a tmux pane when the pane's shell is an
+ancestor of the session's pid[^tmux-dir]. That leaves three kinds of rows in the Claude picker and the reminder popup:
+
+- a session with its pane: a plain `claude` started in that pane;
+- a session without a pane (`◌ bg <id>`): moved to the background with `←` or `/background`, so it runs in a Claude
+  daemon worker outside any pane;
+- a pane running a Claude client with no session (`?`): agent view or `claude attach`, showing one of the background
+  sessions.
+
+Nothing documented says which background session such a pane shows, so the last two are listed apart rather than
+guessed at.
+
+Per-session state files under `$TMPDIR/claude-cache/`, named after the session id, carry what the session list does
+not:
 
 | State                              | Written by                         | Read by                                 |
 | ---------------------------------- | ---------------------------------- | --------------------------------------- |
-| working / waiting on me / idle     | `hooks/claude-waiting-mark.sh`     | Claude picker (state dot)               |
-| prompt cache expiry                | `statusline.sh`                    | Claude picker (cache column)            |
+| prompt cache expiry                | `statusline.sh`                    | Claude picker (cache column), reminder  |
 | pending cache-expiry reminders     | `claude_cache_notify.sh`           | its own popup                           |
 
-The status line is the source of truth for the prompt cache: Claude Code passes it the cache TTL and expiry, and a
-refresh interval in `settings.json` keeps it running while a session is idle. It shows the time left and starts the
-reminder shortly before a cache expires[^claude-dir].
+The status line is the source of truth for the prompt cache: Claude Code passes it the session id, cache TTL and
+expiry on stdin, and a refresh interval in `settings.json` keeps it running while a session is idle. It shows the time
+left and starts the reminder shortly before a cache expires[^claude-dir].
 
 Decisions that the code alone does not explain:
 
+- State is keyed by session, never by `$TMUX_PANE`: a background session's status line and hooks run without it.
+- Nothing reads Claude Code's undocumented internals (`~/.claude/sessions/`, the daemon roster, pane titles), which
+  could change in any release.
 - Reminders are only for the 1h cache; a 5m cache would remind after every short break.
-- Several expiring panes share one popup rather than a popup each.
+- Several expiring sessions share one popup rather than a popup each.
 - No desktop notification on Windows/WSL, by choice; macOS and Linux desktops get one.
 
 [^tmux-dir]: `~/.dot/files/dotfiles/.config/tmux/`

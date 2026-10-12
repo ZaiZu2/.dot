@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 # Claude Code status line: "dir on branch (#PR)" on the left, "model (cache time left/context size)" on the right edge.
 #
-# Inside tmux it also keeps the cache expiry of its pane in $TMPDIR/claude-cache/<pane>, for the Claude picker
+# It also keeps the cache expiry of its session in $TMPDIR/claude-cache/<session_id>, for the Claude picker
 # (~/.config/tmux/find_claude.sh), and starts ~/.config/tmux/claude_cache_notify.sh once when a 1h cache is about to
-# expire. settings.json sets statusLine.refreshInterval, so both keep moving while the session is idle.
+# expire. Keyed by session, not by tmux pane: a session moved to the background runs in a daemon worker without
+# $TMUX_PANE. settings.json sets statusLine.refreshInterval, so both keep moving while the session is idle.
 input=$(cat)
+session_id=$(jq -r '.session_id // empty' <<<"$input")
 dir=$(jq -r '.workspace.current_dir // .cwd' <<<"$input")
 used=$(jq -r '.context_window.total_input_tokens // empty' <<<"$input")
 model=$(jq -r '.model.display_name // empty' <<<"$input")
@@ -81,7 +83,6 @@ fi
 # Time until the prompt cache goes cold; from then on the next prompt pays for the whole context again.
 cache="" cache_c=""
 cache_dir="${TMPDIR:-/tmp}/claude-cache"
-pane=${TMUX_PANE#%}
 if [ -n "$cache_exp" ]; then
   secs=$(( cache_exp - $(date +%s) ))
   if [ "$secs" -le 0 ]; then
@@ -95,21 +96,18 @@ if [ -n "$cache_exp" ]; then
     cache_c="${col}${cache}${reset}"
   fi
 
-  if [ -n "$pane" ]; then
+  if [ -n "$session_id" ]; then
     mkdir -p "$cache_dir/notified"
-    printf '%s %s\n' "$cache_exp" "$cache_ttl" >"$cache_dir/$pane"
+    printf '%s %s\n' "$cache_exp" "$cache_ttl" >"$cache_dir/$session_id"
     # Remind once per expiry, and only for the 1h cache: a 5m one runs out during every short break. Detached, since
     # Claude Code cancels a status line run that is still in flight at the next update.
     if [ "$cache_ttl" = 1h ] && [ "$secs" -gt 0 ] && [ "$secs" -le "${CLAUDE_CACHE_LEAD:-300}" ] &&
-      [ "$(cat "$cache_dir/notified/$pane" 2>/dev/null)" != "$cache_exp" ]; then
-      printf '%s\n' "$cache_exp" >"$cache_dir/notified/$pane"
-      nohup "${XDG_CONFIG_HOME:-$HOME/.config}/tmux/claude_cache_notify.sh" "$TMUX_PANE" "$cache_exp" \
+      [ "$(cat "$cache_dir/notified/$session_id" 2>/dev/null)" != "$cache_exp" ]; then
+      printf '%s\n' "$cache_exp" >"$cache_dir/notified/$session_id"
+      nohup "${XDG_CONFIG_HOME:-$HOME/.config}/tmux/claude_cache_notify.sh" "$session_id" "$cache_exp" \
         </dev/null >/dev/null 2>&1 &
     fi
   fi
-elif [ -n "$pane" ]; then
-  # A new session in the pane: whatever the previous one left behind no longer applies.
-  rm -f "$cache_dir/$pane"
 fi
 
 # "Opus 5.5 (55m/130k)": whichever of the two figures are known, each in its own color.

@@ -1,5 +1,10 @@
 # Directory Update Log
 
+## 2026-10-12
+
+- Updated [My tmux setup](tmux-setup.md): the Claude integration now lists sessions from `claude agents --json` and
+  keys its state files by session id instead of tmux pane, so sessions moved to the background are tracked too.
+
 ## 2026-10-10
 
 - Created [Ask about the plan before implementing a feature](ask-before-implementing-features.md), feedback on asking

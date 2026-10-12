@@ -1,28 +1,36 @@
 #!/bin/sh
-# Remind that the prompt cache of a Claude pane is about to expire: a desktop
-# notification where the OS has one, and a tmux popup listing every pane with
-# a pending reminder, from which one can jump to a pane.
+# Remind that the prompt cache of a Claude session is about to expire: a
+# desktop notification where the OS has one, and a tmux popup listing every
+# session with a pending reminder, from which one can jump to its pane.
 #
 # Started by ~/.claude/statusline.sh, once per expiry of a 1h cache.
 #
-# Usage: claude_cache_notify.sh <pane_id> <expires_at>
+# Usage: claude_cache_notify.sh <session_id> <expires_at>
 #        claude_cache_notify.sh --popup <answer_file> <rows>
 #
-# Reminders are kept in $QUEUE_DIR, one file per pane, and shown together in a
-# single popup on the most recently used client: whichever invocation holds
-# $QUEUE_DIR.lock presents them, the others only add to the directory. A
+# Reminders are kept in $QUEUE_DIR, one file per session, and shown together
+# in a single popup on the most recently used client: whichever invocation
+# holds $QUEUE_DIR.lock presents them, the others only add to the directory. A
 # reminder that cannot be shown yet (a picker is open, no client is attached)
-# is retried until its cache has expired; one whose pane is gone or has been
-# prompted again in the meantime is dropped.
+# is retried until its cache has expired; one whose session has been prompted
+# again in the meantime, or is gone (the picker prunes its cache file), is
+# dropped.
+#
+# The pane of a session comes from claude_sessions.sh. A session running in
+# the background has none that can be found: its row shows "◌ bg <id>" and
+# Enter does nothing on it.
 #
 # The second form is the body of the popup. It redraws itself as reminders
 # arrive, run out or time passes. Up/Down (or k/j) select, Enter jumps to the
-# selected pane, Esc dismisses; either way every listed reminder is done with.
-# Other keys are ignored, so text typed while it pops up does nothing.
+# selected session's pane, Esc dismisses; either way every listed reminder is
+# done with. Other keys are ignored, so text typed while it pops up does
+# nothing.
 
 set -eu
 
-CACHE_DIR="${CLAUDE_CACHE_DIR:-${TMPDIR:-/tmp}/claude-cache}"
+. "${0%/*}/claude_sessions.sh"
+
+CACHE_DIR=$CLAUDE_CACHE_DIR
 QUEUE_DIR="$CACHE_DIR/queue"
 LOCK="$QUEUE_DIR.lock"
 RETRY=5
@@ -30,7 +38,7 @@ POPUP_W=72
 MAX_ROWS=12
 TAB=$(printf '\t')
 
-# Reminders still worth showing, as "<expires_at> <pane number>" lines, the
+# Reminders still worth showing, as "<expires_at> <session id>" lines, the
 # most urgent first. Stale ones are dropped on the way.
 pending() {
   _now=$(date +%s)
@@ -42,13 +50,32 @@ pending() {
     if [ -r "$CACHE_DIR/$_id" ]; then
       read -r _current _ <"$CACHE_DIR/$_id" || true
     fi
-    if [ -n "$_exp" ] && [ "$_exp" -gt "$_now" ] && [ "$_current" = "$_exp" ] &&
-      tmux display-message -p -t "%$_id" '' >/dev/null 2>&1; then
+    if [ -n "$_exp" ] && [ "$_exp" -gt "$_now" ] && [ "$_current" = "$_exp" ]; then
       printf '%s %s\n' "$_exp" "$_id"
     else
       rm -f "$_f"
     fi
   done | sort -n
+}
+
+# describe <table> <session id> -> "<pane>\t<where>\t<title>": where the
+# session is (tmux session:window, or "◌ bg <id>") and its title.
+describe() {
+  _row=$(awk -F"$CLAUDE_SEP" -v OFS="$TAB" -v id="$2" '$3 == id { print $2, $4, $6; exit }' "$1")
+  _pane=${_row%%"$TAB"*}
+  _rest=${_row#*"$TAB"}
+  _short=${_rest%%"$TAB"*}
+  _title=${_rest#*"$TAB"}
+  [ -n "$_row" ] || _title=
+  _where=
+  if [ -n "$_pane" ]; then
+    _where=$(tmux display-message -p -t "$_pane" '#{session_name}:#{window_index}' 2>/dev/null || true)
+  fi
+  if [ -z "$_where" ]; then
+    _pane=
+    _where="◌ bg ${_short:-${2%%-*}}"
+  fi
+  printf '%s\t%s\t%s\n' "$_pane" "$_where" "${_title:-${2%%-*}}"
 }
 
 if [ "${1:-}" = --popup ]; then
@@ -62,13 +89,15 @@ if [ "${1:-}" = --popup ]; then
     head -c 1 | od -An -tx1 | tr -d ' \n'
   }
 
+  table="$answer.table"
   saved=$(stty -g)
-  trap 'stty "$saved"; printf "\033[?25h"' EXIT
+  trap 'stty "$saved"; printf "\033[?25h"; rm -f "$table" "$table.desc"' EXIT
   stty -icanon -echo min 0 time 10
   printf '\033[?25l'
 
   selected=
   frame=
+  described=
   while :; do
     list=$(pending | head -n "$MAX_ROWS")
     [ -n "$list" ] || exit 0
@@ -86,11 +115,21 @@ if [ "${1:-}" = --popup ]; then
     *) selected=$(printf '%s\n' "$ids" | head -n 1) ;;
     esac
 
+    # Looking sessions up costs a `claude agents` call: only when the listed
+    # reminders change.
+    if [ "$ids" != "$described" ]; then
+      claude_sessions "$table" || true
+      printf '%s\n' "$ids" | while read -r id; do
+        printf '%s\t%s\n' "$id" "$(describe "$table" "$id")"
+      done >"$table.desc"
+      described=$ids
+    fi
+
     now=$(date +%s)
     new=$(
       printf '%s\n' "$list" | while read -r exp id; do
-        where=$(tmux display-message -p -t "%$id" "#{session_name}:#{window_index}$TAB#{pane_title}" 2>/dev/null || true)
-        printf '%s\t%sm\t%s\n' "$id" $(((exp - now + 59) / 60)) "$where"
+        desc=$(awk -F"$TAB" -v id="$id" '$1 == id { print $3 "\t" $4; exit }' "$table.desc")
+        printf '%s\t%sm\t%s\n' "$id" $(((exp - now + 59) / 60)) "$desc"
       done | awk -F'\t' -v sel="$selected" -v width="$((POPUP_W - 6))" '
         BEGIN { glyph = (length("●") == 1) ? 2 : 5 }
         {
@@ -119,8 +158,12 @@ if [ "${1:-}" = --popup ]; then
     move=
     case "$key" in
     0a | 0d)
-      echo "jump $selected" >"$answer"
-      exit 0
+      # A session without a pane has nowhere to jump to.
+      to=$(awk -F"$TAB" -v id="$selected" '$1 == id { print $2; exit }' "$table.desc")
+      if [ -n "$to" ]; then
+        echo "jump $to" >"$answer"
+        exit 0
+      fi
       ;;
     6b) move=up ;;
     6a) move=down ;;
@@ -152,11 +195,16 @@ if [ "${1:-}" = --popup ]; then
   done
 fi
 
-pane=${1:?pane id}
+session=${1:?session id}
 expires=${2:?expiry in epoch seconds}
 
-# The pane may be gone by now.
-where=$(tmux display-message -p -t "$pane" '#{session_name}:#{window_index} #{pane_title}' 2>/dev/null) || exit 0
+tmp=$(mktemp -d)
+trap 'rm -rf "$tmp"' EXIT
+
+claude_sessions "$tmp/table" || true
+desc=$(describe "$tmp/table" "$session")
+where=${desc#*"$TAB"}
+where=$(printf '%s' "$where" | tr '\t' ' ')
 left=$((expires - $(date +%s)))
 [ "$left" -gt 0 ] || left=0
 msg="Claude cache expires in $(((left + 59) / 60))m: $where"
@@ -169,7 +217,7 @@ elif command -v notify-send >/dev/null 2>&1; then
 fi
 
 mkdir -p "$QUEUE_DIR"
-printf '%s\n' "$expires" >"$QUEUE_DIR/${pane#%}"
+printf '%s\n' "$expires" >"$QUEUE_DIR/$session"
 
 # Show the pending reminders on the most recently used client and act on the
 # answer. Non-zero when the popup could not open.
@@ -195,15 +243,12 @@ present() {
     done <"$answer.ids"
   fi
   if [ "$action" = jump ] && [ -n "$jump_to" ]; then
-    target=$(tmux display-message -p -t "%$jump_to" '#{session_name}:#{window_index}' 2>/dev/null) || return 0
+    target=$(tmux display-message -p -t "$jump_to" '#{session_name}:#{window_index}' 2>/dev/null) || return 0
     tmux switch-client -c "$client" -t "${target%%:*}"
     tmux select-window -t "$target"
-    tmux select-pane -t "%$jump_to"
+    tmux select-pane -t "$jump_to"
   fi
 }
-
-tmp=$(mktemp -d)
-trap 'rm -rf "$tmp"' EXIT
 
 # A reminder added just as the presenter was leaving would be stranded, hence
 # the look at the directory again after the lock is released.
