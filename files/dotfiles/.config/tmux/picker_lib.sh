@@ -1,6 +1,8 @@
 #!/bin/sh
 # Sourced by the tmux pickers (find_project.sh, find_claude.sh): the shared fzf
-# theme, and the mapping of a pane cwd to its project root and a short label.
+# theme, the mapping of a pane cwd to its project root and a short label, the
+# shortening of a path for display, and the sizing of the popup from its
+# content.
 #
 # The functions use shell builtins only and return through variables instead
 # of stdout, so calling them once per row costs no fork.
@@ -11,7 +13,8 @@ DEV="${HOME}/dev"
 #
 # Share of the client's width the popup may take, in percent.
 PICKER_CAP_PCT=90
-# Narrowest preview worth showing; below it the preview is dropped.
+# Narrowest preview a popup over the cap may be left with; below it the
+# preview is dropped. A narrower preview that fits under the cap is kept.
 PICKER_PREVIEW_MIN=40
 # tmux draws the popup border on the left and right edge, inside `-w`.
 PICKER_POPUP_BORDER=2
