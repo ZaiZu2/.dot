@@ -85,8 +85,8 @@ while IFS="$CLAUDE_SEP" read -r state pane session short sess title abs expires;
 done <"$rows"
 
 # Drop the cache files of sessions that are gone. Skipped when `claude agents`
-# failed: every session would look gone.
-if [ -n "$pruning" ]; then
+# failed: every session would look gone. A dry run deletes nothing.
+if [ -n "$pruning" ] && [ -z "$dry_run" ]; then
   live=" $(cut -d "$CLAUDE_SEP" -f3 "$rows" | tr '\n' ' ') "
   for f in "$CLAUDE_CACHE_DIR"/* "$CLAUDE_CACHE_DIR"/notified/*; do
     [ -f "$f" ] || continue
@@ -145,9 +145,7 @@ sort -f -t "$TAB" -k1.1,1.1 -k4,4 -k6,6 "$raw" |
     }' >"$list"
 
 read -r list_w preview_w <"$widths"
-client_w=${PICKER_CLIENT_W:-}
-[ -n "$client_w" ] || client_w=$(tmux display-message -p '#{client_width}' 2>/dev/null) || client_w=
-client_w=${client_w:-0}
+client_w=${PICKER_CLIENT_W:-$(tmux display-message -p '#{client_width}')}
 picker_size "$list_w" "$preview_w" "$client_w"
 
 if [ -n "$dry_run" ]; then

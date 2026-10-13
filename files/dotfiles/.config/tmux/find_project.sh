@@ -4,6 +4,11 @@
 #
 # Building the list costs a fixed handful of processes however many windows
 # exist: nothing below forks per window.
+#
+# The popup is sized from its content (see picker_size): the list as wide as
+# its columns, the preview as wide as the widest active pane it can show,
+# capped at 90% of the client. `--dry-run` prints the computed widths and
+# opens nothing; PICKER_CLIENT_W replaces the client's width.
 
 set -eu
 
