@@ -14,11 +14,18 @@
 # The cache column comes from the expiry ~/.claude/statusline.sh keeps per
 # session: minutes until the cache goes cold, "cold" after that, "-" if
 # unknown.
+# The popup is sized from its content (see picker_size): the list as wide as
+# its columns, the preview as wide as the widest pane it can show, capped at
+# 90% of the client. `--dry-run` prints the computed widths and opens nothing;
+# PICKER_CLIENT_W replaces the client's width.
 # A session with no pane found shows "◌ bg <id>" as its tmux session: it runs
 # in the background and may still be on screen in one of the "?" panes, when
 # the match was ambiguous. Enter does nothing on it.
 
 set -eu
+
+dry_run=
+[ "${1:-}" = "--dry-run" ] && dry_run=1
 
 . "${0%/*}/picker_lib.sh"
 . "${0%/*}/claude_sessions.sh"
@@ -61,10 +68,8 @@ while IFS="$CLAUDE_SEP" read -r state pane session short sess title abs expires;
   else
     PROJECT_LABEL=${abs##*/}
   fi
-  case "$abs" in
-  "$HOME"*) cwd="~${abs#"$HOME"}" ;;
-  *) cwd=$abs ;;
-  esac
+  picker_short_path "$abs"
+  cwd=$PICKER_PATH
   group=0
   if [ -n "$pane" ]; then
     key=$pane
@@ -92,9 +97,19 @@ if [ -n "$pruning" ]; then
   done
 fi
 
+# Pane widths by pane id, for the preview width.
+panew="$tmp/panew"
+tmux list-panes -a -F "#{pane_id}${TAB}#{pane_width}" >"$panew" 2>/dev/null || : >"$panew"
+widths="$tmp/widths"
+
 sort -f -t "$TAB" -k1.1,1.1 -k4,4 -k6,6 "$raw" |
-  awk -F'\t' '
+  awk -F'\t' -v panew="$panew" -v carddir="$tmp/card" -v widths="$widths" '
     BEGIN {
+      while ((getline line < panew) > 0) {
+        split(line, f, "\t")
+        pw[f[1]] = f[2]
+      }
+      sw = length("SESSION"); pvw = 0
       tw = length("TITLE"); lw = length("PROJECT"); cw = length("PATH")
       # Longest "glyph + space" prefix: one character, or its bytes when awk
       # is not counting in UTF-8.
@@ -107,6 +122,12 @@ sort -f -t "$TAB" -k1.1,1.1 -k4,4 -k6,6 "$raw" |
       if (length($5) > tw) tw = length($5)
       if (length($4) > lw) lw = length($4)
       if (length($6) > cw) cw = length($6)
+      if (length($3) > sw) sw = length($3)
+      if ($2 ~ /^bg:/) {
+        # A card has no pane: its longest line is the preview width.
+        while ((getline line < (carddir "/" $2)) > 0) if (length(line) > pvw) pvw = length(line)
+        close(carddir "/" $2)
+      } else if (($2 in pw) && pw[$2] + 0 > pvw) pvw = pw[$2] + 0
     }
     END {
       # Column header (fzf --header-lines=1). The dot is centered under it.
@@ -118,13 +139,31 @@ sort -f -t "$TAB" -k1.1,1.1 -k4,4 -k6,6 "$raw" |
         printf "%s\t  \033[%dm%s\033[0m    %-5s  %-*s  %-*s  %-*s  %s\n",
           id[i], color, dot, cache[i], tw, title[i], lw, label[i], cw, cwd[i], s
       }
+      # Widest list line: the 14 columns before the title, the four padded
+      # columns with their two-space gaps, and the session column.
+      print 14 + tw + 2 + lw + 2 + cw + 2 + sw, pvw > widths
     }' >"$list"
+
+read -r list_w preview_w <"$widths"
+client_w=${PICKER_CLIENT_W:-}
+[ -n "$client_w" ] || client_w=$(tmux display-message -p '#{client_width}' 2>/dev/null) || client_w=
+client_w=${client_w:-0}
+picker_size "$list_w" "$preview_w" "$client_w"
+
+if [ -n "$dry_run" ]; then
+  echo "list=$list_w preview=$PICKER_PREVIEW_W popup=$PICKER_POPUP_W client=$client_w"
+  exit 0
+fi
+
+preview_opts=
+if [ "$PICKER_PREVIEW_W" -gt 0 ]; then
+  preview_opts="--preview-window=right,$PICKER_PREVIEW_W,border-bold --preview='cat $tmp/card/{1} 2>/dev/null || ${0%/*}/picker_preview.sh {1}'"
+fi
 
 # The preview captures only the highlighted pane, on demand; a background
 # session without pane gets its card instead.
-tmux display-popup -E -w 90% -h 80% -e "FZF_DEFAULT_OPTS=$PICKER_FZF_OPTS" \
-  "fzf --ansi --reverse --header-lines=1 --delimiter='\t' --with-nth=2.. --preview-window=right,60%,border-bold \
-    --preview='cat $tmp/card/{1} 2>/dev/null || ${0%/*}/picker_preview.sh {1}' < '$list' > '$sel'" ||
+tmux display-popup -E -w "$PICKER_POPUP_W" -h 80% -e "FZF_DEFAULT_OPTS=$PICKER_FZF_OPTS" \
+  "fzf --ansi --reverse --header-lines=1 --delimiter='\t' --with-nth=2.. $preview_opts < '$list' > '$sel'" ||
   true
 
 [ -s "$sel" ] || exit 0
