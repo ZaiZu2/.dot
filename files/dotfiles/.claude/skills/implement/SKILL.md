@@ -18,7 +18,7 @@ take everything from it and not from the conversation.
 What the request names:
 
 - a Jira key: read the issue with the `mcp__atlassian__*` tools on `absa.atlassian.net`; its description is the brief;
-- a spec file: the brief is the whole spec, or the part the request names;
+- a spec file, or a part file `/scope` cut from one: the brief is the whole file, or the section the request names;
 - a change described in the request or the conversation.
 
 If the request names a directory, work there: `cd` into it first, as a command of its own. Stop and reply only with the reason if nothing
@@ -28,7 +28,7 @@ identifies the work, the ticket can't be read, or the brief doesn't say what to 
 
 ### 1. Read the brief
 
-Note the scope (in and out), the files and symbols it names, the edge cases, the verification, and the tickets it
+Note the scope (in and out), the files and symbols it names, the edge cases, the verification, and the work it
 depends on.
 
 ### 2. Read the code

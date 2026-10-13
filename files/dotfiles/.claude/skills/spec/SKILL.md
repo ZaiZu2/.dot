@@ -48,8 +48,9 @@ Cover, in order: goal and scope (in and out), behavior and contract, edge cases 
 - how each repository's work is verified. Take the user's word: if they say little verification is needed, or that
   they will test it manually, record that as the verification, plus whatever basic check already runs there unattended
   (its test suite, the CI's test command); don't push for more;
-- the Jira issue the tickets go under, if any, and whether to implement under it, update it or extend it with
-  children. Read its type and children with the MCP server first: a Task takes only Sub-tasks, a Sub-task none.
+- Jira, only when the user brings it up or names an issue: the issue the work goes under, and whether to implement
+  under it, update it or extend it with children. Read its type and children with the MCP server first: a Task takes
+  only Sub-tasks, a Sub-task none.
 
 Skip a topic only when the code or earlier answers settle it, and say so. Skip process topics (stakeholders, metrics,
 rollout, timelines).
@@ -99,7 +100,12 @@ Don't overwrite without asking.
 Read `${CLAUDE_SKILL_DIR}/brief.md` and write the spec in that layout, following its rules. Delivery decisions go in
 `Repositories`, always, even for a single repository; `Requirements` hold behavior only.
 
+If the spec being changed already has a `Parts` section, `/scope` has split it, and `/feature` builds from the part
+files, not from the spec. Before editing it, say so, name the parts the change would touch, and ask whether to go on.
+Never edit a part file or the `Parts` section: rerunning `/scope` brings them in line.
+
 ## Report
 
 Give the spec's path, and list the accepted risks and open questions. Then tell the user to run `/scope <spec path>` to
-split it into tickets.
+split it into parts. For a spec that was already split, say that its parts are now out of date, and that
+`/scope <spec path>` updates them.

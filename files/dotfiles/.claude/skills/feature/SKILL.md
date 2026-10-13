@@ -1,13 +1,12 @@
 ---
 name: feature
 description:
-    '[auto] Implement a scoped spec unattended in each of its repositories, or resume a stopped run: code, review,
-    local checks and PRs.'
+    '[auto] Implement a scoped spec unattended from its worktree, or resume a stopped run: code, review, local checks
+    and PRs.'
 context: fork
 agent: feature-runner
 disable-model-invocation: true
 allowed-tools:
-    - Bash(git pull --ff-only*)
     - Bash(git commit -m *)
     - Bash(git push)
     - Bash(git push -u origin *)
@@ -16,54 +15,49 @@ allowed-tools:
 
 # Feature
 
-Turn the tickets of a spec that `/scope` has split into reviewed, open pull requests, one per repository. The run
-distributes the tickets: it implements a ticket itself, or hands independent tickets to `implement` subagents that work
-at the same time, each in its repository's worktree. A good result is PRs that do what the tickets ask, and a handback
+Turn a spec that `/scope` has split into parts into reviewed, open pull requests, one per repository. The run
+distributes the parts: it implements a part itself, or hands independent parts to `implement` subagents that work
+at the same time, each in its repository's worktree. A good result is PRs that do what the parts ask, and a handback
 that says what was done, what the review found and what was done about each finding.
 
-This runs as a forked `feature-runner` agent, so no one can be asked during the run: resolve every open question with
-the defaults under [Without a user](#without-a-user), and list each in the report.
+The session runs inside the worktree `/scope` created for the spec, so every command, forked skill and subagent
+starts there. This runs as a forked `feature-runner` agent, so no one can be asked during the run: resolve every open
+question with the defaults under [Without a user](#without-a-user), and list each in the report.
 
 ## Target
 
-The spec file the request names. The run covers every block of its `Tickets` section, or only the repositories the
-request names. The request may add "resume", to continue a run that stopped part-way.
+The spec file the request names, by its absolute path: the spec and its part files stay in the main checkout and are
+only read. The run covers every block of its `Parts` section, or only the repositories the request names. A run that
+stopped part-way is continued by starting it again the same way.
 
-The `Tickets` section, written by `/scope`, holds everything the run needs; use its values as written and don't work
+The `Parts` section, written by `/scope`, holds everything the run needs; use its values as written and don't work
 any of them out again. It has one block per repository, in the order the PRs merge. Each block gives `Checkout`
-(`<main>` below), `Base` (`<base>`), `Branch` (`<branch>`), `Worktree` (`<worktree>`), `Test suite` and `Leaves`, each
-leaf with the leaves it comes after and the files it changes. The tickets are the brief; the rest of the spec is
-background.
+(`<main>` below), `Base` (`<base>`), `Branch` (`<branch>`), `Worktree` (`<worktree>`), `Test suite` and `Parts`, each
+part with its id (`<id>`), the path of its file, the parts it comes after, the files it changes and, when `/scope`
+wrote Jira issues, its key. A part's file is its brief; the rest of the spec is background. The run never reads Jira:
+a key is only passed on to commits.
 
-Stop with the reason if no spec is named, if it has no `Tickets` section or a block lacks one of these values (tell the
-user to run `/scope`), if a named repository has no block, or if a ticket can't be read. Then, for each block of the
+Stop with the reason if no spec is named, if it has no `Parts` section or a block lacks one of these values (tell the
+user to run `/scope`), if a named repository has no block, or if a part's file is missing. Then, for each block of the
 run:
 
-- Without "resume": stop if `<branch>` or `<worktree>` already exists, and tell the user to rerun with "resume".
-- With "resume": a block whose `<branch>` exists resumes; one whose branch doesn't starts fresh.
-- A leaf that comes after a leaf of a block outside this run: stop unless that leaf is done on its block's branch (a
-  commit with a `Refs: <KEY>` trailer in `<base>..<branch>`, read as in [Commits](#commits) in its `<main>`).
+- The session's working directory (`git rev-parse --show-toplevel`) must be the `<worktree>` of one of the run's
+  blocks; otherwise stop, and tell the user to start Claude in that worktree.
+- Every `<worktree>` must exist with `<branch>` checked out (`git branch --show-current` in it); otherwise stop and
+  tell the user to run `/scope`. A worktree other than the session's must also be writable: if an edit there is
+  denied, stop that block and tell the user to add it with `/add-dir`.
+- A block resumes when `<base>..HEAD` has commits or `git status --porcelain` isn't empty; otherwise it starts fresh.
+- A part that comes after a part of a block outside this run: stop unless that part is done on its block's
+  branch (a commit with its `Part: <id>` trailer in `<base>..<branch>`, read as in [Commits](#commits) in its
+  `<main>`).
 - A block outside this run that merges before one inside it, and has no open PR (`gh pr list --head <branch>` in its
   `<main>` finds none): continue, and report it as an ordering risk.
 
 ## Actions
 
-### 1. Create the worktrees
+### 1. Prepare
 
-For each block that doesn't resume. All work happens in new worktrees, never in a main checkout:
-
-```bash
-cd <main>
-git worktree list                                   # shows where <base> is checked out, if anywhere
-git pull --ff-only                                  # in the worktree that has <base> checked out
-git worktree add <worktree> -b <branch> <base>
-cd <worktree>
-```
-
-This is what the `gwa` alias does. If no worktree has `<base>` checked out, run `git fetch origin <base>:<base>` in
-place of the pull. If the pull fails, stop and report it; don't cut the branch from a stale or remote base instead.
-Before `git worktree add`, `git rev-parse <base>` must equal `git rev-parse origin/<base>`: if the local `<base>` has
-commits that aren't pushed, they would land in the PR, so stop and report.
+For each block that starts fresh. All work happens in the worktrees, never in a main checkout.
 
 Run `uv sync --quiet` in the worktree if it has a `pyproject.toml`.
 
@@ -76,12 +70,11 @@ base, not to this branch. With `none`, skip this.
 For each block that resumes. Rebuild its branch's state from git and GitHub, then continue it from its first
 unfinished phase.
 
-**Worktree.** If `<worktree>` exists, `cd` into it. If only the branch exists, `cd <main>`, then
-`git worktree add <worktree> <branch>`, then `cd` into it. Run `uv sync --quiet` if there is a `pyproject.toml`.
+**Worktree.** Run `uv sync --quiet` if there is a `pyproject.toml`.
 
 **Progress**, from the commits of `<base>..HEAD`, read as in [Commits](#commits):
 
-- A leaf ticket is done when a commit has a `Refs: <KEY>` trailer.
+- A part is done when a commit has its `Part: <id>` trailer.
 - The review is done when a commit subject ends with `: address review`, or a PR exists.
 - A PR exists when `gh pr view --json url,state` succeeds. If it is closed or merged, stop that block and report.
 - The branch is pushed when `git status -sb` shows an upstream and nothing ahead of it.
@@ -90,49 +83,47 @@ unfinished phase.
 implementing anything:
 
 1. Read `git diff`, `git diff --cached` and every untracked file in full.
-2. Map each hunk and file to the requirement of an unfinished ticket of this block that it implements; usually that
+2. Map each hunk and file to the requirement of an unfinished part of this block that it implements; usually that
    is the first unfinished one.
-3. For that ticket, list the requirements the leftovers already meet, the ones still open, and the leftover changes
+3. For that part, list the requirements the leftovers already meet, the ones still open, and the leftover changes
    that are wrong or outside its brief.
-4. Changes that belong to a later unfinished ticket stay in the tree and become that ticket's leftovers when it comes
-   up. Changes no unfinished ticket owns go to `git stash push -u -m "<PARENT-KEY>: unowned leftovers" -- <paths>`.
+4. Changes that belong to a later unfinished part stay in the tree and become that part's leftovers when it comes
+   up. Changes no unfinished part owns go to `git stash push -u -m "<branch>: unowned leftovers" -- <paths>`.
    Never discard or check out leftovers.
 
 **Continue** each block at its first unfinished phase:
 
-- A ticket isn't done: step 3, from that ticket.
-- All tickets are done, the review isn't: the test suite run at the end of step 3, then step 4.
+- A part isn't done: step 3, from that part.
+- All parts are done, the review isn't: the test suite run at the end of step 3, then step 4.
 - The review is done, but the branch isn't pushed or has no PR: step 6.
 - A PR exists: only the cross-linking at the end of step 6 is left.
 
 ### 3. Implement
 
-Work through the unfinished leaves of every block as one plan. A leaf is ready when every leaf it comes after, in any
-repository, is committed. Hand out the ready leaves:
+Work through the unfinished parts of every block as one plan. A part is ready when every part it comes after, in
+any repository, is committed. Hand out the ready parts:
 
-- In this run, the default when one leaf is ready, or only leaves of one worktree that depend on each other and
-  together stay small (about five files): call the Skill tool with `implement` for each in turn, naming the key and the
-  worktree path.
-- Delegated, when several leaves are ready: start one `general-purpose` subagent per leaf with the Agent tool, all in
-  one message, each told to read `~/.claude/skills/implement/SKILL.md` and follow it for that leaf in its worktree. Two
-  leaves of the same worktree run together only when their files don't overlap; otherwise the later one waits.
-  Delegate a single leaf too when it is so large that reading its files would crowd out the context needed for step 5.
+- In this run, the default when one part is ready, or only parts of one worktree that depend on each other and
+  together stay small (about five files): call the Skill tool with `implement` for each in turn, naming the part's
+  file as the brief and the worktree path.
+- Delegated, when several parts are ready: start one `general-purpose` subagent per part with the Agent tool, all
+  in one message, each told to read `~/.claude/skills/implement/SKILL.md` and follow it for that part's file in its
+  worktree. Two parts of the same worktree run together only when their files don't overlap; otherwise the later one
+  waits. Delegate a single part too when it is so large that reading its files would crowd out the context needed for
+  step 5.
 
-For a leaf marked `(brief: spec)`, name the spec's path as the brief instead of the key, and the repository it is for;
-the key is only for the commit's `Refs:` trailer.
-
-For a ticket with leftovers from step 2, add the list made there to the request: the work already in the tree, which
+For a part with leftovers from step 2, add the list made there to the request: the work already in the tree, which
 requirements are still open to finish, and which changes to correct; keep the rest instead of redoing it.
 
-When a leaf finishes, `cd` to its worktree, read its diff, run its verification yourself (checks marked `(manual)` go
-to the report instead), and commit only its files as in [Commits](#commits). If the ticket asks for tests and
+When a part finishes, `cd` to its worktree, read its diff, run its verification yourself (checks marked `(manual)` go
+to the report instead), and commit only its files as in [Commits](#commits). If the part asks for tests and
 none were written, call the Skill tool with `test` first, naming the changed files and the worktree path. Then hand out
-the leaves it made ready, without waiting for the others still running.
+the parts it made ready, without waiting for the others still running.
 
-When a block's last leaf is committed, run its test suite command and fix what its branch broke: a failing test that is
-in the baseline file isn't the branch's, unless the branch changed that test or the code it covers. Without the
+When a block's last part is committed, run its test suite command and fix what its branch broke: a failing test that
+is in the baseline file isn't the branch's, unless the branch changed that test or the code it covers. Without the
 baseline file (a resumed run from before it existed), a failure is the branch's unless `git diff <base>..HEAD` touches
-neither the test nor the code it covers. With `none`, the tickets' verification stands in: say so in the report. The
+neither the test nor the code it covers. With `none`, the parts' verification stands in: say so in the report. The
 review runs the linters and static checks, but not the tests. The block then goes on to step 4 while others may still
 be implementing.
 
@@ -169,40 +160,44 @@ once every PR is open and linked.
   force-push, never an amend or rebase of pushed commits. Never merge a PR.
 - Never write to a repository or PR outside this run; list the PRs that should link to this run's in the report
   instead.
-- Only the run commits, never its subagents. A commit holds one verified ticket or one block's review fixes, and only
-  its own files. Leftovers reach a commit only as part of a verified ticket.
+- Only the run commits, never its subagents. A commit holds one verified part or one block's review fixes, and only
+  its own files. Leftovers reach a commit only as part of a verified part.
 - Never write to Jira.
-- If a ticket still fails after two attempts in this run, stop that block and every leaf that comes after it, finish
-  the others, and report the state. Don't open a PR for a block with a failed ticket.
+- If a part still fails after two attempts in this run, stop that block and every part that comes after it, finish
+  the others, and report the state. Don't open a PR for a block with a failed part.
 - When resuming, never pull, rebase or reset a branch; work from its current state.
 - Leave the worktrees in place at the end.
 
 ### Commits
 
-Commit by calling the Skill tool with `commit`, naming the worktree path, the files, and the key for the `Refs:`
-trailer. Its Conventional Commits format leaves the subject to the change, so a resumed run reads its progress from the
-trailers (`git log --format='%(trailers:key=Refs,valueonly)' <range>`) and the subjects (`git log --format=%s
-<range>`):
+Commit by calling the Skill tool with `commit`, naming the worktree path, the files and the trailers. Its Conventional
+Commits format leaves the subject to the change, so a resumed run reads its progress from the trailers
+(`git log --format='%(trailers:key=Part,valueonly)' <range>`) and the subjects (`git log --format=%s <range>`):
 
-- a ticket: key of the Sub-task where there is one, else of the ticket;
-- review fixes: key `<PARENT-KEY>`, and the subject `<type>(<scope>): address review`, which the request gives verbatim.
+- every commit: say that it may bypass hooks, so a lint or format complaint doesn't stop the run. `commit` bypasses
+  only those, after trying to fix them; step 5's final checks still run the linters;
+- a part: `Part: <id>`, and `Refs: <KEY>` when the part has a Jira key;
+- review fixes: `Refs: <KEY>` with the key of the `Parts` section's `Jira` line, when it has one, and the subject
+  `<type>(<scope>): address review`, which the request gives verbatim.
 
 ### Working directory
 
-The run starts in the session's working directory, which may be another repository's checkout, and the permission
-rules match a command by how it starts, so where and how a command runs decides whether it goes through unprompted.
+The session's worktree is the working directory of every command, so the commands of its block run as they are. The
+permission rules match a command by how it starts, so how a command is written decides whether it goes through
+unprompted.
 
-- Run each command of step 1 or 2 on its own. Before any command for a block, `cd` to its worktree as a command of its
-  own; the shell keeps its directory between commands.
 - Never write `cd <path> && <command>`, `git -C <path> ...` or `VAR=... <command>`; a compound or prefixed command
   matches no rule.
+- For a block in another worktree, `cd` there as a command of its own before its commands, and `cd` back to the
+  session's worktree afterwards. Check `git rev-parse --show-toplevel` after such a `cd`: if the directory didn't
+  change, stop that block and report it.
 - Commit only through the `commit` skill, which writes the single `git commit -m` command the permission rules allow.
 - Never delete files or directories with `rm` or `find -delete`; every form of it asks the user, whatever auto mode
   allows. Put scratch output in a new directory instead of clearing an old one; `pytest --basetemp <dir>` empties
   `<dir>` itself.
-- A subagent or forked skill starts in the session's working directory, not in a worktree, and does not see this
-  section. Give the worktree's absolute path in every Skill and Agent call (`implement`, `test`, `review`, `pr`), name
-  files by absolute path, and copy the rules of this section into the prompt.
+- A subagent or forked skill starts in the session's worktree and does not see this section. Give the worktree's
+  absolute path in every Skill and Agent call (`implement`, `test`, `review`, `pr`), name files by absolute path, and
+  copy the rules of this section into the prompt.
 - Check `git branch --show-current` before every commit and push; if it isn't that block's `<branch>`, stop and
   report.
 
@@ -210,9 +205,9 @@ rules match a command by how it starts, so where and how a command runs decides 
 
 Never ask. Where a question comes up, take the default and list it in the report:
 
-- A detail the tickets leave open: take the reading that changes least, and record it as an assumption.
-- A leftover change that could belong to two tickets: give it to the earlier one.
-- Two ready leaves whose files turn out to overlap: run them one after the other, in the order of `Leaves`.
+- A detail the parts leave open: take the reading that changes least, and record it as an assumption.
+- A leftover change that could belong to two parts: give it to the earlier one.
+- Two ready parts whose files turn out to overlap: run them one after the other, in the order of `Parts`.
 - A check that already fails on the base branch: leave it, report it, continue. Never disable, skip or loosen a check
   to get it green.
 - A review finding that can be read two ways: contest it, and say which reading you rejected and why.
@@ -222,11 +217,11 @@ Never ask. Where a question comes up, take the default and list it in the report
 ## Report
 
 For each block: the repository, the PR URL and its base, the worktree path with the `gwr <name>` that removes it, each
-ticket with its URL, status and commit, the result of the final local checks (tests, linters, static and format
-checks) with the base's failures left alone, and every review finding marked fixed (with the commit) or contested (with
-the reason). When a block was resumed, say from which phase, and how the leftovers were handled: the
-ticket each was mapped to, and any stash.
+part with its file, its Jira URL when it has one, status and commit, the result of the final local checks (tests,
+linters, static and format checks) with the base's failures left alone, and every review finding marked fixed (with the
+commit) or contested (with the reason). When a block was resumed, say from which phase, and how the leftovers were
+handled: the part each was mapped to, and any stash.
 
-Then say how the leaves were handed out: which ran in this run, which in subagents, and which ran at the same time. End
-with the assumptions made, any ordering risk, the PRs outside this run that should link to this run's, and what is left
-for the user to validate.
+Then say how the parts were handed out: which ran in this run, which in subagents, and which ran at the same time. End
+with the assumptions made, every commit that bypassed a hook with what the hook reported, any ordering risk, the PRs
+outside this run that should link to this run's, and what is left for the user to validate.

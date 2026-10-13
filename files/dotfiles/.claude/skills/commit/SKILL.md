@@ -19,6 +19,7 @@ the named paths have no changes.
 If the request names a directory, work there: `cd` into it first, as a command of its own.
 
 The ticket keys: those the request names, else one `[A-Z][A-Z0-9]+-[0-9]+` in the branch name (`FAPE-1319`), else none.
+A `Part:` trailer only when the request names its value (`/feature` does, to mark a finished part of a spec).
 
 ## Actions
 
@@ -33,18 +34,37 @@ Follow [Format](#format), with the scope from [Scopes](#scopes). Use a subject o
 
 ### 3. Commit
 
-One command, with one `-m` per paragraph, never a heredoc or `$(...)`:
+One command, with one `-m` per paragraph and one `--trailer` per trailer, never a heredoc or `$(...)`:
 
 ```bash
-git commit -m "<subject>" -m "<body>" -m "Refs: <KEY>"
+git commit -m "<subject>" -m "<body>" --trailer "Part: <id>" --trailer "Refs: <KEY>"
 ```
 
-Leave out the `-m` of a missing body or key. The command asks the user unless the caller's permissions allow it.
+Leave out the `-m` of a missing body and the `--trailer` of a missing part or key. The command asks the user unless the
+caller's permissions allow it.
+
+### 4. Handle a rejecting hook
+
+Only when a hook rejects the commit. Read its output, then take the first that applies:
+
+1. The hook rewrote files (a formatter): stage those of the commit's paths again and commit again.
+2. It rejects the message (commitlint): fix the message and commit again.
+3. It reports a problem in the commit's own paths that takes a line or two to fix: fix it, stage and commit again.
+4. Only lint, format or style complaints are left, and the request says hooks may be bypassed: commit once more with
+   `--no-verify` as the last argument.
+
+Otherwise stop and report the output. Try each of 1-3 once. "May bypass" covers lint, format and style only: never a
+failing test, a type or build error, a secret or credential scanner, a merge-conflict or large-file check, or a hook
+that guards the branch.
 
 ## Rules
 
-- Never `--amend`, `--no-verify` or `--allow-empty`.
-- If a hook rejects the commit, report its output; fix only what the request covers, never bypass it.
+- Never `--allow-empty`.
+- `--no-verify` when the request asks to skip the hooks: add it as the last argument of the first attempt, whatever
+  the hooks check. Otherwise only as step 4 says.
+- `--amend` only when the request asks for it and no remote branch holds `HEAD` (`git branch -r --contains HEAD` prints
+  nothing). Keep the message with `--no-edit` unless the request changes it, and keep its trailers when it does. If
+  `HEAD` is pushed, make a new commit instead and say so.
 
 ## Format
 
@@ -53,6 +73,7 @@ Leave out the `-m` of a missing body or key. The command asks the user unless th
 
 <body>
 
+Part: <id>
 Refs: <KEY>
 ```
 
@@ -63,7 +84,8 @@ Refs: <KEY>
 - **Body**: omit it when the subject plus diff already says why; add it only when the why is non-obvious. When
   present, at most 2 short `-` bullets, each a terse verbless phrase (not a sentence), wrapped at 72 characters. Never
   restate the diff or repeat the subject.
-- **Refs**: one `Refs: <KEY>` trailer per ticket, last. Ticket keys never go in the subject.
+- **Trailers**: `Part: <id>` when named, then one `Refs: <KEY>` per ticket, together as the last paragraph. Ticket keys
+  never go in the subject.
 
 ## Scopes
 
@@ -79,4 +101,5 @@ With a defined list, use only its scopes; leave the scope out when none fits or 
 
 ## Report
 
-The commit hash and the full message, or the reason nothing was committed.
+The commit hash and the full message, or the reason nothing was committed. If a hook rejected it, say what the hook
+reported and what was done about it, and name a `--no-verify` or `--amend` explicitly.

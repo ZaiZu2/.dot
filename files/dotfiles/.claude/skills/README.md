@@ -19,15 +19,19 @@ the conventions.
 | `/test`       | Unit tests for files, code objects or changes                      | `[auto]` | model      | -                      |
 | `/implement`  | Implement a ticket, spec or described change                       | `[auto]` | model      | `atlassian` MCP server |
 | `/spec`       | Interview-driven feature spec, written to `.claude/spec/<slug>.md` | `[hitl]` | user       | -                      |
-| `/scope`      | Split a spec into Jira tickets and record them in the spec         | `[hitl]` | user       | `gh`, `atlassian` MCP  |
-| `/feature`    | Implement a scoped spec in each of its repositories, resumable     | `[auto]` | user       | `gh`, `atlassian` MCP  |
+| `/scope`      | Split a spec into part files, optionally mirrored as Jira issues   | `[hitl]` | user       | `gh` (+ `atlassian`)   |
+| `/feature`    | Implement a scoped spec in each of its repositories, resumable     | `[auto]` | user       | `gh`                   |
 | `/ticket`     | Create, update, search, comment on and transition Jira issues      | `[hitl]` | user       | `atlassian` MCP server |
 | `/confluence` | Get, search, create and update Confluence pages                    | `[hitl]` | user       | `atlassian` MCP server |
 
-`/spec`, `/scope` and `/feature` run in sequence, each started by the user: `/spec` writes the spec, `/scope` adds its
-`Tickets` section, and `/feature <spec>` implements it, one worktree and PR per repository, handing independent
-tickets to `implement` subagents that run at the same time. `/feature` runs forked in the `feature-runner` agent
-(`~/.claude/agents/feature-runner.md`), whose `tools` list limits what the unattended run can reach.
+`/spec`, `/scope` and `/feature` run in sequence, each started by the user: `/spec` writes the spec, `/scope` splits
+it into part files beside it (`.claude/spec/<feature>/<no>_<name>.md`, each a standalone brief) and lists them in the
+spec's `Parts` section, then creates a worktree per repository; `/feature <spec>`, typed in a Claude session started
+in that worktree, implements it with one PR per repository, handing independent parts to `implement` subagents that run
+at the same time. The part files carry all the context between the three, so
+none of them needs Jira: `/scope` mirrors the parts as Jira issues only on request, and `/feature` never reads Jira.
+`/feature` runs forked in the `feature-runner` agent (`~/.claude/agents/feature-runner.md`), whose `tools` list limits
+what the unattended run can reach.
 
 Every commit goes through `/commit`, and `git commit` is an `ask` rule in `settings.json`, so it asks the user unless
 the caller's permissions allow it: `/feature` does, through `Bash(git commit -m *)` in its `allowed-tools`. A project
