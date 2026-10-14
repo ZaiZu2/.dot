@@ -21,6 +21,8 @@ PICKER_POPUP_BORDER=2
 # fzf's gutter left of each list line (pointer and marker, one column each)
 # plus the scrollbar column it keeps right of the list.
 PICKER_LIST_PAD=3
+# Blank columns kept between the end of the widest list line and the preview.
+PICKER_LIST_GAP=1
 # A fixed `--preview-window` size counts the preview's content only: fzf adds
 # its left and right border and one column of padding inside each (fzf 0.62).
 PICKER_PREVIEW_PAD=4
@@ -97,13 +99,13 @@ picker_short_path() {
 # alone, still capped.
 #
 # list_w is the width of the widest list line and preview_w that of the
-# preview's content (0 or empty for none), both without padding or border;
+# preview's content (0 or empty for none), both without padding, gap or border;
 # client_w is the tmux client's width. $PICKER_PREVIEW_W is the size to hand to
 # fzf's `--preview-window`, $PICKER_POPUP_W the one for tmux's `-w`.
 # Clobbers the scratch variables `_cap` and `_list`.
 picker_size() {
   _cap=$((${3:-0} * PICKER_CAP_PCT / 100))
-  _list=$((${1:-0} + PICKER_LIST_PAD + PICKER_POPUP_BORDER))
+  _list=$((${1:-0} + PICKER_LIST_GAP + PICKER_LIST_PAD + PICKER_POPUP_BORDER))
   PICKER_PREVIEW_W=${2:-0}
   if [ "$PICKER_PREVIEW_W" -gt 0 ]; then
     PICKER_POPUP_W=$((_list + PICKER_PREVIEW_W + PICKER_PREVIEW_PAD))
