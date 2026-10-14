@@ -25,8 +25,9 @@ the spec's content beyond its `Parts` section, and never implement or commit.
 
 ## Target
 
-A spec file written by `/spec`: the path given, or the only file in `<repo root>/.claude/spec/`. Its parts go to the
-directory beside it, named after it: `<spec directory>/<feature>/`.
+A spec file written by `/spec`, `<repo root>/.claude/spec/<feature>/spec.md`: the path given, the `spec.md` of the
+feature directory given, or the only `spec.md` under `<repo root>/.claude/spec/*/`. Its parts go into the same
+directory, beside it.
 
 The spec's `Repositories` section lists each repository with its base branch and test suite command. Without the
 section, the work is in the repository holding the spec.
@@ -41,7 +42,7 @@ Jira is used only when the request asks for Jira issues or names one, or `Reposi
 [Jira](#jira). Otherwise skip everything marked "with Jira", and don't ask about it.
 
 Stop with the reason if no spec is found (tell the user to run `/spec`), or if several match and none is named. A spec
-that already has a `Parts` section, or a parts directory, is a [rerun](#rerun).
+that already has a `Parts` section, or part files beside it, is a [rerun](#rerun).
 
 ## Actions
 

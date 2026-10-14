@@ -94,8 +94,9 @@ Summarize the decisions and get confirmation.
 
 ### 4. Write the spec
 
-Save to `<repo root>/.claude/spec/<feature-slug>.md` (`git rev-parse --show-toplevel`), unless the user says otherwise.
-Don't overwrite without asking.
+Save to `<repo root>/.claude/spec/<feature-slug>/spec.md` (`git rev-parse --show-toplevel`), unless the user says
+otherwise. The directory is the feature's: `/scope` writes the part files into it, beside the spec. Don't overwrite
+without asking.
 
 Read `${CLAUDE_SKILL_DIR}/brief.md` and write the spec in that layout, following its rules. Delivery decisions go in
 `Repositories`, always, even for a single repository; `Requirements` hold behavior only.

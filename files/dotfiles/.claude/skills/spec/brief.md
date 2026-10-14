@@ -10,10 +10,11 @@ alone for an implementer (the user, a fresh session or a subagent) who has no ot
 - A `Verification` entry may be a check the user does by hand; mark it `(manual)`. `feature` runs the other entries and
   leaves those to the user.
 
-A part file is `<spec directory>/<feature>/<no>_<name>.md`: `<feature>` is the spec's file name without `.md`, `<no>`
-a two-digit number counted across the whole spec in the order the parts can be built, `<name>` one or two kebab-case
-words. Its id is `<feature>/<no>`, and its title `# <no>: <what it covers>`. It names its repository in `Summary`,
-`Verification` is required, and the parts it comes after go under `Notes`.
+A spec file is `.claude/spec/<feature>/spec.md`, and its part files sit beside it. A part file is
+`.claude/spec/<feature>/<no>_<name>.md`: `<feature>` is the name of the spec's directory, `<no>` a two-digit number
+counted across the whole spec in the order the parts can be built, `<name>` one or two kebab-case words. Its id is
+`<feature>/<no>`, and its title `# <no>: <what it covers>`. It names its repository in `Summary`, `Verification` is
+required, and the parts it comes after go under `Notes`.
 
 ```markdown
 # <Feature name>
