@@ -7,8 +7,9 @@
 # cwd match allows, plus every pane running a Claude client no session was
 # tied to (agent view or `claude attach`). Nothing is left out.
 #
-# Columns: state dot, time left on the prompt cache, title, project, cwd and
-# tmux session, with a live preview of the pane's screen.
+# Columns: state dot, time left on the prompt cache, title, project and tmux
+# session, with a live preview of the pane's screen. The project is shown by
+# its root's path: relative to ~/dev when under it, else with `~`.
 # The dot is the session's status: yellow = waiting on the user, red =
 # working, green = idle; a grey "?" when no session is known for the pane.
 # The cache column comes from the expiry ~/.claude/statusline.sh keeps per
@@ -49,7 +50,7 @@ if [ ! -s "$rows" ]; then
 fi
 
 # Rows are keyed for sorting: Claudes in a pane first, background sessions
-# last; within each by project, then path. The first field is the group digit
+# last; within each by project. The first field is the group digit
 # then the state digit.
 : >"$raw"
 now=$(date +%s)
@@ -62,12 +63,10 @@ while IFS="$CLAUDE_SEP" read -r state pane session short sess title abs expires;
       cache=cold
     fi
   fi
-  # A Claude outside any project is still listed, under its cwd's basename.
-  if project_root "$abs"; then
-    project_label "$PROJECT_ROOT"
-  else
-    PROJECT_LABEL=${abs##*/}
-  fi
+  # A Claude outside any project is still listed, under its cwd.
+  project_root "$abs" || PROJECT_ROOT=$abs
+  picker_short_path "$PROJECT_ROOT"
+  project=$PICKER_PATH
   picker_short_path "$abs"
   cwd=$PICKER_PATH
   group=0
@@ -81,7 +80,7 @@ while IFS="$CLAUDE_SEP" read -r state pane session short sess title abs expires;
     printf '%s\n\n  id:      %s\n  session: %s\n  cwd:     %s\n\n  Runs in the background; no tmux pane found.\n  Open it with: claude attach %s\n' \
       "$title" "$short" "$session" "$cwd" "$short" >"$tmp/card/$key"
   fi
-  printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "$group$state" "$key" "$sess" "$PROJECT_LABEL" "$title" "$cwd" "$cache" >>"$raw"
+  printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$group$state" "$key" "$sess" "$project" "$title" "$cache" >>"$raw"
 done <"$rows"
 
 # Drop the cache files of sessions that are gone. Skipped when `claude agents`
@@ -102,7 +101,7 @@ panew="$tmp/panew"
 tmux list-panes -a -F "#{pane_id}${TAB}#{pane_width}" >"$panew" 2>/dev/null || : >"$panew"
 widths="$tmp/widths"
 
-sort -f -t "$TAB" -k1.1,1.1 -k4,4 -k6,6 "$raw" |
+sort -f -t "$TAB" -k1.1,1.1 -k4,4 "$raw" |
   awk -F'\t' -v panew="$panew" -v carddir="$tmp/card" -v widths="$widths" '
     BEGIN {
       while ((getline line < panew) > 0) {
@@ -110,7 +109,7 @@ sort -f -t "$TAB" -k1.1,1.1 -k4,4 -k6,6 "$raw" |
         pw[f[1]] = f[2]
       }
       sw = length("SESSION"); pvw = 0
-      tw = length("TITLE"); lw = length("PROJECT"); cw = length("PATH")
+      tw = length("TITLE"); lw = length("PROJECT")
       # Longest "glyph + space" prefix: one character, or its bytes when awk
       # is not counting in UTF-8.
       glyph = (length("●") == 1) ? 2 : 5
@@ -118,10 +117,9 @@ sort -f -t "$TAB" -k1.1,1.1 -k4,4 -k6,6 "$raw" |
     {
       # Drop the status glyph Claude prefixes its title with.
       if (match($5, /^[^ -~]+ /) && RLENGTH <= glyph) $5 = substr($5, RLENGTH + 1)
-      state[NR] = substr($1, 2); id[NR] = $2; sess[NR] = $3; label[NR] = $4; title[NR] = $5; cwd[NR] = $6; cache[NR] = $7
+      state[NR] = substr($1, 2); id[NR] = $2; sess[NR] = $3; label[NR] = $4; title[NR] = $5; cache[NR] = $6
       if (length($5) > tw) tw = length($5)
       if (length($4) > lw) lw = length($4)
-      if (length($6) > cw) cw = length($6)
       if (length($3) > sw) sw = length($3)
       if ($2 ~ /^bg:/) {
         # A card has no pane: its longest line is the preview width.
@@ -131,17 +129,17 @@ sort -f -t "$TAB" -k1.1,1.1 -k4,4 -k6,6 "$raw" |
     }
     END {
       # Column header (fzf --header-lines=1). The dot is centered under it.
-      printf "-\tSTATE  CACHE  %-*s  %-*s  %-*s  %s\n", tw, "TITLE", lw, "PROJECT", cw, "PATH", "SESSION"
+      printf "-\tSTATE  CACHE  %-*s  %-*s  %s\n", tw, "TITLE", lw, "PROJECT", "SESSION"
       for (i = 1; i <= NR; i++) {
         color = (state[i] == 0) ? 33 : (state[i] == 1) ? 31 : (state[i] == 2) ? 32 : 90
         dot = (state[i] == 3) ? "?" : "●"
         s = (id[i] ~ /^bg:/) ? "\033[2m" sess[i] "\033[0m" : sess[i]
-        printf "%s\t  \033[%dm%s\033[0m    %-5s  %-*s  %-*s  %-*s  %s\n",
-          id[i], color, dot, cache[i], tw, title[i], lw, label[i], cw, cwd[i], s
+        printf "%s\t  \033[%dm%s\033[0m    %-5s  %-*s  %-*s  %s\n",
+          id[i], color, dot, cache[i], tw, title[i], lw, label[i], s
       }
-      # Widest list line: the 14 columns before the title, the four padded
-      # columns with their two-space gaps, and the session column.
-      print 14 + tw + 2 + lw + 2 + cw + 2 + sw, pvw > widths
+      # Widest list line: the 14 columns before the title, the padded title
+      # and project columns with their two-space gaps, and the session column.
+      print 14 + tw + 2 + lw + 2 + sw, pvw > widths
     }' >"$list"
 
 read -r list_w preview_w <"$widths"

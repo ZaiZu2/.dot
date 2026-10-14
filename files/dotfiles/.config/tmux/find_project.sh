@@ -49,34 +49,34 @@ tmux list-panes -a \
 
 : >"$raw"
 while IFS="$TAB" read -r target sess abs pw; do
-  # Windows outside any repo and outside $DEV are skipped.
+  # Windows outside any repo and outside $DEV are skipped. The project is
+  # shown by its root's path: relative to $DEV when under it, which also names
+  # a worktree "repo/worktree", else with `~`.
   project_root "$abs" || continue
-  project_label "$PROJECT_ROOT"
   picker_short_path "$PROJECT_ROOT"
-  printf '%s\t%s\t%s\t%s\t%s\n' "$target" "$PROJECT_LABEL" "$PICKER_PATH" "$sess" "$pw" >>"$raw"
+  printf '%s\t%s\t%s\t%s\n' "$target" "$PICKER_PATH" "$sess" "$pw" >>"$raw"
 done <"$wins"
 
 [ -s "$raw" ] || exit 0
 
-sort -f -t "$TAB" -k2,2 -k3,3 "$raw" |
+sort -f -t "$TAB" -k2,2 "$raw" |
   awk -F'\t' -v widths="$widths" '
     BEGIN {
       # Row 0 is the column header (fzf --header-lines=1).
-      t[0] = "-"; label[0] = "PROJECT"; root[0] = "PATH"; sess[0] = "SESSION"
-      lw = length(label[0]); rw = length(root[0]); sw = length(sess[0])
+      t[0] = "-"; label[0] = "PROJECT"; sess[0] = "SESSION"
+      lw = length(label[0]); sw = length(sess[0])
     }
     {
-      t[NR] = $1; label[NR] = $2; root[NR] = $3; sess[NR] = $4
+      t[NR] = $1; label[NR] = $2; sess[NR] = $3
       if (length($2) > lw) lw = length($2)
-      if (length($3) > rw) rw = length($3)
-      if (length($4) > sw) sw = length($4)
-      if ($5 + 0 > pmax) pmax = $5 + 0
+      if (length($3) > sw) sw = length($3)
+      if ($4 + 0 > pmax) pmax = $4 + 0
     }
     END {
       for (i = 0; i <= NR; i++)
-        printf "%s\t%-*s  %-*s  %s\n", t[i], lw, label[i], rw, root[i], sess[i]
-      # Widest list line (columns and the two gaps) and widest active pane.
-      print lw + 2 + rw + 2 + sw, pmax + 0 > widths
+        printf "%s\t%-*s  %s\n", t[i], lw, label[i], sess[i]
+      # Widest list line (columns and the gap) and widest active pane.
+      print lw + 2 + sw, pmax + 0 > widths
     }' >"$list"
 
 read -r list_w preview_w <"$widths"

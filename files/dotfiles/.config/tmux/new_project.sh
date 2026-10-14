@@ -4,7 +4,8 @@
 
 set -eu
 
-DEV="${HOME}/dev"
+. "${0%/*}/picker_lib.sh"
+
 MAX_W=160
 MAX_H=25
 
@@ -41,16 +42,13 @@ scan_dir() {
   done
 }
 
+# Each repo is shown as the other pickers show a project: by its path,
+# relative to ~/dev.
 scan_dir "$DEV" | sort -uf |
-  awk -v dev="$DEV/" '
-      { p=$0; if (index(p, dev)==1) p=substr(p, length(dev)+1);
-        paths[NR]=$0; rels[NR]=p;
-        if (length(p) > m) m=length(p) }
-      END {
-        for (i=1; i<=NR; i++)
-          printf "%s\t%-*s  %s\n", paths[i], m, rels[i], paths[i]
-      }' \
-    >"$list"
+  while IFS= read -r p; do
+    picker_short_path "$p"
+    printf '%s\t%s\n' "$p" "$PICKER_PATH"
+  done >"$list"
 
 rows=$(wc -l <"$list" | tr -d ' ')
 [ "$rows" -eq 0 ] && exit 0

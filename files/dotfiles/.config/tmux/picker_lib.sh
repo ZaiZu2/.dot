@@ -1,6 +1,6 @@
 #!/bin/sh
-# Sourced by the tmux pickers (find_project.sh, find_claude.sh): the shared fzf
-# theme, the mapping of a pane cwd to its project root and a short label, the
+# Sourced by the tmux pickers (find_project.sh, find_claude.sh, new_project.sh):
+# the shared fzf theme, the mapping of a pane cwd to its project root, the
 # shortening of a path for display, and the sizing of the popup from its
 # content.
 #
@@ -59,20 +59,6 @@ project_root() {
     ;;
   esac
   return 1
-}
-
-# project_label <root> -> $PROJECT_LABEL.
-#
-# If the parent is itself a git repo (regular `.git` dir, or a bare repo whose
-# worktrees live one level deeper), the root is a linked worktree of it — label
-# it "repo/worktree". Otherwise just the basename.
-project_label() {
-  _parent=${1%/*}
-  if [ -e "$_parent/.git" ] || { [ -f "$_parent/HEAD" ] && [ -f "$_parent/config" ] && [ -d "$_parent/refs" ]; }; then
-    PROJECT_LABEL="${_parent##*/}/${1##*/}"
-  else
-    PROJECT_LABEL="${1##*/}"
-  fi
 }
 
 # picker_short_path <abs path> -> $PICKER_PATH.
