@@ -104,7 +104,8 @@ _gwa_completion() {
     _values 'branches' "${branches[@]}"
 }
 
-# Remove worktree named <name> (defaults to cwd); -f/--force to discard changes.
+# Remove worktree named <name> (defaults to cwd), asking first if it has commits no remote has; -f/--force to
+# discard changes and skip that check.
 gwr() {
     local force=0
     local worktree_name=""
@@ -126,6 +127,17 @@ gwr() {
     if [ "$force" -eq 1 ]; then
         git worktree remove --force "$worktree_path" || return 1
     else
+        # git only refuses on uncommitted changes; also ask before leaving commits that no remote has
+        local unpushed="$(git -C "$worktree_path" log --oneline HEAD --not --remotes 2>/dev/null)"
+        if [ -n "$unpushed" ]; then
+            echo "Commits in '$worktree_name' not on any remote:"
+            echo "$unpushed"
+            read -q "?Remove the worktree anyway? [y/N] " || {
+                echo
+                return 1
+            }
+            echo
+        fi
         git worktree remove "$worktree_path" || return 1
     fi
     [ "$worktree_path" = "$(pwd)" ] && cd "$repo_dir"
