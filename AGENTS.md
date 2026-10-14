@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to coding agents (Claude Code and others) when working with code in this repository.
 
 ## Repository purpose
 
@@ -33,7 +33,7 @@ lists every subcommand; the ones with non-obvious behavior:
   `files/dotfiles/.claude/context/personal/` (prefix `personal` is reserved for it), project bundles live in each
   project's `.claude/context/`. Bundle indexes are loaded through `@` imports, not a hook: `dot claude context` and
   `dot link` regenerate the untracked `~/.claude/context/imports.md` (`write_claude_context_imports`), one import per
-  `~/.claude/context/*/index.md`, and `files/dotfiles/.claude/CLAUDE.md` imports that file. A project's `CLAUDE.md`
+  `~/.claude/context/*/index.md`, and `files/dotfiles/.claude/CLAUDE.md` imports that file. A project's `AGENTS.md`
   imports its own bundle. Rules for writing concepts are in `files/dotfiles/.claude/CLAUDE.md`.
 - `dot claude mcp [<path>]` — register the MCP servers declared in an `mcp.json` file in Claude Code's user scope
   (`~/.claude.json`, which holds Claude's own state and so is not tracked). Without `<path>` the tracked

@@ -97,9 +97,9 @@ doesn't print that path, the directory wasn't added: ask again):
 - The local base has no unpushed commits (`git rev-list --count origin/<base>..<base>` is `0`, when it exists locally);
   `/feature` stops on them, so tell the user to push.
 - No directory of `<checkout>` is named `<slug>` or ends in `-<slug>`: the worktree goes to `<checkout>/<branch>`.
-- The test suite command is known: from `Repositories`, else the project's `CLAUDE.md`, else its CI workflow, else its
-  `Makefile`. With none, record `none`; the parts' `Verification` stands in, even when it is only `(manual)`. Say in
-  step 4 which parts the run can't check itself; don't stop for it.
+- The test suite command is known: from `Repositories`, else the project's `AGENTS.md` or `CLAUDE.md`, else its CI
+  workflow, else its `Makefile`. With none, record `none`; the parts' `Verification` stands in, even when it is only
+  `(manual)`. Say in step 4 which parts the run can't check itself; don't stop for it.
 
 `cd` back to the spec's repository at the end.
 

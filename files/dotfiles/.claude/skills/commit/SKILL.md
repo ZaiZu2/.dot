@@ -93,7 +93,7 @@ The first source that exists decides:
 
 1. a `scope-enum` rule in the repo's commitlint config (`commitlint.config.*`, `.commitlintrc*`, `commitlint` in
    `package.json`);
-2. a `Commit scopes` list in the project's `CLAUDE.md`;
+2. a `Commit scopes` list in the project's `AGENTS.md`, else its `CLAUDE.md`;
 3. free-form: one short lowercase name of the module or area the change is in, preferring scopes already used in
    `git log --format=%s -50`.
 

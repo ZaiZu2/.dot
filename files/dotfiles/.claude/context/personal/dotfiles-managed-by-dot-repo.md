@@ -6,10 +6,10 @@ description: >-
     mounting and loading of my personal, mounted and project OKF knowledge bundles.
 tags: [dotfiles, dot, configuration, claude-code, setup]
 status: stable
-generated: { by: claude-code/claude-opus-5-5, at: 2026-10-05T15:21:44Z }
+generated: { by: claude-code/claude-opus-5-5, at: 2026-10-14T20:15:00Z }
 sources:
-    - id: dot-claude-md
-      resource: ~/.dot/CLAUDE.md
+    - id: dot-agents-md
+      resource: ~/.dot/AGENTS.md
       author: human:jakub
     - id: global-claude-md
       resource: ~/.dot/files/dotfiles/.claude/CLAUDE.md
@@ -23,18 +23,18 @@ sources:
 
 ## Role of the repo
 
-`~/.dot` is the single source of truth for my personal configuration on macOS and Linux[^dot-claude-md]. It holds:
+`~/.dot` is the single source of truth for my personal configuration on macOS and Linux[^dot-agents-md]. It holds:
 
 - `files/dotfiles/` - a tree mirrored file by file into `$HOME` (shell, tmux, Neovim, Claude Code, ...).
 - `tools/` - one install script per tool in my curated tool set.
 - `code/` and `dot.sh` - the implementation of the `dot` CLI.
 
 Configuration under `$HOME` (including `~/.claude/`) is mostly symlinks pointing back into this repo, so edits to config
-should be made in `~/.dot/files/dotfiles/...`, not to the files in `$HOME`[^dot-claude-md].
+should be made in `~/.dot/files/dotfiles/...`, not to the files in `$HOME`[^dot-agents-md].
 
 ## The `dot` tool
 
-Invoked as `dot <cmd>` (alias for `zsh $DOT/dot.sh`); `dot --help` lists all subcommands[^dot-claude-md].
+Invoked as `dot <cmd>` (alias for `zsh $DOT/dot.sh`); `dot --help` lists all subcommands[^dot-agents-md].
 
 - `dot link [-f]` - symlink every file under `files/dotfiles/` into `$HOME`. Required after adding a new file; edits to
   already tracked files show up immediately through the existing symlink.
@@ -58,7 +58,7 @@ My knowledge lives in several OKF bundles at once, all gathered under `~/.claude
   directory is never replaced, `-c` removes the mount again, and the prefix `personal` is reserved[^dot-code].
 - **Project** (`<project root>/.claude/context/`): lives in the project itself, not under `~/.claude/context/`.
 
-All of them reach the session through `CLAUDE.md` `@` imports, not a hook, so no bundle needs to be listed by
+All of them reach the session through `@` imports in instruction files, not a hook, so no bundle needs to be listed by
 hand[^dot-code]:
 
 1. Every `dot link` and every `dot claude context` (mount or `-c`) regenerates the untracked
@@ -66,7 +66,7 @@ hand[^dot-code]:
    rewritten only when the set of bundles changes.
 2. The global `CLAUDE.md` imports that file with `@~/.claude/context/imports.md`. Claude Code expands imports
    recursively at session start, so the index of every personal and mounted bundle is loaded in full.
-3. Project bundles are not covered by `imports.md`; each project's `CLAUDE.md` imports its own index with
+3. Project bundles are not covered by `imports.md`; each project's `AGENTS.md` imports its own index with
    `@.claude/context/index.md`[^global-claude-md].
 
 Each bundle keeps a single `index.md` at its root listing every concept, subdirectories included, so no concept hides
@@ -83,7 +83,7 @@ written into the repo and surfaced with `dot link`.
 
 - Commits to the repo are made only by me, never by an agent[^global-claude-md].
 
-[^dot-claude-md]: `~/.dot/CLAUDE.md`
+[^dot-agents-md]: `~/.dot/AGENTS.md`
 
 [^global-claude-md]: `~/.dot/files/dotfiles/.claude/CLAUDE.md`
 

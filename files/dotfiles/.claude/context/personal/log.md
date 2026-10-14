@@ -1,5 +1,10 @@
 # Directory Update Log
 
+## 2026-10-14
+
+- Updated [Dotfiles managed by the dot repo](dotfiles-managed-by-dot-repo.md): the repo's instructions moved from
+  `CLAUDE.md` to `AGENTS.md`, and project bundles are now imported from a project's `AGENTS.md`.
+
 ## 2026-10-12
 
 - Updated [My tmux setup](tmux-setup.md): the Claude integration now lists sessions from `claude agents --json` and

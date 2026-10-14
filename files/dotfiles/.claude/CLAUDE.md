@@ -9,6 +9,20 @@
   than a permission-list gap. Only re-invoke the same action after the user confirms in-conversation.
 - NEVER add emojis to any generated artifact (PR bodies, PR titles, commit messages, code, docs, file contents).
 
+## Project instructions
+
+Instructions for agents in a repository go into `AGENTS.md`, so they work for any coding agent, not only Claude Code.
+This file stays `CLAUDE.md`: Claude Code has no user-level `AGENTS.md`.
+
+- Create and edit `AGENTS.md`, never `CLAUDE.md`: at the repository root, and in a subdirectory that needs instructions
+  of its own. Claude Code reads a root `AGENTS.md` at launch and a subdirectory's once it reads a file there.
+- Never create a `CLAUDE.md`, `.claude/CLAUDE.md` or `CLAUDE.local.md` in a repository: one in the working directory or
+  above it makes Claude Code skip every `AGENTS.md` there, and one in a subdirectory hides that subdirectory's
+  `AGENTS.md`. Rename the `CLAUDE.md` that `/init` writes to `AGENTS.md`.
+- A repository that already has a `CLAUDE.md` keeps it until I say otherwise: edit it there, since an `AGENTS.md` beside
+  it would not be loaded, and offer once to rename it to `AGENTS.md`.
+- To read a project's instructions (commit scopes, test commands), look in its `AGENTS.md`, else its `CLAUDE.md`.
+
 ## Skills
 
 Every skill is either model-invoked or user-invoked, and runs in one of two modes given by the prefix of its
@@ -39,8 +53,8 @@ adding/updating/removing skills. Read its "Writing SKILL.md Instructions" sectio
 
 Knowledge I want you to keep is stored as bundles in Open Knowledge Format (OKF) 0.2. Whenever you would save a memory,
 or create any other standalone context/knowledge file, write it as an OKF concept into one of these bundles instead of
-into `~/.claude/projects/<project>/memory/`. Files with a format fixed by Claude Code (`CLAUDE.md`, `SKILL.md`, agent
-definitions) are exempt.
+into `~/.claude/projects/<project>/memory/`. Files with a format fixed by Claude Code (`CLAUDE.md`, `AGENTS.md`,
+`SKILL.md`, agent definitions) are exempt.
 
 Before creating or updating any file in a bundle (concept, `index.md`, `log.md`), read the spec at
 `~/.claude/context/personal/references/okf-spec-0-2.md` and follow it; it is the authority for format and rules. It
@@ -62,7 +76,7 @@ Pick the bundle by what the concept is about:
   `~/.claude/context/personal/`.
 - **Project** (`<project root>/.claude/context/`): facts about the current project. Create the bundle on first use: an
   `index.md` starting with an `okf_version: "0.2"` frontmatter block, and a `log.md`, and import the index from the
-  project's `CLAUDE.md` with `@.claude/context/index.md`.
+  project's `AGENTS.md` with `@.claude/context/index.md`.
 - **Mounted** (`~/.claude/context/<prefix>/`, symlinked from another repo by `dot claude context`): knowledge shared
   across the projects of one scope, e.g. a work repo. Write there whatever belongs to that scope rather than to me or to
   a single project; the symlink resolves into the other repo, so new files need no `dot link`. Mounting or removing

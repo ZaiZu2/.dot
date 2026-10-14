@@ -36,8 +36,8 @@ what the unattended run can reach.
 
 Every commit goes through `/commit`, and `git commit` is an `ask` rule in `settings.json`, so it asks the user unless
 the caller's permissions allow it: `/feature` does, through `Bash(git commit -m *)` in its `allowed-tools`. A project
-defines its commit scopes with a `Commit scopes` list in its `CLAUDE.md` (or commitlint's `scope-enum`); without one,
-scopes are free-form.
+defines its commit scopes with a `Commit scopes` list in its `AGENTS.md` or `CLAUDE.md` (or commitlint's
+`scope-enum`); without one, scopes are free-form.
 
 See [Invocation and Mode](#invocation-and-mode) for the `Mode` and `Invoked by` columns.
 

@@ -25,12 +25,13 @@ Before the first question, learn the affected area so your questions are specifi
 
 - Relevant code: modules, entry points, data models, APIs, config. Read the code; don't infer from file names.
 - Existing patterns for similar features (naming, layering, errors, tests).
-- Constraints and prior art: CLAUDE.md, docs, TODOs, recent `git log` of the area.
+- Constraints and prior art: `AGENTS.md` or `CLAUDE.md`, docs, TODOs, recent `git log` of the area.
 - Library behavior, checked via docs (Context7) rather than from memory.
 - Anything that already does part of this, or conflicts with it.
 - Every repository the feature touches, this one included: read the others the same way, and find each one's main
   checkout (the first entry of `git worktree list`, never a worktree of it) and its test suite command (from its
-  `CLAUDE.md`, else its CI workflow, else its `Makefile`; when CI runs on another platform, the local equivalent).
+  `AGENTS.md` or `CLAUDE.md`, else its CI workflow, else its `Makefile`; when CI runs on another platform, the local
+  equivalent).
 
 Use an Explore subagent for breadth on large codebases. Then share brief findings (`path:line`, assumed patterns, early
 concerns).
