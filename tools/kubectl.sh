@@ -8,7 +8,12 @@ is_installed_kubectl() {
 
 install_kubectl() {
   install_linux() {
-    local kubectl_url="https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/$ARCH/kubectl"
+    local kubectl_arch
+    case "$ARCH" in
+    x86_64) kubectl_arch='amd64' ;;
+    arm64) kubectl_arch='arm64' ;;
+    esac
+    local kubectl_url="https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/$kubectl_arch/kubectl"
     local kubectl_file=$(mktemp)
     blue "Downloading KUBECTL binary - $kubectl_url"
     curl -fsSL -o "$kubectl_file" "$kubectl_url" || {
