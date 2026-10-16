@@ -94,7 +94,8 @@
       "Bash(kubectl config get-clusters)",
       "Bash(kubectl auth can-i *)",
       "WebFetch",
-      "WebSearch"
+      "WebSearch",
+      "Bash(git commit -m *)"
     ],
     "deny": [
       "Bash(git push * master)",
@@ -122,7 +123,6 @@
       "Bash(mv */ /dev/null*)"
     ],
     "ask": [
-      "Bash(git commit *)",
       "Bash(git checkout -- *)",
       "Bash(git checkout .)",
       "Bash(git branch -D *)",
@@ -163,7 +163,17 @@
   },
   "model": "opus",
   "hooks": {
-    "PreToolUse": [],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/commit-gate.sh"
+          }
+        ]
+      }
+    ],
     "Notification": [
       {
         "hooks": [

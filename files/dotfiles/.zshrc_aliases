@@ -45,6 +45,11 @@ alias grs='git restore --staged'
 alias gR='git restore --staged $(git rev-parse --show-toplevel) && git restore $(git rev-parse --show-toplevel)'
 alias gA='git commit --amend --no-verify --no-edit'
 
+# Commit the staged changes, or the paths/instructions given, through Claude's /commit skill without asking.
+gC() {
+    CLAUDE_ALLOW_COMMIT=1 claude -p "/commit $*"
+}
+
 # Fuzzy-pick a worktree in the current repo and cd into it.
 gw() {
     git rev-parse --git-dir >/dev/null 2>&1 || {

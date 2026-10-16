@@ -1,5 +1,11 @@
 # Directory Update Log
 
+## 2026-10-16
+
+- Created [Commit gate and CLAUDE_ALLOW_COMMIT](claude-allow-commit.md), covering the `commit-gate.sh` hook, the
+  `commit-agent` agent and the `CLAUDE_ALLOW_COMMIT` launch env var, with the probe findings that shaped them, and
+  the `gC` zsh function that uses it.
+
 ## 2026-10-14
 
 - Updated [Dotfiles managed by the dot repo](dotfiles-managed-by-dot-repo.md): the repo's instructions moved from

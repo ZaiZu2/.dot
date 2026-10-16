@@ -4,10 +4,10 @@ description:
     '[auto] Implement a scoped spec unattended from its worktree, or resume a stopped run: code, review, local checks
     and PRs.'
 context: fork
-agent: feature-runner
+agent: commit-agent
+model: opus
 disable-model-invocation: true
 allowed-tools:
-    - Bash(git commit -m *)
     - Bash(git push)
     - Bash(git push -u origin *)
     - Bash(git stash push *)
@@ -21,7 +21,7 @@ at the same time, each in its repository's worktree. A good result is PRs that d
 that says what was done, what the review found and what was done about each finding.
 
 The session runs inside the worktree `/scope` created for the spec, so every command, forked skill and subagent
-starts there. This runs as a forked `feature-runner` agent, so no one can be asked during the run: resolve every open
+starts there. This runs as a forked `commit-agent`, so no one can be asked during the run: resolve every open
 question with the defaults under [Without a user](#without-a-user), and list each in the report.
 
 ## Target
