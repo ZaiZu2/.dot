@@ -115,7 +115,7 @@ any repository, is committed. Hand out the ready parts:
 For a part with leftovers from step 2, add the list made there to the request: the work already in the tree, which
 requirements are still open to finish, and which changes to correct; keep the rest instead of redoing it.
 
-When a part finishes, `cd` to its worktree, read its diff, run its verification yourself (checks marked `(manual)` go
+When a part finishes, read its diff in its worktree, run its verification yourself (checks marked `(manual)` go
 to the report instead), and commit only its files as in [Commits](#commits). If the part asks for tests and
 none were written, call the Skill tool with `test` first, naming the changed files and the worktree path. Then hand out
 the parts it made ready, without waiting for the others still running.
@@ -186,18 +186,16 @@ The session's worktree is the working directory of every command, so the command
 permission rules match a command by how it starts, so how a command is written decides whether it goes through
 unprompted.
 
-- Never write `cd <path> && <command>`, `git -C <path> ...` or `VAR=... <command>`; a compound or prefixed command
-  matches no rule.
-- For a block in another worktree, `cd` there as a command of its own before its commands, and `cd` back to the
-  session's worktree afterwards. Check `git rev-parse --show-toplevel` after such a `cd`: if the directory didn't
-  change, stop that block and report it.
+- Never write `git -C <path> ...` or `VAR=... <command>`; a prefixed command matches no rule.
+- Every command for a block outside the session's worktree is written as `cd <worktree> && <command>`. It never
+  depends on an earlier `cd`: each command starts back in the session's worktree.
 - Commit only through the `commit` skill, which writes the single `git commit -m` command the permission rules allow.
 - Never delete files or directories with `rm` or `find -delete`; every form of it asks the user, whatever auto mode
   allows. Put scratch output in a new directory instead of clearing an old one; `pytest --basetemp <dir>` empties
   `<dir>` itself.
 - A subagent or forked skill starts in the session's worktree and does not see this section. Give the worktree's
-  absolute path in every Skill and Agent call (`implement`, `test`, `review`, `pr`), name files by absolute path, and
-  copy the rules of this section into the prompt.
+  absolute path in every Skill and Agent call (`implement`, `test`, `review`, `pr`, `commit`), name files by absolute
+  path, and copy the rules of this section into the prompt.
 - Check `git branch --show-current` before every commit and push; if it isn't that block's `<branch>`, stop and
   report.
 
