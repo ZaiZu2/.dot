@@ -8,6 +8,10 @@
   Stop, tell the user what was denied, and ASK whether to proceed — the denial may be an intentional safeguard rather
   than a permission-list gap. Only re-invoke the same action after the user confirms in-conversation.
 - NEVER add emojis to any generated artifact (PR bodies, PR titles, commit messages, code, docs, file contents).
+- Do not run the full test suite after each change while we iterate on a feature together. After a change, run at most
+  the tests that cover the code you touched (one file, class or test), and only when the change is not trivial. Run the
+  full suite only when I ask, when a skill's verification step requires it, or once before declaring a larger piece of
+  work done; say which tests you ran and which you skipped.
 
 ## Project instructions
 
