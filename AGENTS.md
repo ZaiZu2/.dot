@@ -34,7 +34,8 @@ lists every subcommand; the ones with non-obvious behavior:
   project's `.claude/context/`. Bundle indexes are loaded through `@` imports, not a hook: `dot claude context` and
   `dot link` regenerate the untracked `~/.claude/context/imports.md` (`write_claude_context_imports`), one import per
   `~/.claude/context/*/index.md`, and `files/dotfiles/.claude/CLAUDE.md` imports that file. A project's `AGENTS.md`
-  imports its own bundle. Rules for writing concepts are in `files/dotfiles/.claude/CLAUDE.md`.
+  imports its own bundle. Rules for writing concepts are in the `remember` skill
+  (`files/dotfiles/.claude/skills/remember/SKILL.md`).
 - `dot claude mcp [<path>]` — register the MCP servers declared in an `mcp.json` file in Claude Code's user scope
   (`~/.claude.json`, which holds Claude's own state and so is not tracked). Without `<path>` the tracked
   `files/dotfiles/.claude/mcp.json` is used; pass the `mcp.json` of another repo (e.g. a work repo) to add its servers.

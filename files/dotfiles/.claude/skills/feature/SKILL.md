@@ -134,11 +134,16 @@ and nothing else: the reviewer must judge the change without this run's reasonin
 
 ### 5. Respond
 
-Check every finding against the code, then fix it or contest it:
+Check every finding against the code, then fix it or contest it. Fix any finding that is right, whatever its
+severity. Contest one that is unreasonable:
 
-- `[MUST]`: fix, unless the code shows the finding is wrong. A check this branch broke is always fixed.
-- `[SHOULD]` and `[NIT]`: fix when correct and cheap, otherwise contest.
-- A contested finding needs evidence (`path:line`, a test, the spec), not a preference.
+- the code, a test or the spec shows it is wrong;
+- its fix would add what the parts don't ask for: an abstraction, defensive code or tests for cases that can't happen,
+  or a change outside the brief;
+- it asks for a style the project's own code doesn't follow.
+
+A contested finding needs evidence (`path:line`, a test, the spec), not a preference. A `[MUST]` is contested only when
+it is wrong, and a check this branch broke is always fixed.
 
 Then run the block's final local checks: its test suite, and the repository's linters, static checks and format checks
 (the ones the review ran, or those its Makefile, `pyproject.toml` or CI workflow define). Fix what the branch broke;

@@ -1,5 +1,11 @@
 # Directory Update Log
 
+## 2026-10-19
+
+- Updated [Dotfiles managed by the dot repo](dotfiles-managed-by-dot-repo.md): the rules for writing concepts moved
+  from the global `CLAUDE.md` into the `remember` skill, and the commit rule now names the commit gate's exceptions
+  instead of saying agents never commit.
+
 ## 2026-10-16
 
 - Created [Commit gate and CLAUDE_ALLOW_COMMIT](claude-allow-commit.md), covering the `commit-gate.sh` hook, the

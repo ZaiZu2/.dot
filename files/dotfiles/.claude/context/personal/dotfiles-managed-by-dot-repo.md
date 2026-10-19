@@ -6,7 +6,7 @@ description: >-
     mounting and loading of my personal, mounted and project OKF knowledge bundles.
 tags: [dotfiles, dot, configuration, claude-code, setup]
 status: stable
-generated: { by: claude-code/claude-opus-5-5, at: 2026-10-14T20:15:00Z }
+generated: { by: claude-code/claude-opus-5-5, at: 2026-10-19T18:00:00Z }
 sources:
     - id: dot-agents-md
       resource: ~/.dot/AGENTS.md
@@ -16,6 +16,9 @@ sources:
       author: human:jakub
     - id: dot-code
       resource: ~/.dot/code/commands.sh
+      author: human:jakub
+    - id: remember-skill
+      resource: ~/.dot/files/dotfiles/.claude/skills/remember/SKILL.md
       author: human:jakub
 ---
 
@@ -70,21 +73,25 @@ hand[^dot-code]:
    `@.claude/context/index.md`[^global-claude-md].
 
 Each bundle keeps a single `index.md` at its root listing every concept, subdirectories included, so no concept hides
-behind a subdirectory summary[^global-claude-md]. Mounted bundles are symlinks, so searching them needs `grep -R` /
+behind a subdirectory summary[^remember-skill]. Mounted bundles are symlinks, so searching them needs `grep -R` /
 `find -L`; `grep -r` skips them.
 
 ## Claude Code configuration
 
 My global Claude Code setup (`CLAUDE.md`, `settings.json`, hooks, skills, `mcp.json`) and this personal context bundle
 are tracked under `files/dotfiles/.claude/` and linked into `~/.claude/`[^global-claude-md]. New personal concepts are
-written into the repo and surfaced with `dot link`.
+written into the repo by the `remember` skill and surfaced with `dot link`[^remember-skill].
 
 ## Rules
 
-- Commits to the repo are made only by me, never by an agent[^global-claude-md].
+- Every commit goes through the `commit` skill and asks me first; only the `commit-agent` agent (forked skills such as
+  `/feature`) and sessions launched with `CLAUDE_ALLOW_COMMIT` commit unasked. See
+  [Commit gate and CLAUDE_ALLOW_COMMIT](claude-allow-commit.md)[^global-claude-md].
 
 [^dot-agents-md]: `~/.dot/AGENTS.md`
 
 [^global-claude-md]: `~/.dot/files/dotfiles/.claude/CLAUDE.md`
 
 [^dot-code]: `~/.dot/code/commands.sh`
+
+[^remember-skill]: `~/.dot/files/dotfiles/.claude/skills/remember/SKILL.md`

@@ -29,16 +29,16 @@ A spec file written by `/spec`, `<repo root>/.claude/spec/<feature>/spec.md`: th
 feature directory given, or the only `spec.md` under `<repo root>/.claude/spec/*/`. Its parts go into the same
 directory, beside it.
 
-The spec's `Repositories` section lists each repository with its base branch and test suite command. Without the
+The spec's `Base repositories` section lists each repository with its base branch and test suite command. Without the
 section, the work is in the repository holding the spec.
 
-Every repository needs an explicit base branch: the one the request names, else the one in `Repositories`. With
+Every repository needs an explicit base branch: the one the request names, else the one in `Base repositories`. With
 neither, take the repository's default branch
 (`gh repo view --json defaultBranchRef -q .defaultBranchRef.name`) only when it is the obvious base: the checkout is on
 it, and nothing in the spec or the request points to another branch. Otherwise ask with `AskUserQuestion`, the default
 branch first. Never take the base from the branch that happens to be checked out.
 
-Jira is used only when the request asks for Jira issues or names one, or `Repositories` has a `Jira` line; see
+Jira is used only when the request asks for Jira issues or names one, or `Base repositories` has a `Jira` line; see
 [Jira](#jira). Otherwise skip everything marked "with Jira", and don't ask about it.
 
 Stop with the reason if no spec is found (tell the user to run `/spec`), or if several match and none is named. A spec
@@ -66,7 +66,7 @@ rest at the same time, so two parts that can run together must not change the sa
 the spec and the code don't settle it, using `AskUserQuestion` with your recommended option first.
 
 Number the parts `01`, `02`, ... across the whole spec, in an order that respects their dependencies and the merge
-order of `Repositories`.
+order of `Base repositories`.
 
 Pick a short, kebab-case slug for the branch and worktree names: 2-3 words that let a human recognize the change at a
 glance (e.g. `cache-ttl-fix`), not the spec's file name, which can be longer and more descriptive. One slug per
@@ -97,7 +97,7 @@ doesn't print that path, the directory wasn't added: ask again):
 - The local base has no unpushed commits (`git rev-list --count origin/<base>..<base>` is `0`, when it exists locally);
   `/feature` stops on them, so tell the user to push.
 - No directory of `<checkout>` is named `<slug>` or ends in `-<slug>`: the worktree goes to `<checkout>/<branch>`.
-- The test suite command is known: from `Repositories`, else the project's `AGENTS.md` or `CLAUDE.md`, else its CI
+- The test suite command is known: from `Base repositories`, else the project's `AGENTS.md` or `CLAUDE.md`, else its CI
   workflow, else its `Makefile`. With none, record `none`; the parts' `Verification` stands in, even when it is only
   `(manual)`. Say in step 4 which parts the run can't check itself; don't stop for it.
 

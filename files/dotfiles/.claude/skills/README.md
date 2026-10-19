@@ -1,7 +1,7 @@
 # Claude Code Skills
 
-Custom skills for Claude Code. A skill is a directory with a `SKILL.md`; its instructions drive Claude's built-in
-tools, CLIs already on the machine (`gh`, `zk`, `git`) and tools from [MCP servers](#mcp-servers).
+Custom skills for Claude Code. A skill is a directory with a `SKILL.md`; its instructions drive Claude's built-in tools,
+CLIs already on the machine (`gh`, `zk`, `git`) and tools from [MCP servers](#mcp-servers).
 
 To reach an external system, use an MCP server: it brings the client and the authentication, and the skill keeps only
 the conventions.
@@ -13,6 +13,7 @@ the conventions.
 | `/doc`        | Docstrings for files or code objects, matching the project's style | `[auto]` | model      | -                      |
 | `/mkdoc`      | Markdown documentation for a part of a project                     | `[auto]` | model      | -                      |
 | `/note`       | Zettelkasten note from the conversation                            | `[auto]` | user       | `zk`                   |
+| `/remember`   | Knowledge as an OKF concept in one of my context bundles           | `[hitl]` | model      | -                      |
 | `/commit`     | Commit staged or named changes with a Conventional Commits message | `[auto]` | model      | `git`                  |
 | `/pr`         | Create or update the GitHub PR for the current branch              | `[auto]` | model      | `gh`                   |
 | `/review`     | Review a PR, commits or changes                                    | `[auto]` | model      | `gh`                   |
@@ -28,17 +29,17 @@ the conventions.
 directory (`.claude/spec/<feature>/spec.md`), `/scope` splits it into part files beside it
 (`.claude/spec/<feature>/<no>_<name>.md`, each a standalone brief) and lists them in the spec's `Parts` section, then
 creates a worktree per repository; `/feature <spec>`, typed in a Claude session started in that worktree, implements it
-with one PR per repository, handing independent parts to `implement` subagents that run at the same time. The part
-files carry all the context between the three, so none of them needs Jira: `/scope` mirrors the parts as Jira issues
-only on request, and `/feature` never reads Jira.
-`/feature` runs forked in the `commit-agent` agent (`~/.claude/agents/commit-agent.md`).
+with one PR per repository, handing independent parts to `implement` subagents that run at the same time. The part files
+carry all the context between the three, so none of them needs Jira: `/scope` mirrors the parts as Jira issues only on
+request, and `/feature` never reads Jira. `/feature` runs forked in the `commit-agent` agent
+(`~/.claude/agents/commit-agent.md`).
 
 Every commit goes through `/commit`. `settings.json` allows `git commit -m *`, and the `PreToolUse` hook
 `~/.claude/hooks/commit-gate.sh` asks the user before every `git commit`, except in the `commit-agent` agent or what
 `CLAUDE_ALLOW_COMMIT` allows at launch. A forked skill commits unattended by setting `agent: commit-agent`; a skill's
-`allowed-tools` can't lift an `ask`. See the personal concept `claude-allow-commit.md`. A project
-defines its commit scopes with a `Commit scopes` list in its `AGENTS.md` or `CLAUDE.md` (or commitlint's
-`scope-enum`); without one, scopes are free-form.
+`allowed-tools` can't lift an `ask`. See the personal concept `claude-allow-commit.md`. A project defines its commit
+scopes with a `Commit scopes` list in its `AGENTS.md` or `CLAUDE.md` (or commitlint's `scope-enum`); without one, scopes
+are free-form.
 
 See [Invocation and Mode](#invocation-and-mode) for the `Mode` and `Invoked by` columns.
 
@@ -48,8 +49,7 @@ See [Invocation and Mode](#invocation-and-mode) for the `Mode` and `Invoked by` 
 
 - `[auto]`: runs to completion on its own. It never asks for confirmation or clarification mid-run; it resolves
   ambiguity with a stated default, and stops only on a stop condition named under `Target`.
-- `[hitl]`: only works under the user's scrutiny, for an interview or a confirmation before writing to a shared
-  system.
+- `[hitl]`: only works under the user's scrutiny, for an interview or a confirmation before writing to a shared system.
 
 **Invoked by** is who can reach it:
 
@@ -59,24 +59,25 @@ See [Invocation and Mode](#invocation-and-mode) for the `Mode` and `Invoked by` 
   unprompted and no other skill can reach it, so the description is human-facing: a one-line summary for someone
   browsing slash commands.
 
-A `[hitl]` skill is always `user`-invoked, since it can't run without the user. An `[auto]` skill is `model`-invoked
-when the model could usefully reach for it on its own (`review`, `pr`), and `user`-invoked when only the user decides
-it should run (`note`).
+A `[hitl]` skill is `user`-invoked, since it can't run without the user, unless every write it makes waits at a
+`Confirm` stop and the model should reach for it on its own (`remember`); it then stays `model`-invoked. An `[auto]`
+skill is `model`-invoked when the model could usefully reach for it on its own (`review`, `pr`), and `user`-invoked when
+only the user decides it should run (`note`).
 
 ## Directory Structure
 
 ```
 ~/.claude/skills/
 ├── README.md
-└── commit/, confluence/, doc/, feature/, implement/, mkdoc/, note/, pr/, review/, scope/, spec/, test/, ticket/   # one SKILL.md each
+└── commit/, confluence/, doc/, feature/, implement/, mkdoc/, note/, pr/, remember/, review/, scope/, spec/, test/, ticket/   # one SKILL.md each
 ```
 
 Skills are discovered exactly one level deep (`skills/<name>/SKILL.md`); grouping them in subfolders does not work.
 
 ## Adding a Skill
 
-To add one, create `<name>/SKILL.md` and follow [Writing SKILL.md Instructions](#writing-skillmd-instructions). In
-this repo, run `dot link` afterwards so the new file is symlinked into `~/.claude/skills/`.
+To add one, create `<name>/SKILL.md` and follow [Writing SKILL.md Instructions](#writing-skillmd-instructions). In this
+repo, run `dot link` afterwards so the new file is symlinked into `~/.claude/skills/`.
 
 ### Cross-file References
 
@@ -84,9 +85,9 @@ Skills can point Claude at other files: "Before X, read `${CLAUDE_SKILL_DIR}/fil
 hop deep, and use resolvable paths. `@file` imports are documented for `CLAUDE.md`; don't rely on them in skills.
 
 To run another skill from a step, name the tool: "Call the Skill tool with `review`", one skill per call. A bare
-`/review` in prose is easily read as a label. This only works for a model-invoked skill; for a user-invoked one,
-write "tell the user to run `/<name>`". A skill that needs the conventions of a user-invoked skill reads its `SKILL.md`
-by path instead (`scope` reads `ticket/SKILL.md`).
+`/review` in prose is easily read as a label. This only works for a model-invoked skill; for a user-invoked one, write
+"tell the user to run `/<name>`". A skill that needs the conventions of a user-invoked skill reads its `SKILL.md` by
+path instead (`scope` reads `ticket/SKILL.md`).
 
 A forked skill runs as a subagent, which can't ask the user anything, so a skill with a `Confirm` or `Interview` stop
 must be inline (`scope`). A skill that should run either in the session or delegated also stays inline; the caller
@@ -107,8 +108,8 @@ dot claude mcp <path>   # same, from the mcp.json of another repo (e.g. a work r
 Servers from another repo's file are added next to the tracked ones; a server with the same name as an already
 registered one is replaced by the config registered last.
 
-Claude Code does not read `~/.claude/mcp.json` itself, so re-run `dot claude mcp` after editing it. Servers registered by
-hand (`claude mcp add`) are left alone, and removing an entry from the file does not unregister it; use
+Claude Code does not read `~/.claude/mcp.json` itself, so re-run `dot claude mcp` after editing it. Servers registered
+by hand (`claude mcp add`) are left alone, and removing an entry from the file does not unregister it; use
 `claude mcp remove <name> -s user`. Keep secrets out of the file: use OAuth or `${VAR}` expansion.
 
 In a skill, refer to the server's tools as `mcp__<server>__*` and tell Claude what to do when they are missing (see
@@ -122,10 +123,9 @@ To use skills from another repo (e.g. work), link them in with a prefix to keep 
 dot claude skills <path-to-.claude-dir> --prefix ps
 ```
 
-This creates one symlink per skill, `~/.claude/skills/ps-<name>` -> `<path>/skills/<name>`; the prefix is one
-lowercase word, joined to the skill name with `-`. Files added to a linked skill show up on their own, so re-run it
-only for new skills. `--force` repoints a symlink that leads elsewhere; a real directory is never replaced. To unlink
-them again:
+This creates one symlink per skill, `~/.claude/skills/ps-<name>` -> `<path>/skills/<name>`; the prefix is one lowercase
+word, joined to the skill name with `-`. Files added to a linked skill show up on their own, so re-run it only for new
+skills. `--force` repoints a symlink that leads elsewhere; a real directory is never replaced. To unlink them again:
 
 ```bash
 dot claude skills <path-to-.claude-dir> --prefix ps --clean
@@ -135,65 +135,49 @@ Only symlinks pointing into that repo are removed, so personal skills and other 
 
 ## Writing SKILL.md Instructions
 
-Read this list before creating or editing a skill. Whenever a writing preference is stated while refining one, add
-it here without being asked, so later skills don't repeat a mistake that was already fixed.
+Read this list before creating or editing a skill. Whenever a writing preference is stated while refining one, add it
+here without being asked, so later skills don't repeat a mistake that was already fixed.
 
 - **Mode prefix.** Start every `description` with `[hitl]` or `[auto]` (see
-  [Invocation and Mode](#invocation-and-mode)). Quote the description, since a
-  leading `[` is otherwise parsed by YAML as a list.
-- **`[hitl]` is user-invoked.** Every `[hitl]` skill sets
-  `disable-model-invocation: true`. An `[auto]` skill sets it only when the
-  user alone decides it should run (`note`).
-- **`[auto]` never asks.** No "confirm before X", "ask if unsure" or "wait
-  for approval" in an `[auto]` skill. Give each such point a safe default
-  instead, and have `Report` list the assumptions made. A skill that can't
-  work without asking is `[hitl]`.
-- **`[hitl]` names its stops.** Say exactly where the skill asks or waits
-  (an `Interview`, a `Confirm` step), so the rest runs without interruption.
-- **Side effects.** An `[auto]` skill may write to a shared system without
-  confirming only when that write is the request itself (`pr`), and its
-  trigger phrases must be narrow enough that it fires on nothing else.
-- **Lean descriptions.** Say what the skill does. On a model-invoked skill, add
-  trigger phrases ("Use when the user asks to review a PR") only when
-  auto-triggering needs them. On a user-invoked skill, never: nothing triggers
-  it but its name. Never "Use when the user invokes /x", since invoking by
-  name always works.
-- **Fork `[auto]` skills** with `context: fork` when their input is the repo,
-  files or arguments alone. A forked skill runs in a background subagent
-  without the conversation history, so keep skills that rely on the chat
-  (summaries, selected code) inline. Always fork skills that judge work
-  (reviews), so they aren't biased by the conversation that produced it.
-  Unless its target is fixed (e.g. `pr` always works on the current
-  branch), a forked skill must require an explicit target in the request
-  (PR, commits, files) and stop if none is given, since it can't see the
-  chat or ask; state this under `Target`. It also can't confirm mid-run, so replace any "confirm before X"
-  step with a safe default.
-- **Model choice.** Set `model` on forked skills and routine inline ones
-  (API wrappers, note-taking): `sonnet` for routine work, `opus` where
-  judgment matters (reviews). Use the aliases, which track the latest
-  version, not pinned model IDs. Leave it unset on skills that need the
-  session's model, like `spec`.
-- **Supported frontmatter only.** Unknown keys such as `title` or
-  `permissions` are ignored locally and rejected by claude.ai. See
-  https://code.claude.com/docs/en/skills for the valid fields.
-- **Be concise.** State each rule once, in as few words as carry it. Cut
-  restatements, explanations of the obvious, and filler intros.
-- **Short, plain headers.** A few straightforward words (`Interview`,
-  `Report results`), no sentence-style titles or parenthetical asides.
-  Number only the `###` steps under `Actions`; see
-  [Structure](#structure).
-- **Language rules under `Rules`.** Rules that apply to one language go in
-  an unnumbered `### <Language>` subsection of `## Rules` (`### Python`),
-  after the general rules, never in a top-level section.
+  [Invocation and Mode](#invocation-and-mode)). Quote the description, since a leading `[` is otherwise parsed by YAML
+  as a list.
+- **`[hitl]` is user-invoked.** Every `[hitl]` skill sets `disable-model-invocation: true`, unless every write waits at
+  a `Confirm` stop and the model should start it on its own (`remember`). An `[auto]` skill sets it only when the user
+  alone decides it should run (`note`).
+- **`[auto]` never asks.** No "confirm before X", "ask if unsure" or "wait for approval" in an `[auto]` skill. Give each
+  such point a safe default instead, and have `Report` list the assumptions made. A skill that can't work without asking
+  is `[hitl]`.
+- **`[hitl]` names its stops.** Say exactly where the skill asks or waits (an `Interview`, a `Confirm` step), so the
+  rest runs without interruption.
+- **Side effects.** An `[auto]` skill may write to a shared system without confirming only when that write is the
+  request itself (`pr`), and its trigger phrases must be narrow enough that it fires on nothing else.
+- **Lean descriptions.** Say what the skill does. On a model-invoked skill, add trigger phrases ("Use when the user asks
+  to review a PR") only when auto-triggering needs them. On a user-invoked skill, never: nothing triggers it but its
+  name. Never "Use when the user invokes /x", since invoking by name always works.
+- **Fork `[auto]` skills** with `context: fork` when their input is the repo, files or arguments alone. A forked skill
+  runs in a background subagent without the conversation history, so keep skills that rely on the chat (summaries,
+  selected code) inline. Always fork skills that judge work (reviews), so they aren't biased by the conversation that
+  produced it. Unless its target is fixed (e.g. `pr` always works on the current branch), a forked skill must require an
+  explicit target in the request (PR, commits, files) and stop if none is given, since it can't see the chat or ask;
+  state this under `Target`. It also can't confirm mid-run, so replace any "confirm before X" step with a safe default.
+- **Model choice.** Set `model` on forked skills and routine inline ones (API wrappers, note-taking): `sonnet` for
+  routine work, `opus` where judgment matters (reviews). Use the aliases, which track the latest version, not pinned
+  model IDs. Leave it unset on skills that need the session's model, like `spec`.
+- **Supported frontmatter only.** Unknown keys such as `title` or `permissions` are ignored locally and rejected by
+  claude.ai. See https://code.claude.com/docs/en/skills for the valid fields.
+- **Be concise.** State each rule once, in as few words as carry it. Cut restatements, explanations of the obvious, and
+  filler intros.
+- **Short, plain headers.** A few straightforward words (`Interview`, `Report results`), no sentence-style titles or
+  parenthetical asides. Number only the `###` steps under `Actions`; see [Structure](#structure).
+- **Language rules under `Rules`.** Rules that apply to one language go in an unnumbered `### <Language>` subsection of
+  `## Rules` (`### Python`), after the general rules, never in a top-level section.
 - **No Capabilities sections.** They repeat the frontmatter description.
-- **No personas.** Don't open with "You are a senior engineer…" or similar
-  role-play. State the skill's purpose (what it's for and what a good
-  result looks like) and give concrete rules for the behavior you want.
-  Specific rules and a clear goal guide judgment better than a role label.
-- **No usage-example sections or argument syntax.** Skills take a
-  free-form request. State the default behavior and let the request
-  override it ("review against `master` unless the request names other
-  changes"), instead of documenting positional arguments or flags.
+- **No personas.** Don't open with "You are a senior engineer…" or similar role-play. State the skill's purpose (what
+  it's for and what a good result looks like) and give concrete rules for the behavior you want. Specific rules and a
+  clear goal guide judgment better than a role label.
+- **No usage-example sections or argument syntax.** Skills take a free-form request. State the default behavior and let
+  the request override it ("review against `master` unless the request names other changes"), instead of documenting
+  positional arguments or flags.
 
 ### Structure
 
@@ -203,21 +187,21 @@ names `Target`, `Tools`, `Actions`, `Rules` and `Report` are fixed.
 ```markdown
 ---
 name: <name>
-description: "[hitl|auto] <what it does>. <trigger phrases, if needed>"
-context: fork                    # see Fork
-model: <sonnet | opus>          # see Model choice
-disable-model-invocation: true   # user-invoked: every [hitl], some [auto]
+description: '[hitl|auto] <what it does>. <trigger phrases, if needed>'
+context: fork # see Fork
+model: <sonnet | opus> # see Model choice
+disable-model-invocation: true # user-invoked: every [hitl], some [auto]
 ---
 
 # <Title>
 
-<Purpose: what the skill is for and what a good result looks like, in 1-3 sentences. Constraints that hold for the
-whole run go here too ("Read-only: don't modify files").>
+<Purpose: what the skill is for and what a good result looks like, in 1-3 sentences. Constraints that hold for the whole
+run go here too ("Read-only: don't modify files").>
 
 ## Target
 
-<What it works on: the default, how the request overrides it, and every stop condition (nothing named, ambiguous
-match, wrong branch). Forked skills stop with a one-line reason; inline skills ask.>
+<What it works on: the default, how the request overrides it, and every stop condition (nothing named, ambiguous match,
+wrong branch). Forked skills stop with a one-line reason; inline skills ask.>
 
 ## Tools
 
@@ -244,8 +228,7 @@ match, wrong branch). Forked skills stop with a one-line reason; inline skills a
 
 ## <Topic>
 
-<Reference sections (`Project tags`, `Notebooks`). An output template lives in the step or topic that
-produces it.>
+<Reference sections (`Project tags`, `Notebooks`). An output template lives in the step or topic that produces it.>
 
 ## Report
 
