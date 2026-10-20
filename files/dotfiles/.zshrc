@@ -67,6 +67,7 @@ setopt BASH_REMATCH # Turn on BASH_REMATCH[] syntax for capture groups
 
 # Initialize runtime tools
 eval "$(fzf --zsh)"
+bindkey '^E' fzf-cd-widget
 alias fzf='fzf --preview "bat --theme=kanagawa --color=always --style=numbers --line-range=:500 {}"'
 eval "$(fnm env --use-on-cd --shell zsh)"
 eval "$(zoxide init zsh)"
