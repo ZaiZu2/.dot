@@ -3,6 +3,7 @@ name: scope
 description:
     '[hitl] Split a spec into self-contained part files (briefs), record them in the spec and create the worktree
     `/feature` runs in; on request, mirror them as Jira issues.'
+model: sonnet
 disable-model-invocation: true
 allowed-tools:
     - Bash(gh auth status*)

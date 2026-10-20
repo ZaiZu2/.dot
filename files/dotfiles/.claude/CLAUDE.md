@@ -1,5 +1,10 @@
 # Personal CLAUDE settings
 
+## Work repo
+
+Work-specific Claude Code rules are in @/Users/AB0383Q/dev/ssh_tools/ai/CLAUDE.md . Ignore them if the file does not
+exist.
+
 ## General
 
 - Commit only through the `commit` skill, never with a hand-written `git commit`, so every commit follows its
@@ -36,8 +41,8 @@ A skill's `description` starts with its mode:
   on a stop condition the skill names, with a one-line reason. A denied command still means stop and ask (see
   [General](#general)).
 - **`[hitl]`**: work on your own, and ask me only where my input is actually needed: a decision you can't settle from
-  the code or the request, and the confirmation the skill requires before writing to a shared system (Jira,
-  Confluence). Don't check in between.
+  the code or the request, and the confirmation the skill requires before writing to a shared system (Jira, Confluence).
+  Don't check in between.
 
 Never reproduce a user-invoked skill's side effects by hand; tell me to run `/<name>` instead.
 
@@ -66,21 +71,16 @@ Below rules define when each listed MCP should be used.
 
 ### Context7
 
-Up-to-date Code Docs - Context7 MCP pulls up-to-date, version-specific documentation and code examples straight from the
-source — and places them directly into your prompt.
-
 Always use context7 when answering questions about API, interfaces or internal workings of a given library. This means
 you should automatically use the Context7 MCP tools to resolve library id and get library docs without me having to
 explicitly ask.
 
 ### Atlassian
 
-Jira and Confluence access - Atlassian MCP reads and writes Jira issues and Confluence pages on `absa.atlassian.net`.
-
 Use it to read whenever a request refers to a Jira issue (a key such as `FAPE-1319`) or a Confluence page, without me
 having to explicitly ask. Never create, update, comment on or transition anything with it directly: writes go through
-the `ticket` and `confluence` skills, which are user-invoked, so tell me to run `/ticket` or `/confluence` instead.
-The only exception is a `/scope` run, which creates and updates the Jira issues I approved at its `Confirm` step.
+the `ticket` and `confluence` skills, which are user-invoked, so tell me to run `/ticket` or `/confluence` instead. The
+only exception is a `/scope` run, which creates and updates the Jira issues I approved at its `Confirm` step.
 
 Never work on another site, even if the account can reach one. If no `atlassian` tools are available, tell me to run
 `dot claude mcp`, then `/mcp` to sign in.

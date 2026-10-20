@@ -75,8 +75,8 @@ unfinished phase.
 **Progress**, from the commits of `<base>..HEAD`, read as in [Commits](#commits):
 
 - A part is done when a commit has its `Part: <id>` trailer.
-- The review is done when a commit subject ends with `: address review`, or a PR exists.
 - A PR exists when `gh pr view --json url,state` succeeds. If it is closed or merged, stop that block and report.
+- The review is done when a commit subject matches `fix: PR#<no> review`.
 - The branch is pushed when `git status -sb` shows an upstream and nothing ahead of it.
 
 **Leftovers.** If `git status --porcelain` isn't empty, the interrupted run left partial work. Reconcile it before
@@ -94,9 +94,10 @@ implementing anything:
 **Continue** each block at its first unfinished phase:
 
 - A part isn't done: step 3, from that part.
-- All parts are done, the review isn't: the test suite run at the end of step 3, then step 4.
-- The review is done, but the branch isn't pushed or has no PR: step 6.
-- A PR exists: only the cross-linking at the end of step 6 is left.
+- All parts are done, there is no PR: the test suite run at the end of step 3, then step 4.
+- A PR exists, the review isn't done: step 5.
+- The review is done, but the fixes aren't pushed: step 6.
+- The fixes are pushed: only the cross-linking at the end of step 4 is left.
 
 ### 3. Implement
 
@@ -110,7 +111,7 @@ any repository, is committed. Hand out the ready parts:
   in one message, each told to read `~/.claude/skills/implement/SKILL.md` and follow it for that part's file in its
   worktree. Two parts of the same worktree run together only when their files don't overlap; otherwise the later one
   waits. Delegate a single part too when it is so large that reading its files would crowd out the context needed for
-  step 5.
+  step 6.
 
 For a part with leftovers from step 2, add the list made there to the request: the work already in the tree, which
 requirements are still open to finish, and which changes to correct; keep the rest instead of redoing it.
@@ -127,12 +128,18 @@ neither the test nor the code it covers. With `none`, the parts' verification st
 review runs the linters and static checks, but not the tests. The block then goes on to step 4 while others may still
 be implementing.
 
-### 4. Review
+### 4. Open the PRs
+
+For each block, in merge order: `git push -u origin <branch>` from its worktree, then call the Skill tool with `pr`,
+naming the worktree path, `<base>`, and the URLs of the PRs already open for the spec's other blocks, as related. Wait
+for its result. Once every block has its PR, call `pr` again for each earlier one, so that every PR names the others.
+
+### 5. Review
 
 For each block, call the Skill tool with `review`, naming the commit range `<base>..HEAD`, the worktree path to run in,
 and nothing else: the reviewer must judge the change without this run's reasoning. Wait for its result.
 
-### 5. Respond
+### 6. Respond
 
 Check every finding against the code, then fix it or contest it. Fix any finding that is right, whatever its
 severity. Contest one that is unreasonable:
@@ -147,17 +154,11 @@ it is wrong, and a check this branch broke is always fixed.
 
 Then run the block's final local checks: its test suite, and the repository's linters, static checks and format checks
 (the ones the review ran, or those its Makefile, `pyproject.toml` or CI workflow define). Fix what the branch broke;
-failures in the baseline or in files the branch doesn't touch are the base's, so leave them. Commit the fixes. Don't
-request a second review.
+failures in the baseline or in files the branch doesn't touch are the base's, so leave them. Commit the fixes with the
+PR number from step 4 (see [Commits](#commits)), then `git push` from the worktree. Don't request a second review.
 
-### 6. Open the PRs
-
-For each block, in merge order: `git push -u origin <branch>` from its worktree, then call the Skill tool with `pr`,
-naming the worktree path, `<base>`, and the URLs of the PRs already open for the spec's other blocks, as related. Wait
-for its result. Once every block has its PR, call `pr` again for each earlier one, so that every PR names the others.
-
-The local checks of step 5 are the run's last verification. Don't watch, read or rerun CI after pushing; the run ends
-once every PR is open and linked.
+The push of this step is the run's last verification. Don't watch, read or rerun CI after it; the run ends once every
+block's fixes are pushed.
 
 ## Rules
 
@@ -180,10 +181,10 @@ Commits format leaves the subject to the change, so a resumed run reads its prog
 (`git log --format='%(trailers:key=Part,valueonly)' <range>`) and the subjects (`git log --format=%s <range>`):
 
 - every commit: say that it may bypass hooks, so a lint or format complaint doesn't stop the run. `commit` bypasses
-  only those, after trying to fix them; step 5's final checks still run the linters;
+  only those, after trying to fix them; step 6's final checks still run the linters;
 - a part: `Part: <id>`, and `Refs: <KEY>` when the part has a Jira key;
 - review fixes: `Refs: <KEY>` with the key of the `Parts` section's `Jira` line, when it has one, and the subject
-  `<type>(<scope>): address review`, which the request gives verbatim.
+  `fix: PR#<no> review`, with `<no>` the number of the PR opened in step 4.
 
 ### Working directory
 
