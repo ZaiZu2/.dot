@@ -7,6 +7,16 @@
         "context7": {
             "type": "http",
             "url": "https://mcp.context7.com/mcp"
+        },
+        "azure-devops": {
+            "type": "stdio",
+            "command": "${HOME}/.local/share/azure-devops-mcp/node_modules/.bin/mcp-server-azuredevops",
+            "args": [
+                "absarails",
+                "-d",
+                "core",
+                "repositories"
+            ]
         }
     }
 }

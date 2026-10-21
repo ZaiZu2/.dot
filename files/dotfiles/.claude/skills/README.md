@@ -15,7 +15,7 @@ the conventions.
 | `/note`       | Zettelkasten note from the conversation                            | `[auto]` | user       | `zk`                   |
 | `/remember`   | Knowledge as an OKF concept in one of my context bundles           | `[hitl]` | model      | -                      |
 | `/commit`     | Commit staged or named changes with a Conventional Commits message | `[auto]` | model      | `git`                  |
-| `/pr`         | Create or update the GitHub PR for the current branch              | `[auto]` | model      | `gh`                   |
+| `/pr`         | Create or update the GitHub or Azure DevOps PR for the branch      | `[auto]` | model      | `gh`, `azure-devops`   |
 | `/review`     | Review a PR, commits or changes                                    | `[auto]` | model      | `gh`                   |
 | `/test`       | Unit tests for files, code objects or changes                      | `[auto]` | model      | -                      |
 | `/implement`  | Implement a ticket, spec or described change                       | `[auto]` | model      | `atlassian` MCP server |

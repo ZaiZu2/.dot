@@ -62,6 +62,8 @@ Write the concept, `index.md` and `log.md` in one change. A new file in the pers
 
 ## Conventions
 
+- Record what still holds: lasting behaviour, gotchas and constraints a later session must respect. Never the story of
+  an issue that was found and fixed, which the fix makes worthless; when a bug teaches such a fact, record the fact.
 - One fact per concept file, named `<kebab-case-slug>.md`, with `type` one of `user`, `feedback`, `project`,
   `reference`, and `title`, `description`, `tags`, `status`, `generated` and `sources` always set.
 - `description` is a verbless phrase naming what the concept covers (e.g. "The `dot` CLI: deployment of my dotfiles
