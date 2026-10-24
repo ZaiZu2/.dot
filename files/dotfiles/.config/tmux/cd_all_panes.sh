@@ -9,19 +9,21 @@
 popup_target() {
   local out zdot
   out=$(mktemp) && zdot=$(mktemp -d) || return 1
-  # Throwaway ZDOTDIR with no .zshenv and a minimal .zshrc, so none of the real startup files run. PATH comes
-  # from the tmux server environment.
+  # Throwaway ZDOTDIR with no .zshenv and a minimal .zshrc, so of the real startup files only ~/.zshrc_aliases
+  # runs. compinit provides the compdef it calls. PATH comes from the tmux server environment. fzf-tab is sourced
+  # from zinit's clone, after fzf, so it owns Tab as in the regular shell.
   cat >"$zdot/.zshrc" <<'EOF'
 bindkey -v
 PROMPT='%F{yellow}%~%f: '
+autoload -Uz compinit && compinit -C
 (( $+commands[fzf] )) && eval "$(fzf --zsh)" && bindkey '^E' fzf-cd-widget
-if (( $+commands[zoxide] )); then
-  eval "$(zoxide init zsh)"
-  _cdap_zi() { local d=$(zoxide query --interactive) && [[ -n $d ]] && { BUFFER="cd ${(q)d}"; zle accept-line } }
-  zle -N _cdap_zi
-  bindkey '^G' _cdap_zi
-fi
-alias ...='cd ../..' ....='cd ../../..' .....='cd ../../../..'
+(( $+commands[zoxide] )) && eval "$(zoxide init zsh)"
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
+zstyle ':completion:*' menu no
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
+fzf_tab=${XDG_DATA_HOME:-$HOME/.local/share}/zinit/plugins/Aloxaf---fzf-tab/fzf-tab.plugin.zsh
+[[ -r $fzf_tab ]] && source $fzf_tab
+source "$HOME/.zshrc_aliases"
 zshexit() { print -r -- $PWD >| $CD_ALL_PANES_OUT }
 q() { CD_ALL_PANES_OUT=/dev/null; exit }
 EOF
@@ -42,8 +44,17 @@ fi
 
 [ -d "$target" ] || exit 1
 
+panes=()
 while read -r pane cmd; do
   case "$cmd" in
-    zsh | bash | sh | fish) tmux send-keys -t "$pane" "cd -- $(printf '%q' "$target") && clear" Enter ;;
+    zsh | bash | sh | fish) panes+=("$pane") ;;
   esac
 done < <(tmux list-panes -F '#{pane_id} #{pane_current_command}')
+
+# C-c first discards whatever is typed at the prompt, in any shell and vi mode, so the cd is not appended to it.
+# The shell flushes pending input on the interrupt, so the cd is sent only after it has settled.
+for pane in "${panes[@]}"; do tmux send-keys -t "$pane" C-c; done
+sleep 0.1
+for pane in "${panes[@]}"; do
+  tmux send-keys -t "$pane" "cd -- $(printf '%q' "$target") && clear" Enter
+done
