@@ -14,6 +14,11 @@
 # session at a time only. DOT_CLAUDE_QA=1 in its environment tells
 # ~/.claude/statusline.sh to start no prompt cache reminders for it; it
 # identifies the Q&A Claude across /clear, which changes its session id.
+#
+# Limitation: inside the popup, bindings that switch sessions (M-1..M-4, a
+# pick in the prefix C-c or prefix C-f picker) switch the nested client, so
+# the target opens inside the popup and prefix C-q no longer closes it but
+# opens a second popup; prefix d closes it. Leave the popup before jumping.
 set -eu
 
 dir=$HOME/.local/share/claude-qa
