@@ -106,21 +106,25 @@ doesn't print that path, the directory wasn't added: ask again):
 
 ### 4. Confirm
 
-Show the full text of every part file with its path, which parts run at the same time and which wait for another,
-the `Parts` section that will be added to the spec, each repository with its base (saying where it came from: the
-request, the spec, or the default branch), test suite command, and the branch and worktree that will be created, and
-any split or sizing choice that was close.
+Write each part file as a draft to the scratchpad directory (a temporary directory if there is none), and show only a
+summary of each part: its id and draft path, one or two plain sentences on what it does (the change it makes and what
+that achieves), the files it touches and how it is verified. Never print the text
+of a part file or of the spec into the chat; the user reads the drafts if they want to. Show which parts run at the
+same time and which wait for another, the `Parts` section that will be added to the spec, each repository with its base
+(saying where it came from: the request, the spec, or the default branch), test suite command, and the branch and
+worktree that will be created, and any split or sizing choice that was close.
 
-With Jira, also show the issue tree with the parts each issue covers, the full text of every new issue, the current
-and the new text of every field an update changes, and the parent issue the spec file will be attached to.
+With Jira, also show the issue tree with the parts each issue covers, for each new issue its summary and type
+(an issue that carries a part file's text is covered by the draft), the current and the new text of every field an
+update changes, and the parent issue the spec file will be attached to.
 
-Wait for approval, and apply requested changes before continuing.
+Wait for approval, and apply requested changes to the drafts before continuing.
 
 ### 5. Write the parts
 
-Write each part file exactly as approved, in the layout of `${CLAUDE_SKILL_DIR}/../spec/brief.md` and under the name
-it gives. Cut the text from the spec's sections instead of rewording them: a part carries all that someone with no
-other context needs to implement it.
+Copy each approved draft to its final place beside the spec, under the name `${CLAUDE_SKILL_DIR}/../spec/brief.md` gives
+(the drafts already follow its layout). Cut the text from the spec's sections instead of rewording them: a part carries
+all that someone with no other context needs to implement it.
 
 ### 6. Write the issues
 
@@ -173,9 +177,9 @@ plan again from the current spec, and change only what the spec's change require
 - In step 3, a block's own branch and worktree may exist; step 9 leaves such a worktree as it is, and creates only
   those of new blocks. In each such checkout, read which parts are already built
   (`git log --format='%(trailers:key=Part,valueonly)' <base>..<branch>`).
-- In step 4, show each changed part file as a diff, the parts added and removed, and the changed lines of `Parts`. Name
-  every changed or removed part that is already built: `/feature` won't build it again, so the user decides what to do
-  with that work.
+- In step 4, list the changed part files by id with a one-line description of each change (the draft holds the full
+  text), the parts added and removed, and the changed lines of `Parts`. Name every changed or removed part that is
+  already built: `/feature` won't build it again, so the user decides what to do with that work.
 - In steps 5 and 7, rewrite only what was approved. Remove the file of a removed part with the user's approval.
 - With Jira, propose the matching issue updates in step 4 and write them in step 6. Never close or delete an issue;
   list the ones a removed part leaves without work.
