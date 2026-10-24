@@ -38,9 +38,9 @@ request, and `/feature` never reads Jira. `/feature` runs forked in the `commit-
 Every commit goes through `/commit`. `settings.json` allows `git commit -m *`, and the `PreToolUse` hook
 `~/.claude/hooks/commit-gate.sh` asks the user before every `git commit`, except in the `commit-agent` agent or what
 `CLAUDE_ALLOW_COMMIT` allows at launch. A forked skill commits unattended by setting `agent: commit-agent`; a skill's
-`allowed-tools` can't lift an `ask`. See the personal concept `claude-allow-commit.md`. A project defines its commit
-scopes with a `Commit scopes` list in its `AGENTS.md` or `CLAUDE.md` (or commitlint's `scope-enum`); without one, scopes
-are free-form.
+`allowed-tools` can't lift an `ask`. See the personal concept `caller-scoped-permission-gate.md`. A project defines its
+commit scopes with a `Commit scopes` list in its `AGENTS.md` or `CLAUDE.md` (or commitlint's `scope-enum`); without one,
+scopes are free-form.
 
 See [Invocation and Mode](#invocation-and-mode) for the `Mode` and `Invoked by` columns.
 

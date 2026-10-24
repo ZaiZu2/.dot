@@ -1,5 +1,11 @@
 # Directory Update Log
 
+## 2026-10-24
+
+- Updated [Caller-scoped permission gates](caller-scoped-permission-gate.md), formerly `claude-allow-commit.md`: now a
+  note on the design for gating any sensitive action, with the commit gate as its example; the file is renamed to
+  match.
+
 ## 2026-10-19
 
 - Updated [Dotfiles managed by the dot repo](dotfiles-managed-by-dot-repo.md): the rules for writing concepts moved

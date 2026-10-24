@@ -86,7 +86,7 @@ written into the repo by the `remember` skill and surfaced with `dot link`[^reme
 
 - Every commit goes through the `commit` skill and asks me first; only the `commit-agent` agent (forked skills such as
   `/feature`) and sessions launched with `CLAUDE_ALLOW_COMMIT` commit unasked. See
-  [Commit gate and CLAUDE_ALLOW_COMMIT](claude-allow-commit.md)[^global-claude-md].
+  [Caller-scoped permission gates](caller-scoped-permission-gate.md)[^global-claude-md].
 
 [^dot-agents-md]: `~/.dot/AGENTS.md`
 

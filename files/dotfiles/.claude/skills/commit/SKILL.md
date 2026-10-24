@@ -60,8 +60,8 @@ that guards the branch.
 ## Rules
 
 - Never `--allow-empty`.
-- `--no-verify` when the request asks to skip the hooks: add it as the last argument of the first attempt, whatever
-  the hooks check. Otherwise only as step 4 says.
+- `--no-verify` when the request asks to skip the hooks: add it as the last argument of the first attempt, whatever the
+  hooks check. Otherwise only as step 4 says.
 - `--amend` only when the request asks for it and no remote branch holds `HEAD` (`git branch -r --contains HEAD` prints
   nothing). Keep the message with `--no-edit` unless the request changes it, and keep its trailers when it does. If
   `HEAD` is pushed, make a new commit instead and say so.
@@ -81,9 +81,9 @@ Refs: <KEY>
 - **Scope**: optional; leave out the parentheses with it.
 - **`!`**: only for a breaking change, which also gets a `BREAKING CHANGE: <what breaks>` trailer after the body.
 - **Summary**: imperative, lowercase, no period; the whole subject at most 72 characters.
-- **Body**: omit it when the subject plus diff already says why; add it only when the why is non-obvious. When
-  present, at most 2 short `-` bullets, each a terse verbless phrase (not a sentence), wrapped at 72 characters. Never
-  restate the diff or repeat the subject.
+- **Body**: omit it when the subject plus diff already says why; add it only when the why is non-obvious. When present,
+  at most 2 short `-` bullets, each a terse verbless phrase (not a sentence), wrapped at 72 characters. Never restate
+  the diff or repeat the subject.
 - **Trailers**: `Part: <id>` when named, then one `Refs: <KEY>` per ticket, together as the last paragraph. Ticket keys
   never go in the subject.
 
