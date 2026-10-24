@@ -13,7 +13,7 @@
 # holds $QUEUE_DIR.lock presents them, the others only add to the directory. A
 # reminder that cannot be shown yet (a picker is open, no client is attached)
 # is retried until its cache has expired; one whose session has been prompted
-# again in the meantime, or is gone (the picker prunes its cache file), is
+# again in the meantime, or is gone (the picker prunes its expiry file), is
 # dropped.
 #
 # The pane of a session comes from claude_sessions.sh. A session running in
@@ -30,9 +30,13 @@ set -eu
 
 . "${0%/*}/claude_sessions.sh"
 
-CACHE_DIR=$CLAUDE_CACHE_DIR
+# Shared state dir of the Claude scripts; holds expiry/ (read here, written
+# by statusline.sh) and the queue.
+CACHE_DIR=$CLAUDE_STATE_DIR
 QUEUE_DIR="$CACHE_DIR/queue"
-LOCK="$QUEUE_DIR.lock"
+# Lock directory next to, not inside, queue/, so the reminder files are the
+# only entries of $QUEUE_DIR.
+LOCK="$CACHE_DIR/queue.lock"
 RETRY=5
 POPUP_W=72
 MAX_ROWS=12
@@ -47,8 +51,8 @@ pending() {
     _id=${_f##*/}
     _exp=$(cat "$_f" 2>/dev/null || true)
     _current=
-    if [ -r "$CACHE_DIR/$_id" ]; then
-      read -r _current _ <"$CACHE_DIR/$_id" || true
+    if [ -r "$CACHE_DIR/expiry/$_id" ]; then
+      read -r _current _ <"$CACHE_DIR/expiry/$_id" || true
     fi
     if [ -n "$_exp" ] && [ "$_exp" -gt "$_now" ] && [ "$_current" = "$_exp" ]; then
       printf '%s %s\n' "$_exp" "$_id"
@@ -229,9 +233,11 @@ present() {
   answer="$tmp/answer"
   rm -f "$answer" "$answer.ids"
   # A client that already shows a popup ignores the request without an error;
-  # only the answer file tells whether this one opened.
+  # only the answer file tells whether this one opened. The popup gets the
+  # tmux server's environment, not ours, so DOT_STATE_DIR is passed on to make
+  # it read the same state dir.
   tmux display-popup -c "$client" -E -w "$POPUP_W" -h $((rows + 7)) -T ' claude cache ' \
-    -e "CLAUDE_CACHE_DIR=$CACHE_DIR" "'$0' --popup '$answer' '$rows'" 2>/dev/null || true
+    -e "DOT_STATE_DIR=$DOT_STATE_DIR" "'$0' --popup '$answer' '$rows'" 2>/dev/null || true
   [ -s "$answer" ] || return 1
 
   read -r action jump_to <"$answer" || true
