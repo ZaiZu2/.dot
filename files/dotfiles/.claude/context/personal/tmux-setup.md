@@ -6,7 +6,7 @@ description: >-
     through `claude agents --json` and per-session state files, and where to look for the details.
 tags: [tmux, dotfiles, workflow, claude-code]
 status: stable
-generated: { by: claude-code/claude-opus-5-5, at: 2026-10-24T12:13:44Z }
+generated: { by: claude-code/claude-opus-5-5, at: 2026-10-24T12:18:07Z }
 sources:
     - id: tmux-dir
       resource: ~/.dot/files/dotfiles/.config/tmux/
@@ -62,12 +62,17 @@ subfolder per kind of state and named after the session id, carry what the sessi
 | prompt cache expiry            | `expiry/<session_id>`               | `statusline.sh`          | Claude picker (cache column), reminder |
 | reminder sent for an expiry    | `notified/<session_id>`             | `statusline.sh`          | `statusline.sh`                        |
 | pending cache-expiry reminders | `queue/<session_id>`, `queue.lock/` | `claude_cache_notify.sh` | its own popup                          |
+| pins, one file per slot        | `pins/<n>` (n = 1..4)               | `claude_pins.sh`         | `claude_pins.sh`, Claude picker        |
 
 The Claude picker prunes `expiry/` and `notified/` files of sessions that are gone, and nothing else.
 
 The status line is the source of truth for the prompt cache: Claude Code passes it the session id, cache TTL and
 expiry on stdin, and a refresh interval in `settings.json` keeps it running while a session is idle. It shows the time
 left and starts the reminder shortly before a cache expires[^claude-dir].
+
+Pins put up to four Claudes on global keys: `claude_pins.sh` pins a session by its id (a `?` pane by its pane id and
+the tmux server's start time) and resolves the pin through `claude_sessions.sh` on every jump, so a pin follows its
+session to whichever pane shows it and is never served from a cached pane[^tmux-dir].
 
 Decisions that the code alone does not explain:
 
