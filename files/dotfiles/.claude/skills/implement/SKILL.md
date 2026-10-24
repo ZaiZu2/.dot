@@ -54,7 +54,8 @@ Call the Skill tool with `doc`, naming the files you changed. If the Skill tool 
 ## Rules
 
 - Change only what the brief covers. If it turns out to need a change outside its scope, or the brief contradicts the
-  code, report that instead of widening the work.
+  code, report that instead of widening the work. A bug your change causes or triggers is in scope wherever it lies:
+  fix it when the fix is small, and report it either way.
 - Where the brief and the project's conventions differ on style, the project wins.
 - Write tests only when the brief asks for them, following `${CLAUDE_SKILL_DIR}/../test/SKILL.md`.
 - Never weaken a check or a test to make the verification pass.

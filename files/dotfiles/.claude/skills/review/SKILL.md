@@ -48,6 +48,8 @@ takes paths.
 Work out what the change is trying to achieve, then read every changed file and enough surrounding code to judge it.
 
 - Read surrounding code before flagging something; it may be intentional.
+- Follow the change past the diff, to the callers, bindings and scripts its behavior reaches. A bug it causes or
+  triggers there is its finding, rated as if it were in the diff.
 - If a finding depends on how a called function behaves (raises, returns `None`), read that function first.
 - Before judging documentation, read `${CLAUDE_SKILL_DIR}/../doc/SKILL.md` and `${CLAUDE_SKILL_DIR}/../mkdoc/SKILL.md`.
   They are the standard for docstrings, comments and markdown docs, not a task: write nothing. What they tell the
