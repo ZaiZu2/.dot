@@ -101,8 +101,10 @@ if [ -n "$cache_exp" ]; then
     mkdir -p "$state_dir/expiry" "$state_dir/notified"
     printf '%s %s\n' "$cache_exp" "$cache_ttl" >"$state_dir/expiry/$session_id"
     # Remind once per expiry, and only for the 1h cache: a 5m one runs out during every short break. Detached, since
-    # Claude Code cancels a status line run that is still in flight at the next update.
-    if [ "$cache_ttl" = 1h ] && [ "$secs" -gt 0 ] && [ "$secs" -le "${CLAUDE_CACHE_LEAD:-300}" ] &&
+    # Claude Code cancels a status line run that is still in flight at the next update. The Q&A popup's Claude
+    # (~/.config/tmux/claude_qa.sh, which sets DOT_CLAUDE_QA) gets no reminders.
+    if [ -z "${DOT_CLAUDE_QA:-}" ] &&
+      [ "$cache_ttl" = 1h ] && [ "$secs" -gt 0 ] && [ "$secs" -le "${CLAUDE_CACHE_LEAD:-300}" ] &&
       [ "$(cat "$state_dir/notified/$session_id" 2>/dev/null)" != "$cache_exp" ]; then
       printf '%s\n' "$cache_exp" >"$state_dir/notified/$session_id"
       nohup "${XDG_CONFIG_HOME:-$HOME/.config}/tmux/claude_cache_notify.sh" "$session_id" "$cache_exp" \
