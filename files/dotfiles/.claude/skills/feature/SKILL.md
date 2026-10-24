@@ -82,8 +82,11 @@ unfinished phase.
 - The review is done when a commit subject matches `fix: PR#<no> review`.
 - The branch is pushed when `git status -sb` shows an upstream and nothing ahead of it.
 
-**Leftovers.** If `git status --porcelain` isn't empty, ignoring the review report `.claude/features/<feature>/review.md`, the
-interrupted run left partial work. Reconcile it before implementing anything:
+**Decisions.** A `decisions.md` item without a `Decision: <answer>` line is open. Write each answer the request gives
+under its item; a block with items still open stops and reports them again.
+
+**Leftovers.** If `git status --porcelain` isn't empty, ignoring `review.md` and `decisions.md` in
+`.claude/features/<feature>/`, the interrupted run left partial work. Reconcile it before implementing anything:
 
 1. Read `git diff`, `git diff --cached` and every untracked file in full.
 2. Map each hunk and file to the requirement of an unfinished part of this block that it implements; usually that
@@ -100,6 +103,7 @@ interrupted run left partial work. Reconcile it before implementing anything:
 - All parts are done, there is no PR: the test suite run at the end of step 3, then step 4.
 - A PR exists, the review isn't done: step 5.
 - The review is done, but the fixes aren't pushed: step 6.
+- The fixes are pushed, and a decision was answered but not yet applied: step 6, fixing as decided.
 - The fixes are pushed: only the cross-linking at the end of step 4 is left.
 
 ### 3. Implement
@@ -121,7 +125,9 @@ requirements are still open to finish, and which changes to correct; keep the re
 
 When a part finishes, read its diff in its worktree, run its verification yourself (checks marked `(manual)` go
 to the report instead), and commit only its files as in [Commits](#commits). If the part asks for tests and
-none were written, call the Skill tool with `test` first, naming the changed files and the worktree path. Then hand out
+none were written, call the Skill tool with `test` first, naming the changed files and the worktree path. What
+`implement` reports as needing a change outside its brief, or as an open issue, is a finding: handle it as step 6
+says, a fix going into the part's commit. Then hand out
 the parts it made ready, without waiting for the others still running.
 
 When a block's last part is committed, run its test suite command and fix what its branch broke: a failing test that
@@ -145,16 +151,33 @@ without this run's reasoning. Wait for its result.
 
 ### 6. Respond
 
-Check every finding against the code, then fix it or contest it. Fix any finding that is right, whatever its
-severity. Contest one that is unreasonable:
+Check every finding against the code, then fix it, contest it or put it to the user. Never contest or leave a
+legitimate finding because it lies outside the spec, the parts or the files they list: the brief limits what the run
+adds, not which bugs it fixes. A known bug left in place for that reason is a failed run.
+
+Fix any finding that is right, whatever its severity and wherever its fix lands:
+
+- a bug or regression the branch causes or triggers, also in code the branch doesn't touch;
+- a pre-existing bug found along the way, when its fix stays small (no heavy changes outside the parts);
+- a spec that is wrong (a command that fails, a wrong assumption about the code): fix the code, and report where it
+  departs from the spec.
+
+Contest a finding only when:
 
 - the code, a test or the spec shows it is wrong;
-- its fix would add what the parts don't ask for: an abstraction, defensive code or tests for cases that can't happen,
-  or a change outside the brief;
+- its fix would add what the parts don't ask for: an abstraction, a feature, a refactor, defensive code or tests for
+  cases that can't happen. Fixing a bug is never such an addition;
 - it asks for a style the project's own code doesn't follow.
 
 A contested finding needs evidence (`path:line`, a test, the spec), not a preference. A `[MUST]` is contested only when
-it is wrong, and a check this branch broke is always fixed.
+it is wrong, and a check this branch broke is always fixed. A risk the spec explicitly accepts is the user's call: leave
+it, and report it as accepted, not contested.
+
+Put a finding to the user when it is right but its fix needs their input: it has several reasonable designs, changes
+behavior they rely on, or needs heavy changes outside the parts. Gather every such finding of the block, also those
+from step 3, and analyze each in `<worktree>/.claude/features/<feature>/decisions.md`: what breaks and when
+(`path:line`), the options with their cost, and the one you recommend. Don't pick for the user. Finish the rest of this
+step, then end the block there: it isn't done until the user decides.
 
 Then run the block's final local checks: its test suite, and the repository's linters, static checks and format checks
 (the ones the review ran, or those its Makefile, `pyproject.toml` or CI workflow define). Fix what the branch broke;
@@ -218,7 +241,9 @@ Never ask. Where a question comes up, take the default and list it in the report
 - Two ready parts whose files turn out to overlap: run them one after the other, in the order of `Parts`.
 - A check that already fails on the base branch: leave it, report it, continue. Never disable, skip or loosen a check
   to get it green.
-- A review finding that can be read two ways: contest it, and say which reading you rejected and why.
+- A review finding that can be read two ways: if one reading makes it a bug, treat it as one; otherwise contest it,
+  and say which reading you rejected and why.
+- A fix that needs the user's input: gather it into `decisions.md` (step 6) instead of choosing.
 - A rejected push, or a pull that fails: stop that block and report the state. Never force.
 - A denied command: stop and report it, as the global rules require.
 
@@ -227,8 +252,10 @@ Never ask. Where a question comes up, take the default and list it in the report
 For each block: the repository, the PR URL and its base, the worktree path with the `gwr <name>` that removes it, each
 part with its file, its Jira URL when it has one, status and commit, the result of the final local checks (tests,
 linters, static and format checks) with the base's failures left alone, the path of its review report (left uncommitted
-in the worktree), and every review finding marked fixed (with the commit) or contested (with the reason). When a block was resumed, say from which phase, and how the leftovers were
-handled: the part each was mapped to, and any stash.
+in the worktree), and every review finding marked fixed (with the commit, and the files outside the parts it touched),
+contested (with the reason), accepted by the spec, or waiting for the user. A block waiting for the user comes first in
+the report, with the path of its `decisions.md` and each decision in short. When a block was resumed, say from which
+phase, and how the leftovers were handled: the part each was mapped to, and any stash.
 
 Then say how the parts were handed out: which ran in this run, which in subagents, and which ran at the same time. End
 with the assumptions made, every commit that bypassed a hook with what the hook reported, any ordering risk, the PRs
