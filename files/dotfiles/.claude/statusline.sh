@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Claude Code status line: "dir on branch (#PR)" on the left, "model (cache time left/context size)" on the right edge.
 #
-# It also keeps the cache expiry of its session in $TMPDIR/claude-cache/<session_id>, for the Claude picker
+# It also keeps the cache expiry of its session in $DOT_STATE_DIR/claude/expiry/<session_id>, for the Claude picker
 # (~/.config/tmux/find_claude.sh), and starts ~/.config/tmux/claude_cache_notify.sh once when a 1h cache is about to
 # expire. Keyed by session, not by tmux pane: a session moved to the background runs in a daemon worker without
 # $TMUX_PANE. settings.json sets statusLine.refreshInterval, so both keep moving while the session is idle.
@@ -82,7 +82,8 @@ fi
 
 # Time until the prompt cache goes cold; from then on the next prompt pays for the whole context again.
 cache="" cache_c=""
-cache_dir="${TMPDIR:-/tmp}/claude-cache"
+# Same path as CLAUDE_STATE_DIR in ~/.config/tmux/claude_sessions.sh, which this script does not source.
+state_dir="${DOT_STATE_DIR:-${TMPDIR:-/tmp}/dot-state}/claude"
 if [ -n "$cache_exp" ]; then
   secs=$(( cache_exp - $(date +%s) ))
   if [ "$secs" -le 0 ]; then
@@ -97,13 +98,13 @@ if [ -n "$cache_exp" ]; then
   fi
 
   if [ -n "$session_id" ]; then
-    mkdir -p "$cache_dir/notified"
-    printf '%s %s\n' "$cache_exp" "$cache_ttl" >"$cache_dir/$session_id"
+    mkdir -p "$state_dir/expiry" "$state_dir/notified"
+    printf '%s %s\n' "$cache_exp" "$cache_ttl" >"$state_dir/expiry/$session_id"
     # Remind once per expiry, and only for the 1h cache: a 5m one runs out during every short break. Detached, since
     # Claude Code cancels a status line run that is still in flight at the next update.
     if [ "$cache_ttl" = 1h ] && [ "$secs" -gt 0 ] && [ "$secs" -le "${CLAUDE_CACHE_LEAD:-300}" ] &&
-      [ "$(cat "$cache_dir/notified/$session_id" 2>/dev/null)" != "$cache_exp" ]; then
-      printf '%s\n' "$cache_exp" >"$cache_dir/notified/$session_id"
+      [ "$(cat "$state_dir/notified/$session_id" 2>/dev/null)" != "$cache_exp" ]; then
+      printf '%s\n' "$cache_exp" >"$state_dir/notified/$session_id"
       nohup "${XDG_CONFIG_HOME:-$HOME/.config}/tmux/claude_cache_notify.sh" "$session_id" "$cache_exp" \
         </dev/null >/dev/null 2>&1 &
     fi

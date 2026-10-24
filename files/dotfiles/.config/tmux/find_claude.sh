@@ -13,8 +13,9 @@
 # The dot is the session's status: yellow = waiting on the user, red =
 # working, green = idle; a grey "?" when no session is known for the pane.
 # The cache column comes from the expiry ~/.claude/statusline.sh keeps per
-# session: minutes until the cache goes cold, "cold" after that, "-" if
-# unknown.
+# session in $CLAUDE_STATE_DIR/expiry/: minutes until the cache goes cold,
+# "cold" after that, "-" if unknown. Opening the picker prunes the expiry/
+# and notified/ files of sessions that are gone.
 # The popup is sized from its content (see picker_size): the list as wide as
 # its columns, the preview as wide as the widest pane it can show, capped at
 # 90% of the client. `--dry-run` prints the computed widths and opens nothing;
@@ -83,11 +84,11 @@ while IFS="$CLAUDE_SEP" read -r state pane session short sess title abs expires;
   printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$group$state" "$key" "$sess" "$project" "$title" "$cache" >>"$raw"
 done <"$rows"
 
-# Drop the cache files of sessions that are gone. Skipped when `claude agents`
+# Drop the expiry and reminder files of sessions that are gone. Skipped when `claude agents`
 # failed: every session would look gone. A dry run deletes nothing.
 if [ -n "$pruning" ] && [ -z "$dry_run" ]; then
   live=" $(cut -d "$CLAUDE_SEP" -f3 "$rows" | tr '\n' ' ') "
-  for f in "$CLAUDE_CACHE_DIR"/* "$CLAUDE_CACHE_DIR"/notified/*; do
+  for f in "$CLAUDE_STATE_DIR"/expiry/* "$CLAUDE_STATE_DIR"/notified/*; do
     [ -f "$f" ] || continue
     case "$live" in
     *" ${f##*/} "*) ;;

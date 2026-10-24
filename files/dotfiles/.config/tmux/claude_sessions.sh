@@ -17,7 +17,8 @@
 #            session name
 #   cwd      absolute working directory
 #   expires  prompt cache expiry in epoch seconds, from the file
-#            ~/.claude/statusline.sh keeps per session; empty if unknown
+#            ~/.claude/statusline.sh keeps per session in
+#            $CLAUDE_STATE_DIR/expiry/; empty if unknown
 #
 # A session is tied to the pane whose shell is an ancestor of its pid: plain
 # `claude` sessions. A session moved to the background (← or /background)
@@ -27,8 +28,14 @@
 # session whose name and cwd match its title and cwd, if no other pane or
 # session matches too. Otherwise both are listed apart: the session without a
 # pane, the pane without a session.
+#
+# All state of the Claude scripts lives under $CLAUDE_STATE_DIR
+# ($DOT_STATE_DIR/claude), one subfolder per kind: expiry/ and notified/
+# (~/.claude/statusline.sh, which repeats this default), queue/ and
+# queue.lock/ (claude_cache_notify.sh).
 
-CLAUDE_CACHE_DIR="${CLAUDE_CACHE_DIR:-${TMPDIR:-/tmp}/claude-cache}"
+DOT_STATE_DIR="${DOT_STATE_DIR:-${TMPDIR:-/tmp}/dot-state}"
+CLAUDE_STATE_DIR="$DOT_STATE_DIR/claude"
 CLAUDE_SEP=$(printf '\037')
 
 claude_sessions() {
@@ -49,7 +56,7 @@ claude_sessions() {
     >"$_cs_tmp/panes" 2>/dev/null || : >"$_cs_tmp/panes"
   ps -A -o pid=,ppid= >"$_cs_tmp/ps" 2>/dev/null || : >"$_cs_tmp/ps"
 
-  awk -F'\t' -v OFS="$CLAUDE_SEP" -v cache_dir="$CLAUDE_CACHE_DIR" '
+  awk -F'\t' -v OFS="$CLAUDE_SEP" -v expiry_dir="$CLAUDE_STATE_DIR/expiry" '
     BEGIN {
       # Longest "glyph + space" prefix: one character, or its bytes when awk
       # is not counting in UTF-8.
@@ -62,7 +69,7 @@ claude_sessions() {
     }
     function expiry(sid,   file, line, w) {
       if (sid == "") return ""
-      file = cache_dir "/" sid
+      file = expiry_dir "/" sid
       line = ""
       if ((getline line < file) > 0) { close(file); split(line, w, " "); return w[1] }
       return ""

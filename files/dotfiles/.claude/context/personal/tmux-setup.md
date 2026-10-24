@@ -6,7 +6,7 @@ description: >-
     through `claude agents --json` and per-session state files, and where to look for the details.
 tags: [tmux, dotfiles, workflow, claude-code]
 status: stable
-generated: { by: claude-code/claude-opus-5-5, at: 2026-10-12T15:56:25Z }
+generated: { by: claude-code/claude-opus-5-5, at: 2026-10-24T12:13:44Z }
 sources:
     - id: tmux-dir
       resource: ~/.dot/files/dotfiles/.config/tmux/
@@ -54,13 +54,16 @@ Nothing documented says which background session such a pane shows. The client s
 name, so a client pane whose title and cwd match exactly one background session, and no other pane, is merged into
 that session's row. Any ambiguity, or a release that changes the title, leaves the two listed apart.
 
-Per-session state files under `$TMPDIR/claude-cache/`, named after the session id, carry what the session list does
-not:
+Per-session state files under `$DOT_STATE_DIR/claude/` (`DOT_STATE_DIR` defaults to `$TMPDIR/dot-state`), one
+subfolder per kind of state and named after the session id, carry what the session list does not:
 
-| State                              | Written by                         | Read by                                 |
-| ---------------------------------- | ---------------------------------- | --------------------------------------- |
-| prompt cache expiry                | `statusline.sh`                    | Claude picker (cache column), reminder  |
-| pending cache-expiry reminders     | `claude_cache_notify.sh`           | its own popup                           |
+| State                          | Path under `claude/`                | Written by               | Read by                                |
+| ------------------------------ | ----------------------------------- | ------------------------ | -------------------------------------- |
+| prompt cache expiry            | `expiry/<session_id>`               | `statusline.sh`          | Claude picker (cache column), reminder |
+| reminder sent for an expiry    | `notified/<session_id>`             | `statusline.sh`          | `statusline.sh`                        |
+| pending cache-expiry reminders | `queue/<session_id>`, `queue.lock/` | `claude_cache_notify.sh` | its own popup                          |
+
+The Claude picker prunes `expiry/` and `notified/` files of sessions that are gone, and nothing else.
 
 The status line is the source of truth for the prompt cache: Claude Code passes it the session id, cache TTL and
 expiry on stdin, and a refresh interval in `settings.json` keeps it running while a session is idle. It shows the time
