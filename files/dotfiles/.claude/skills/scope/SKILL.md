@@ -26,8 +26,8 @@ the spec's content beyond its `Parts` section, and never implement or commit.
 
 ## Target
 
-A spec file written by `/spec`, `<repo root>/.claude/spec/<feature>/spec.md`: the path given, the `spec.md` of the
-feature directory given, or the only `spec.md` under `<repo root>/.claude/spec/*/`. Its parts go into the same
+A spec file written by `/spec`, `<repo root>/.claude/features/<feature>/spec.md`: the path given, the `spec.md` of the
+feature directory given, or the only `spec.md` under `<repo root>/.claude/features/*/`. Its parts go into the same
 directory, beside it.
 
 The spec's `Base repositories` section lists each repository with its base branch and test suite command. Without the

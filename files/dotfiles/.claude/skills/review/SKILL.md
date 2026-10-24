@@ -11,7 +11,7 @@ model: opus
 
 Review code changes and give specific, actionable feedback. This runs as a separate agent so the review isn't biased by
 the conversation that produced the change: judge it only by the diff, the surrounding code, commit messages and the PR
-description. Read-only: don't modify files.
+description. Don't modify the code; the only file it writes is the review report.
 
 ## Target
 
@@ -19,6 +19,10 @@ What the request names: a PR, commits or a commit range, or files or uncommitted
 stop and reply only that a PR, commits or changes must be specified.
 
 If the request names a directory, work there: `cd` into it first, as a command of its own.
+
+The report goes to the file path the request names. Without one, it goes to `.claude/review/<slug>.md` at the root of
+the repository being reviewed, where `<slug>` is `pr-<no>` for a PR, the short SHA of the range's last commit for
+commits, and `changes` for uncommitted changes.
 
 ## Actions
 
@@ -103,6 +107,11 @@ Section scope:
   the check, `[SHOULD]` otherwise. Name every required check that wasn't run, and why. Unlike the other sections,
   include this one whenever a check was skipped.
 
+### 5. Write the report file
+
+Write the complete review, the same markdown as the reply, to the report path from Target, creating its directory. An
+existing file there is replaced: the report describes the change as it is now.
+
 ## Language checks
 
 Python:
@@ -125,4 +134,4 @@ TypeScript / JavaScript:
 
 ## Report
 
-Your final message must be the complete review, not a summary of it.
+Your final message must be the complete review, not a summary of it. End it with the path of the report file.

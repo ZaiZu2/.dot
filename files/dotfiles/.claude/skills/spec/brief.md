@@ -11,8 +11,8 @@ alone for an implementer (the user, a fresh session or a subagent) who has no ot
   expected result, concrete enough to pass or fail without judgment. A check the user does by hand is marked
   `(manual)`; `feature` runs the other entries and leaves those to the user.
 
-A spec file is `.claude/spec/<feature>/spec.md`, and its part files sit beside it. A part file is
-`.claude/spec/<feature>/<no>_<name>.md`: `<feature>` is the name of the spec's directory, `<no>` a two-digit number
+A spec file is `.claude/features/<feature>/spec.md`, and its part files sit beside it. A part file is
+`.claude/features/<feature>/<no>_<name>.md`: `<feature>` is the name of the spec's directory, `<no>` a two-digit number
 counted across the whole spec in the order the parts can be built, `<name>` one or two kebab-case words. Its id is
 `<feature>/<no>`, and its title `# <no>: <what it covers>`. It names its repository in `Summary`, and the parts it comes
 after go under `Notes`.

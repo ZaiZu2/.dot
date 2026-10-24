@@ -30,6 +30,9 @@ The spec file the request names, by its absolute path: the spec and its part fil
 only read. The run covers every block of its `Parts` section, or only the repositories the request names. A run that
 stopped part-way is continued by starting it again the same way.
 
+`<feature>` is the name of the spec's directory (`.claude/features/<feature>/spec.md` gives `<feature>`). Each block's
+review report goes to `<worktree>/.claude/features/<feature>/review.md`.
+
 The `Parts` section, written by `/scope`, holds everything the run needs; use its values as written and don't work
 any of them out again. It has one block per repository, in the order the PRs merge. Each block gives `Checkout`
 (`<main>` below), `Base` (`<base>`), `Branch` (`<branch>`), `Worktree` (`<worktree>`), `Test suite` and `Parts`, each
@@ -79,8 +82,8 @@ unfinished phase.
 - The review is done when a commit subject matches `fix: PR#<no> review`.
 - The branch is pushed when `git status -sb` shows an upstream and nothing ahead of it.
 
-**Leftovers.** If `git status --porcelain` isn't empty, the interrupted run left partial work. Reconcile it before
-implementing anything:
+**Leftovers.** If `git status --porcelain` isn't empty, ignoring the review report `.claude/features/<feature>/review.md`, the
+interrupted run left partial work. Reconcile it before implementing anything:
 
 1. Read `git diff`, `git diff --cached` and every untracked file in full.
 2. Map each hunk and file to the requirement of an unfinished part of this block that it implements; usually that
@@ -137,7 +140,8 @@ for its result. Once every block has its PR, call `pr` again for each earlier on
 ### 5. Review
 
 For each block, call the Skill tool with `review`, naming the commit range `<base>..HEAD`, the worktree path to run in,
-and nothing else: the reviewer must judge the change without this run's reasoning. Wait for its result.
+and the report path `<worktree>/.claude/features/<feature>/review.md`, and nothing else: the reviewer must judge the change
+without this run's reasoning. Wait for its result.
 
 ### 6. Respond
 
@@ -222,8 +226,8 @@ Never ask. Where a question comes up, take the default and list it in the report
 
 For each block: the repository, the PR URL and its base, the worktree path with the `gwr <name>` that removes it, each
 part with its file, its Jira URL when it has one, status and commit, the result of the final local checks (tests,
-linters, static and format checks) with the base's failures left alone, and every review finding marked fixed (with the
-commit) or contested (with the reason). When a block was resumed, say from which phase, and how the leftovers were
+linters, static and format checks) with the base's failures left alone, the path of its review report (left uncommitted
+in the worktree), and every review finding marked fixed (with the commit) or contested (with the reason). When a block was resumed, say from which phase, and how the leftovers were
 handled: the part each was mapped to, and any stash.
 
 Then say how the parts were handed out: which ran in this run, which in subagents, and which ran at the same time. End

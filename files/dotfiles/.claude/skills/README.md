@@ -16,20 +16,21 @@ the conventions.
 | `/remember`   | Knowledge as an OKF concept in one of my context bundles           | `[hitl]` | model      | -                      |
 | `/commit`     | Commit staged or named changes with a Conventional Commits message | `[auto]` | model      | `git`                  |
 | `/pr`         | Create or update the GitHub or Azure DevOps PR for the branch      | `[auto]` | model      | `gh`, `azure-devops`   |
-| `/review`     | Review a PR, commits or changes                                    | `[auto]` | model      | `gh`                   |
+| `/review`     | Review a PR, commits or changes, with a markdown report            | `[auto]` | model      | `gh`                   |
 | `/test`       | Unit tests for files, code objects or changes                      | `[auto]` | model      | -                      |
 | `/implement`  | Implement a ticket, spec or described change                       | `[auto]` | model      | `atlassian` MCP server |
-| `/spec`       | Interview-driven feature spec in `.claude/spec/<slug>/spec.md`     | `[hitl]` | user       | -                      |
+| `/spec`       | Interview-driven feature spec in `.claude/features/<slug>/spec.md`     | `[hitl]` | user       | -                      |
 | `/scope`      | Split a spec into part files, optionally mirrored as Jira issues   | `[hitl]` | user       | `gh` (+ `atlassian`)   |
 | `/feature`    | Implement a scoped spec in each of its repositories, resumable     | `[auto]` | user       | `gh`                   |
 | `/ticket`     | Create, update, search, comment on and transition Jira issues      | `[hitl]` | user       | `atlassian` MCP server |
 | `/confluence` | Get, search, create and update Confluence pages                    | `[hitl]` | user       | `atlassian` MCP server |
 
 `/spec`, `/scope` and `/feature` run in sequence, each started by the user: `/spec` writes the spec into the feature's
-directory (`.claude/spec/<feature>/spec.md`), `/scope` splits it into part files beside it
-(`.claude/spec/<feature>/<no>_<name>.md`, each a standalone brief) and lists them in the spec's `Parts` section, then
+directory (`.claude/features/<feature>/spec.md`), `/scope` splits it into part files beside it
+(`.claude/features/<feature>/<no>_<name>.md`, each a standalone brief) and lists them in the spec's `Parts` section, then
 creates a worktree per repository; `/feature <spec>`, typed in a Claude session started in that worktree, implements it
-with one PR per repository, handing independent parts to `implement` subagents that run at the same time. The part files
+with one PR per repository, handing independent parts to `implement` subagents that run at the same time, and writes a
+review report per repository to `.claude/features/<feature>/review.md` in its worktree. The part files
 carry all the context between the three, so none of them needs Jira: `/scope` mirrors the parts as Jira issues only on
 request, and `/feature` never reads Jira. `/feature` runs forked in the `commit-agent` agent
 (`~/.claude/agents/commit-agent.md`).
