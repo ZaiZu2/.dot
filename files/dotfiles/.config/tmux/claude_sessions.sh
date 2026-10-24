@@ -1,6 +1,6 @@
 #!/bin/sh
-# Sourced by the Claude picker (find_claude.sh) and the cache reminder
-# (claude_cache_notify.sh): one table of every Claude, from `claude agents
+# Sourced by the Claude picker (find_claude.sh), the cache reminder
+# (claude_cache_notify.sh) and the pins (claude_pins.sh): one table of every Claude, from `claude agents
 # --json` (documented, lists every live session) tied to tmux panes where the
 # process tree allows.
 #
@@ -32,7 +32,7 @@
 # All state of the Claude scripts lives under $CLAUDE_STATE_DIR
 # ($DOT_STATE_DIR/claude), one subfolder per kind: expiry/ and notified/
 # (~/.claude/statusline.sh, which repeats this default), queue/ and
-# queue.lock/ (claude_cache_notify.sh).
+# queue.lock/ (claude_cache_notify.sh), pins/ (claude_pins.sh).
 
 DOT_STATE_DIR="${DOT_STATE_DIR:-${TMPDIR:-/tmp}/dot-state}"
 CLAUDE_STATE_DIR="$DOT_STATE_DIR/claude"

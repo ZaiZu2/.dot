@@ -6,7 +6,7 @@ description: >-
     through `claude agents --json` and per-session state files, and where to look for the details.
 tags: [tmux, dotfiles, workflow, claude-code]
 status: stable
-generated: { by: claude-code/claude-opus-5-5, at: 2026-10-24T12:18:07Z }
+generated: { by: claude-code/claude-opus-5-5, at: 2026-10-24T12:23:50Z }
 sources:
     - id: tmux-dir
       resource: ~/.dot/files/dotfiles/.config/tmux/
@@ -54,8 +54,8 @@ Nothing documented says which background session such a pane shows. The client s
 name, so a client pane whose title and cwd match exactly one background session, and no other pane, is merged into
 that session's row. Any ambiguity, or a release that changes the title, leaves the two listed apart.
 
-Per-session state files under `$DOT_STATE_DIR/claude/` (`DOT_STATE_DIR` defaults to `$TMPDIR/dot-state`), one
-subfolder per kind of state and named after the session id, carry what the session list does not:
+State files under `$DOT_STATE_DIR/claude/` (`DOT_STATE_DIR` defaults to `$TMPDIR/dot-state`), one subfolder per kind
+of state, carry what the session list does not; all but the pins are named after the session id:
 
 | State                          | Path under `claude/`                | Written by               | Read by                                |
 | ------------------------------ | ----------------------------------- | ------------------------ | -------------------------------------- |
@@ -76,7 +76,8 @@ session to whichever pane shows it and is never served from a cached pane[^tmux-
 
 Decisions that the code alone does not explain:
 
-- State is keyed by session, never by `$TMUX_PANE`: a background session's status line and hooks run without it.
+- Per-session state is keyed by session, never by `$TMUX_PANE`: a background session's status line and hooks run
+  without it. Only a pin of a `?` pane, which has no session, is keyed by its pane id.
 - Nothing reads Claude Code's undocumented internals (`~/.claude/sessions/`, the daemon roster), which could change in
   any release. The pane title is used only for the merge above, where a mismatch fails safe.
 - Reminders are only for the 1h cache; a 5m cache would remind after every short break.

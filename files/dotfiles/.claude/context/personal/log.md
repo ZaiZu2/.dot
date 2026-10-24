@@ -2,6 +2,10 @@
 
 ## 2026-10-24
 
+- Updated [My tmux setup](tmux-setup.md): the Claude state moved from `$TMPDIR/claude-cache/` to
+  `$DOT_STATE_DIR/claude/`, one subfolder per kind of state, and the Claude pins are added to the state table and the
+  Claude Code integration.
+
 - Updated [Caller-scoped permission gates](caller-scoped-permission-gate.md), formerly `claude-allow-commit.md`: now a
   note on the design for gating any sensitive action, with the commit gate as its example; the file is renamed to
   match.

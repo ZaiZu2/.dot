@@ -10,7 +10,7 @@
 #
 # Reminders are kept in $QUEUE_DIR, one file per session, and shown together
 # in a single popup on the most recently used client: whichever invocation
-# holds $QUEUE_DIR.lock presents them, the others only add to the directory. A
+# holds $LOCK presents them, the others only add to the directory. A
 # reminder that cannot be shown yet (a picker is open, no client is attached)
 # is retried until its cache has expired; one whose session has been prompted
 # again in the meantime, or is gone (the picker prunes its expiry file), is
