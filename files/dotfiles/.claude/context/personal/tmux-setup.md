@@ -6,7 +6,7 @@ description: >-
     through `claude agents --json` and per-session state files, and where to look for the details.
 tags: [tmux, dotfiles, workflow, claude-code]
 status: stable
-generated: { by: claude-code/claude-opus-5-5, at: 2026-10-24T12:23:50Z }
+generated: { by: claude-code/claude-opus-5-5, at: 2026-10-24T22:50:00Z }
 sources:
     - id: tmux-dir
       resource: ~/.dot/files/dotfiles/.config/tmux/
@@ -33,10 +33,11 @@ An overview to orient by. Key bindings, options, plugins and the behavior of eac
 ## Workspace model
 
 - A fixed set of sessions, one per main project, created automatically when the tmux server starts.
+- One hidden session outside that set, `_qa`, for the Q&A Claude (see below).
 - One window per project, in a three-pane layout: utility | code | Claude. Scripts rely on that shape, e.g. the middle
   pane's cwd is what identifies a window's project[^tmux-dir].
 - Navigation goes through fzf popups ("pickers") instead of tmux's own choosers: one for project windows, one for
-  every Claude across all sessions.
+  every Claude except the Q&A one.
 
 ## Claude Code integration
 
@@ -64,7 +65,8 @@ of state, carry what the session list does not; all but the pins are named after
 | pending cache-expiry reminders | `queue/<session_id>`, `queue.lock/` | `claude_cache_notify.sh` | its own popup                          |
 | pins, one file per slot        | `pins/<n>` (n = 1..4)               | `claude_pins.sh`         | `claude_pins.sh`, Claude picker        |
 
-The Claude picker prunes `expiry/` and `notified/` files of sessions that are gone, and nothing else.
+The Claude picker prunes `expiry/` and `notified/` files of sessions that are gone and of the Q&A Claude, and
+nothing else.
 
 The status line is the source of truth for the prompt cache: Claude Code passes it the session id, cache TTL and
 expiry on stdin, and a refresh interval in `settings.json` keeps it running while a session is idle. It shows the time
@@ -73,6 +75,15 @@ left and starts the reminder shortly before a cache expires[^claude-dir].
 Pins put up to four Claudes on global keys: `claude_pins.sh` pins a session by its id (a `?` pane by its pane id and
 the tmux server's start time) and resolves the pin through `claude_sessions.sh` on every jump, so a pin follows its
 session to whichever pane shows it and is never served from a cached pane[^tmux-dir].
+
+The Q&A Claude is for quick, non-project questions. The single pane of the hidden session `_qa` runs
+`claude --model sonnet --effort medium` in `~/.local/share/claude-qa`. `prefix C-q` creates it on demand and shows it
+in a popup through a nested `tmux attach` (`claude_qa.sh`), so closing the popup only detaches it, and the conversation
+lasts until Claude exits[^tmux-dir]. `_qa` has no prefix and its own key table `qa`, so no other binding works in the
+popup: `C-b C-q` closes it and `C-b C-b` sends `C-b`. It is identified by the session name `_qa` and by
+`DOT_CLAUDE_QA=1` in its environment, never by session id, which `/clear` changes. `claude_sessions.sh` leaves `_qa`
+out, which keeps it out of the picker, pins and reminder popup. `statusline.sh` starts no reminder when
+`DOT_CLAUDE_QA` is set, and `new_project.sh` offers no project window in `_qa`.
 
 Decisions that the code alone does not explain:
 
@@ -83,6 +94,8 @@ Decisions that the code alone does not explain:
 - Reminders are only for the 1h cache; a 5m cache would remind after every short break.
 - Several expiring sessions share one popup rather than a popup each.
 - No desktop notification on Windows/WSL, by choice; macOS and Linux desktops get one.
+- The Q&A popup gets its own key table rather than a guard in each script: inside the popup, a global binding acts on
+  the popup's nested client, so a jump or a picker would open its target inside the popup.
 
 [^tmux-dir]: `~/.dot/files/dotfiles/.config/tmux/`
 
