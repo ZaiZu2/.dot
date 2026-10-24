@@ -71,9 +71,10 @@ path=$(cut -f1 <"$sel")
 # Second popup: pick target session, or type a new name.
 # fzf --print-query emits the typed query on line 1 and the matched pick
 # (if any) on line 2 — a typed-but-unmatched value becomes a new session.
+# The Q&A Claude's hidden session `_qa` (claude_qa.sh) is no target.
 sess_list="$tmp/sessions"
 sess_sel="$tmp/sess_sel"
-tmux list-sessions -F '#{session_name}' >"$sess_list"
+tmux list-sessions -f '#{!=:#{session_name},_qa}' -F '#{session_name}' >"$sess_list"
 
 sess_rows=$(wc -l <"$sess_list" | tr -d ' ')
 sess_h=$((sess_rows + 4))

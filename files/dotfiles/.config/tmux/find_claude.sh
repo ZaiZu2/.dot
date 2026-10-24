@@ -17,7 +17,9 @@
 # The cache column comes from the expiry ~/.claude/statusline.sh keeps per
 # session in $CLAUDE_STATE_DIR/expiry/: minutes until the cache goes cold,
 # "cold" after that, "-" if unknown. Opening the picker prunes the expiry/
-# and notified/ files of sessions that are gone.
+# and notified/ files of sessions that are gone, and of the Q&A Claude, which
+# claude_sessions.sh leaves out; its status line rewrites its expiry file,
+# and nothing reads it.
 # The popup is sized from its content (see picker_size): the list as wide as
 # its columns, the preview as wide as the widest pane it can show, capped at
 # 90% of the client. `--dry-run` prints the computed widths and opens nothing;
