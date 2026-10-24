@@ -27,13 +27,14 @@
 # the match was ambiguous. Enter does nothing on it.
 #
 # Keys: Enter jumps to the row's pane. alt-1..alt-4 pin the row to that slot
-# (only a row with a pane: on a "◌ bg" row the header says so), alt-0 unpins
+# (only a row with a pane: on a "◌ bg" row the header says so), alt-` unpins
 # it; the popup stays open and its rows are reloaded.
 #
 # Internal modes, run by the popup's fzf:
 #   --list <dir>                 print the rows (first draw and reload);
 #                                cards, widths and scratch files go to <dir>
 #   --key <n> <dir> <key> <sid>  print the fzf actions of alt-<n> on a row
+#                                (n is 0 for alt-`)
 # Each row starts with two hidden fields: its key (the pane id, or
 # "bg:<short>" for a session without pane) and its session id.
 
@@ -51,12 +52,12 @@ TAB=$(printf '\t')
 if [ "${1:-}" = --key ]; then
   n=$2 dir=$3 key=$4 sid=$5
   reload="reload('$0' --list '$dir')"
-  pins="${0%/*}/claude_pins.sh"
+  pins="CLAUDE_PINS_QUIET=1 '${0%/*}/claude_pins.sh'"
   case "$n:$key" in
-  0:bg:*) echo "change-header()+execute-silent('$pins' unpin '$sid')+$reload" ;;
-  0:*) echo "change-header()+execute-silent('$pins' unpin '$key')+$reload" ;;
+  0:bg:*) echo "change-header()+execute-silent($pins unpin '$sid')+$reload" ;;
+  0:*) echo "change-header()+execute-silent($pins unpin '$key')+$reload" ;;
   *:bg:*) echo "change-header(pin: no pane, can't pin)" ;;
-  *) echo "change-header()+execute-silent('$pins' pin $n '$key')+$reload" ;;
+  *) echo "change-header()+execute-silent($pins pin $n '$key')+$reload" ;;
   esac
   exit 0
 fi
@@ -218,14 +219,15 @@ if [ "$PICKER_PREVIEW_W" -gt 0 ]; then
   preview_opts="--preview-window=right,$PICKER_PREVIEW_W,border-bold --preview='cat $tmp/card/{1} 2>/dev/null || ${0%/*}/picker_preview.sh {1}'"
 fi
 
-# alt-0..alt-4 ask --key for their actions; any other key clears the message
-# a pin key may have left in the header. --track keeps the cursor at its
-# position across a reload; a row appearing or ending in between can move it
-# by one.
+# alt-1..alt-4 and alt-` ask --key for their actions; any other key clears the
+# message a pin key may have left in the header. --track keeps the cursor at
+# its position across a reload; a row appearing or ending in between can move
+# it by one.
 pin_opts="--track --bind='focus:change-header()' --bind='change:change-header()'"
-for n in 0 1 2 3 4; do
+for n in 1 2 3 4; do
   pin_opts="$pin_opts --bind='alt-$n:transform:\"$0\" --key $n \"$tmp\" {1} {2}'"
 done
+pin_opts="$pin_opts --bind='alt-\`:transform:\"$0\" --key 0 \"$tmp\" {1} {2}'"
 
 # The preview captures only the highlighted pane, on demand; a background
 # session without pane gets its card instead.

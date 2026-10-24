@@ -2,7 +2,7 @@
 # Pin up to four Claudes to tmux keys and jump to them from anywhere.
 # Bound in tmux.conf: `M-1`..`M-4` jump, `prefix M-1`..`M-4` pin the Claude of
 # the current pane; the Claude picker (find_claude.sh) pins and unpins rows
-# with alt-1..alt-4 / alt-0.
+# with alt-1..alt-4 / alt-`.
 #
 # Usage: claude_pins.sh pin <1-4> <pane_id>
 #        claude_pins.sh unpin <pane_id|session_id>
@@ -29,7 +29,8 @@
 #        gone or belongs to an earlier tmux server, loses it.
 # When `claude agents` fails, nothing is pinned, unpinned or cleared: without
 # the session list every Claude pane would look like a "?" row.
-# Messages go to the tmux status line.
+# Messages go to the tmux status line, unless CLAUDE_PINS_QUIET is set: the
+# picker sets it, since tmux does not redraw a popup while a message shows.
 
 set -eu
 
@@ -45,6 +46,7 @@ usage() {
 
 # say <message>: show it in the status line; `#` is literal, not a format.
 say() {
+  [ -z "${CLAUDE_PINS_QUIET:-}" ] || return 0
   tmux display-message "$(printf '%s' "$1" | sed 's/#/##/g')" 2>/dev/null || true
 }
 
