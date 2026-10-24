@@ -7,6 +7,10 @@ This file provides guidance to coding agents (Claude Code and others) when worki
 Personal cross-platform dotfiles manager. The `dot` shell program symlinks configuration into `$HOME` and installs a
 curated tool set declaratively. macOS + Linux.
 
+## Context
+
+@.claude/context/index.md
+
 ## Commit scopes
 
 - `dot` — the `dot` program: `dot.sh`, `code/`
