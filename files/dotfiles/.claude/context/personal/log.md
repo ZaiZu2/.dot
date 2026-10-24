@@ -2,6 +2,9 @@
 
 ## 2026-10-24
 
+- Updated [My tmux setup](tmux-setup.md): the hidden `_qa` session with the Q&A Claude popup, its own key table,
+  and its exclusion from the picker, pins, reminders and `new_project.sh`.
+
 - Updated [My tmux setup](tmux-setup.md): the Claude state moved from `$TMPDIR/claude-cache/` to
   `$DOT_STATE_DIR/claude/`, one subfolder per kind of state, and the Claude pins are added to the state table and the
   Claude Code integration.
