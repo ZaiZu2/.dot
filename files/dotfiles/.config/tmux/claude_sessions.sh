@@ -29,6 +29,10 @@
 # session matches too. Otherwise both are listed apart: the session without a
 # pane, the pane without a session.
 #
+# The Q&A Claude's tmux session `_qa` (see claude_qa.sh, tmux.conf) is left
+# out: its pane still claims its session, so that it is not listed as one
+# without a pane, but no row of `_qa` is written.
+#
 # All state of the Claude scripts lives under $CLAUDE_STATE_DIR
 # ($DOT_STATE_DIR/claude), one subfolder per kind: expiry/ and notified/
 # (~/.claude/statusline.sh, which repeats this default), queue/ and
@@ -96,6 +100,8 @@ claude_sessions() {
       st = state_of($5, $6)
       if (at != "") {
         claimed[at] = 1
+        # Claimed above, so the Q&A session is not listed as one without a pane.
+        if (tsess[at] == "_qa") next
         title = (ptitle[at] != "") ? ptitle[at] : $7
         print st, pid_of[at], $1, $2, tsess[at], title, pcwd[at], expiry($1)
       } else {
@@ -104,8 +110,9 @@ claude_sessions() {
       }
     }
     END {
+      # Panes of `_qa` are skipped too, so its Claude is not listed as a pane without a session.
       for (i = 1; i <= np; i++)
-        if (!(i in claimed) && (cmd[i] == "claude" || cmd[i] == "claude.exe")) {
+        if (!(i in claimed) && tsess[i] != "_qa" && (cmd[i] == "claude" || cmd[i] == "claude.exe")) {
           client[i] = 1
           k = pcwd[i] SUBSEP bare(ptitle[i])
           pkeys[k]++; pane_at[k] = i
