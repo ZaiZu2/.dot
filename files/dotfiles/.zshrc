@@ -11,6 +11,9 @@ zinit light Aloxaf/fzf-tab
 zinit ice wait lucid
 zinit snippet OMZP::ssh-agent/ssh-agent.plugin.zsh
 
+zinit light zsh-users/zsh-completions
+autoload -Uz compinit && compinit -u
+autoload bashcompinit && bashcompinit
 if [ $(uname -s) = 'Linux' ]; then
     # On MacOS completions are managed by `brew`
     command -v gh > /dev/null && eval "$(gh completion -s zsh)"
@@ -21,9 +24,6 @@ if [ $(uname -s) = 'Linux' ]; then
     command -v opencode > /dev/null && eval "$(opencode completion)"
     command -v terraform > /dev/null && complete -o nospace -C $(which terraform) terraform
 fi
-zinit light zsh-users/zsh-completions
-autoload -Uz compinit && compinit -u
-autoload bashcompinit && bashcompinit
 zinit cdreplay -q # Replay all cached completions
 
 # VIM support
