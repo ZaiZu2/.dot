@@ -19,7 +19,7 @@
 # Inside the popup no other tmux binding works: `_qa` has no prefix and its
 # own key table `qa` instead of root, so C-b C-q closes the popup, C-b C-b
 # sends C-b and every other key goes to Claude. The global bindings would
-# run against the popup's nested client: a jump (M-1..M-4) or a picker would
+# run against the popup's nested client: a jump (F1..F4) or a picker would
 # open its target inside the popup.
 set -eu
 

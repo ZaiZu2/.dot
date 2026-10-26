@@ -1,8 +1,8 @@
 #!/bin/sh
 # Pin up to four Claudes to tmux keys and jump to them from anywhere.
-# Bound in tmux.conf: `M-1`..`M-4` jump, `prefix M-1`..`M-4` pin the Claude of
+# Bound in tmux.conf: `F1`..`F4` jump, `prefix F1`..`F4` pin the Claude of
 # the current pane; the Claude picker (find_claude.sh) pins and unpins rows
-# with alt-1..alt-4 / alt-`.
+# with f1..f4 / f12.
 #
 # Usage: claude_pins.sh pin <1-4> <pane_id>
 #        claude_pins.sh unpin <pane_id|session_id>
