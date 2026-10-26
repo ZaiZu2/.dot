@@ -2,7 +2,7 @@ deps_opencode() {
   echo ''
 }
 
-is_installed_opencode() { command -v cargo >/dev/null 2>&1; }
+is_installed_opencode() { command -v opencode >/dev/null 2>&1; }
 
 install_opencode() {
   local script_file=$(mktemp -u)
