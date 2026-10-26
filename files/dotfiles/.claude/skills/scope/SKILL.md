@@ -118,11 +118,13 @@ With Jira, also show the issue tree with the parts each issue covers, for each n
 (an issue that carries a part file's text is covered by the draft), the current and the new text of every field an
 update changes, and the parent issue the spec file will be attached to.
 
-Wait for approval, and apply requested changes to the drafts before continuing.
+Then continue to step 5 without waiting. Wait for approval only when the request asks to review the split, with Jira
+(for the issue writes), or on a rerun that changes or removes a part already built or removes a part file. Apply
+requested changes to the drafts before continuing.
 
 ### 5. Write the parts
 
-Copy each approved draft to its final place beside the spec, under the name `${CLAUDE_SKILL_DIR}/../spec/brief.md` gives
+Copy each draft to its final place beside the spec, under the name `${CLAUDE_SKILL_DIR}/../spec/brief.md` gives
 (the drafts already follow its layout). Cut the text from the spec's sections instead of rewording them: a part carries
 all that someone with no other context needs to implement it.
 
@@ -180,7 +182,7 @@ plan again from the current spec, and change only what the spec's change require
 - In step 4, list the changed part files by id with a one-line description of each change (the draft holds the full
   text), the parts added and removed, and the changed lines of `Parts`. Name every changed or removed part that is
   already built: `/feature` won't build it again, so the user decides what to do with that work.
-- In steps 5 and 7, rewrite only what was approved. Remove the file of a removed part with the user's approval.
+- In steps 5 and 7, rewrite only what the plan changes. Remove the file of a removed part with the user's approval.
 - With Jira, propose the matching issue updates in step 4 and write them in step 6. Never close or delete an issue;
   list the ones a removed part leaves without work.
 
