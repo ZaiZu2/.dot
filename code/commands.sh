@@ -58,7 +58,8 @@ symlink_tree() {
     local rel_path=${dot_path##"$src_root/"}
     local target_path="$dest_root/$rel_path"
 
-    if [ -d "$dot_path" ]; then
+    # A tracked symlink to a directory (.copilot/skills) is linked as a whole, like a file; ** doesn't descend into it
+    if [[ -d "$dot_path" && ! -L "$dot_path" ]]; then
       # Remove any broken links from target directories - handles situation in which some files
       # were removed from DOT repo but their symlinks persisted in user's dotfiles
       if [ -d "$target_path" ]; then
@@ -93,7 +94,10 @@ symlink_tree() {
       continue
     fi
 
-    if [[ -f "$target_path" && "$force" = false ]]; then
+    if [[ -d "$target_path" && ! -L "$target_path" ]]; then
+      # ln -sf would put the link inside the directory instead of replacing it
+      multi "$YELLOW" "Skipping " "$BLUE" "$target_path" "$YELLOW" ", a directory already exists"
+    elif [[ -f "$target_path" && "$force" = false ]]; then
       multi "$YELLOW" "Skipping " "$BLUE" "$target_path" "$YELLOW" ", file already exists"
     elif [[ -L "$target_path" && "$force" = false ]]; then
       multi "$YELLOW" "Skipping " "$BLUE" "$target_path" "$YELLOW" ", symlink already exists"
