@@ -145,9 +145,10 @@ for its result. Once every block has its PR, call `pr` again for each earlier on
 
 ### 5. Review
 
-For each block, call the Skill tool with `review`, naming the commit range `<base>..HEAD`, the worktree path to run in,
-and the report path `<worktree>/.claude/features/<feature>/review.md`, and nothing else: the reviewer must judge the change
-without this run's reasoning. Wait for its result.
+For each block, call the Skill tool with `copilot-review`, naming the commit range `<base>..HEAD`, the worktree path to
+run in, and the report path `<worktree>/.claude/features/<feature>/review.md`, and nothing else: the reviewer must judge
+the change without this run's reasoning. It falls back to `review` on its own when Copilot fails. Wait for its result,
+and note which reviewer wrote the report.
 
 ### 6. Respond
 
@@ -227,7 +228,7 @@ unprompted.
   allows. Put scratch output in a new directory instead of clearing an old one; `pytest --basetemp <dir>` empties
   `<dir>` itself.
 - A subagent or forked skill starts in the session's worktree and does not see this section. Give the worktree's
-  absolute path in every Skill and Agent call (`implement`, `test`, `review`, `pr`, `commit`), name files by absolute
+  absolute path in every Skill and Agent call (`implement`, `test`, `copilot-review`, `pr`, `commit`), name files by absolute
   path, and copy the rules of this section into the prompt.
 - Check `git branch --show-current` before every commit and push; if it isn't that block's `<branch>`, stop and
   report.
@@ -252,7 +253,7 @@ Never ask. Where a question comes up, take the default and list it in the report
 For each block: the repository, the PR URL and its base, the worktree path with the `gwr <name>` that removes it, each
 part with its file, its Jira URL when it has one, status and commit, the result of the final local checks (tests,
 linters, static and format checks) with the base's failures left alone, the path of its review report (left uncommitted
-in the worktree), and every review finding marked fixed (with the commit, and the files outside the parts it touched),
+in the worktree) and its reviewer (Copilot, or `review` with the fallback reason), and every review finding marked fixed (with the commit, and the files outside the parts it touched),
 contested (with the reason), accepted by the spec, or waiting for the user. A block waiting for the user comes first in
 the report, with the path of its `decisions.md` and each decision in short. When a block was resumed, say from which
 phase, and how the leftovers were handled: the part each was mapped to, and any stash.

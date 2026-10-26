@@ -17,6 +17,7 @@ the conventions.
 | `/commit`     | Commit staged or named changes with a Conventional Commits message | `[auto]` | model      | `git`                  |
 | `/pr`         | Create or update the GitHub or Azure DevOps PR for the branch      | `[auto]` | model      | `gh`, `azure-devops`   |
 | `/review`     | Review a PR, commits or changes, with a markdown report            | `[auto]` | model      | `gh`                   |
+| `/copilot-review` | `/review` run by Copilot CLI on a non-Claude model, `/review` as fallback | `[auto]` | model | `copilot`, `gh` |
 | `/test`       | Unit tests for files, code objects or changes                      | `[auto]` | model      | -                      |
 | `/implement`  | Implement a ticket, spec or described change                       | `[auto]` | model      | `atlassian` MCP server |
 | `/spec`       | Interview-driven feature spec in `.claude/features/<slug>/spec.md`     | `[hitl]` | user       | -                      |
@@ -30,7 +31,7 @@ directory (`.claude/features/<feature>/spec.md`), `/scope` splits it into part f
 (`.claude/features/<feature>/<no>_<name>.md`, each a standalone brief) and lists them in the spec's `Parts` section, then
 creates a worktree per repository; `/feature <spec>`, typed in a Claude session started in that worktree, implements it
 with one PR per repository, handing independent parts to `implement` subagents that run at the same time, and writes a
-review report per repository to `.claude/features/<feature>/review.md` in its worktree. The part files
+review report per repository to `.claude/features/<feature>/review.md` in its worktree, through `copilot-review`. The part files
 carry all the context between the three, so none of them needs Jira: `/scope` mirrors the parts as Jira issues only on
 request, and `/feature` never reads Jira. `/feature` runs forked in the `commit-agent` agent
 (`~/.claude/agents/commit-agent.md`).
@@ -70,7 +71,7 @@ only the user decides it should run (`note`).
 ```
 ~/.claude/skills/
 ├── README.md
-└── commit/, confluence/, doc/, feature/, implement/, mkdoc/, note/, pr/, remember/, review/, scope/, spec/, test/, ticket/   # one SKILL.md each
+└── commit/, confluence/, copilot-review/, doc/, feature/, implement/, mkdoc/, note/, pr/, remember/, review/, scope/, spec/, test/, ticket/   # one SKILL.md each
 ```
 
 Skills are discovered exactly one level deep (`skills/<name>/SKILL.md`); grouping them in subfolders does not work.
@@ -84,6 +85,8 @@ repo, run `dot link` afterwards so the new file is symlinked into `~/.claude/ski
 
 Skills can point Claude at other files: "Before X, read `${CLAUDE_SKILL_DIR}/file.md`". Name the trigger, keep it one
 hop deep, and use resolvable paths. `@file` imports are documented for `CLAUDE.md`; don't rely on them in skills.
+Copilot CLI also loads these skills but doesn't expand `${CLAUDE_SKILL_DIR}`, so a skill it runs (`review`, for
+`copilot-review`) names other files by `~/.claude/skills/<name>/...` instead.
 
 To run another skill from a step, name the tool: "Call the Skill tool with `review`", one skill per call. A bare
 `/review` in prose is easily read as a label. This only works for a model-invoked skill; for a user-invoked one, write
