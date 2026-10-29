@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Claude Code status line: "dir on branch (#PR)" on the left, "model (cache time left/context size)" on the right edge.
+# Claude Code status line: "dir on branch" on the left, "model (cache time left/context size)" on the right edge.
 #
 # It also keeps the cache expiry of its session in $DOT_STATE_DIR/claude/expiry/<session_id>, for the Claude picker
 # (~/.config/tmux/find_claude.sh), and starts ~/.config/tmux/claude_cache_notify.sh once when a 1h cache is about to
@@ -41,27 +41,11 @@ case $model_id in
 esac
 
 reset=$'\e[0m' dim=$'\e[2m' magenta=$'\e[35m' blue=$'\e[34m'
-green=$'\e[32m' yellow=$'\e[33m' red=$'\e[31m' cyan=$'\e[36m'
+green=$'\e[32m' yellow=$'\e[33m' red=$'\e[31m'
 
 short_dir=$dir
 case $dir in "$HOME"*) short_dir="~${dir#"$HOME"}" ;; esac
 branch=$(git --no-optional-locks -C "$dir" branch --show-current 2>/dev/null)
-
-# PR number for the branch, cached per repo+branch. `gh` takes ~1s, so a stale
-# cache is refreshed in the background and the status line never waits on it.
-pr=""
-if [ -n "$branch" ] && command -v gh >/dev/null; then
-  root=$(git --no-optional-locks -C "$dir" rev-parse --show-toplevel 2>/dev/null)
-  cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/claude-statusline"
-  cache="$cache_dir/pr-$(printf '%s' "$root:$branch" | md5sum | cut -c1-16)"
-  [ -f "$cache" ] && pr=$(<"$cache")
-  if [ -z "$(find "$cache" -mmin -5 2>/dev/null)" ]; then
-    mkdir -p "$cache_dir"
-    touch "$cache"
-    ( cd "$root" && gh pr view "$branch" --json number -q .number 2>/dev/null >"$cache.tmp"
-      mv "$cache.tmp" "$cache" ) >/dev/null 2>&1 &
-  fi
-fi
 
 # 48439 -> 48k, 1200000 -> 1.2M
 human() {
@@ -122,10 +106,10 @@ right_c="${model:+${dim}${model}${reset}}${model:+${stats:+ }}${stats:+${dim}(${
 # Claude Code pads the status line, so leave a small right margin.
 width=$(( ${COLUMNS:-80} - 4 ))
 
-# "~/.dot on master (#12)". In a pane too narrow for the whole line the path gives way first: it is cut from the left,
+# "~/.dot on master". In a pane too narrow for the whole line the path gives way first: it is cut from the left,
 # by exactly as much as it takes to fit, down to its last directory at most:
 # ~/dev/work/repo/src -> …ev/work/repo/src -> …epo/src -> …/src.
-git_info="${branch:+ on $branch${pr:+ (#$pr)}}"
+git_info="${branch:+ on $branch}"
 room=$(( width - ${#right} - ${#git_info} - 2 ))
 path=$short_dir
 last="…/${path##*/}"
@@ -135,7 +119,6 @@ if [ "${#path}" -gt "$room" ]; then
 fi
 left="$path$git_info"
 left_c="${blue}${path}${reset}${branch:+ ${dim}on${reset} ${magenta}${branch}${reset}}"
-left_c+="${pr:+ ${dim}(${reset}${cyan}#${pr}${reset}${dim})${reset}}"
 
 gap=$(( width - ${#left} - ${#right} ))
 [ "$gap" -lt 2 ] && gap=2

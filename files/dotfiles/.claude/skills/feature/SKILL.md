@@ -31,7 +31,8 @@ only read. The run covers every block of its `Parts` section, or only the reposi
 stopped part-way is continued by starting it again the same way.
 
 `<feature>` is the name of the spec's directory (`.claude/features/<feature>/spec.md` gives `<feature>`). Each block's
-review report goes to `<worktree>/.claude/features/<feature>/review.md`.
+feature directory is `<main>/.claude/features/<feature>/` (`<feature dir>` below), in its main checkout, not its
+worktree: its review report goes to `<feature dir>/review.md`, and its decisions to `<feature dir>/decisions.md`.
 
 The `Parts` section, written by `/scope`, holds everything the run needs; use its values as written and don't work
 any of them out again. It has one block per repository, in the order the PRs merge. Each block gives `Checkout`
@@ -47,8 +48,8 @@ run:
 - The session's working directory (`git rev-parse --show-toplevel`) must be the `<worktree>` of one of the run's
   blocks; otherwise stop, and tell the user to start Claude in that worktree.
 - Every `<worktree>` must exist with `<branch>` checked out (`git branch --show-current` in it); otherwise stop and
-  tell the user to run `/scope`. A worktree other than the session's must also be writable: if an edit there is
-  denied, stop that block and tell the user to add it with `/add-dir`.
+  tell the user to run `/scope`. A worktree other than the session's, and every `<feature dir>`, must also be
+  writable: if an edit there is denied, stop that block and tell the user to add the directory with `/add-dir`.
 - A block resumes when `<base>..HEAD` has commits or `git status --porcelain` isn't empty; otherwise it starts fresh.
 - A part that comes after a part of a block outside this run: stop unless that part is done on its block's
   branch (a commit with its `Part: <id>` trailer in `<base>..<branch>`, read as in [Commits](#commits) in its
@@ -79,14 +80,13 @@ unfinished phase.
 
 - A part is done when a commit has its `Part: <id>` trailer.
 - A PR exists when `gh pr view --json url,state` succeeds. If it is closed or merged, stop that block and report.
-- The review is done when a commit subject matches `fix: PR#<no> review`.
+- The review is done when a commit subject matches `fix: PR#<no> automated review`.
 - The branch is pushed when `git status -sb` shows an upstream and nothing ahead of it.
 
-**Decisions.** A `decisions.md` item without a `Decision: <answer>` line is open. Write each answer the request gives
+**Decisions.** A `<feature dir>/decisions.md` item without a `Decision: <answer>` line is open. Write each answer the request gives
 under its item; a block with items still open stops and reports them again.
 
-**Leftovers.** If `git status --porcelain` isn't empty, ignoring `review.md` and `decisions.md` in
-`.claude/features/<feature>/`, the interrupted run left partial work. Reconcile it before implementing anything:
+**Leftovers.** If `git status --porcelain` isn't empty, the interrupted run left partial work. Reconcile it before implementing anything:
 
 1. Read `git diff`, `git diff --cached` and every untracked file in full.
 2. Map each hunk and file to the requirement of an unfinished part of this block that it implements; usually that
@@ -146,7 +146,7 @@ for its result. Once every block has its PR, call `pr` again for each earlier on
 ### 5. Review
 
 For each block, call the Skill tool with `copilot-review`, naming the commit range `<base>..HEAD`, the worktree path to
-run in, and the report path `<worktree>/.claude/features/<feature>/review.md`, and nothing else: the reviewer must judge
+run in, and the report path `<feature dir>/review.md`, and nothing else: the reviewer must judge
 the change without this run's reasoning. It falls back to `review` on its own when Copilot fails. Wait for its result,
 and note which reviewer wrote the report.
 
@@ -176,7 +176,7 @@ it, and report it as accepted, not contested.
 
 Put a finding to the user when it is right but its fix needs their input: it has several reasonable designs, changes
 behavior they rely on, or needs heavy changes outside the parts. Gather every such finding of the block, also those
-from step 3, and analyze each in `<worktree>/.claude/features/<feature>/decisions.md`: what breaks and when
+from step 3, and analyze each in `<feature dir>/decisions.md`: what breaks and when
 (`path:line`), the options with their cost, and the one you recommend. Don't pick for the user. Finish the rest of this
 step, then end the block there: it isn't done until the user decides.
 
@@ -190,7 +190,7 @@ block's fixes are pushed.
 
 ## Rules
 
-- Edit files only inside the run's worktrees. Commit and push only their branches; never a base branch, never a
+- Edit files only inside the run's worktrees, apart from `review.md` and `decisions.md` in each `<feature dir>`. Commit and push only their branches; never a base branch, never a
   force-push, never an amend or rebase of pushed commits. Never merge a PR.
 - Never write to a repository or PR outside this run; list the PRs that should link to this run's in the report
   instead.
@@ -253,7 +253,7 @@ Never ask. Where a question comes up, take the default and list it in the report
 For each block: the repository, the PR URL and its base, the worktree path with the `gwr <name>` that removes it, each
 part with its file, its Jira URL when it has one, status and commit, the result of the final local checks (tests,
 linters, static and format checks) with the base's failures left alone, the path of its review report (left uncommitted
-in the worktree) and its reviewer (Copilot, or `review` with the fallback reason), and every review finding marked fixed (with the commit, and the files outside the parts it touched),
+in the main checkout) and its reviewer (Copilot, or `review` with the fallback reason), and every review finding marked fixed (with the commit, and the files outside the parts it touched),
 contested (with the reason), accepted by the spec, or waiting for the user. A block waiting for the user comes first in
 the report, with the path of its `decisions.md` and each decision in short. When a block was resumed, say from which
 phase, and how the leftovers were handled: the part each was mapped to, and any stash.

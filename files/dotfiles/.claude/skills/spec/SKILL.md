@@ -15,7 +15,8 @@ anything is built. The only file you write is the spec.
 The feature described in the request; if there is none, ask for one. Restate it in 2-3 sentences and point out what's
 ambiguous.
 
-The result is a spec at `<repo root>/.claude/features/<feature-slug>/spec.md` (unless the user names another path), in the
+The result is a spec at `<main checkout>/.claude/features/<feature-slug>/spec.md` (unless the user names another path),
+where `<main checkout>` is the first entry of `git worktree list`, also when the session runs in a worktree. It is in the
 layout and rules of `${CLAUDE_SKILL_DIR}/brief.md`; read it first, since each step gathers what fills it. `/scope` later
 writes part files beside the spec.
 

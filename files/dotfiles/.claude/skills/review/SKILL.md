@@ -20,8 +20,8 @@ stop and reply only that a PR, commits or changes must be specified.
 
 If the request names a directory, work there: `cd` into it first, as a command of its own.
 
-The report goes to the file path the request names. Without one, it goes to `.claude/review/<slug>.md` at the root of
-the repository being reviewed, where `<slug>` is `pr-<no>` for a PR, the short SHA of the range's last commit for
+The report goes to the file path the request names. Without one, it goes to `.claude/review/<slug>.md` in the main
+checkout of the repository being reviewed (the first entry of `git worktree list`, also when working in a worktree), where `<slug>` is `pr-<no>` for a PR, the short SHA of the range's last commit for
 commits, and `changes` for uncommitted changes.
 
 ## Actions

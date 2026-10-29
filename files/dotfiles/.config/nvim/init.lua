@@ -72,7 +72,11 @@ vim.keymap.set('n', '<leader>l', function()
     print('Copied: ' .. path)
 end, { desc = 'Extract file:line' })
 vim.keymap.set('v', '<leader>l', function()
-    local path = vim.fn.expand '%' .. ':' .. vim.fn.line "'<" .. '-' .. vim.fn.line "'>"
+    local first, last = vim.fn.line 'v', vim.fn.line '.'
+    if first > last then
+        first, last = last, first
+    end
+    local path = vim.fn.expand '%' .. ':' .. first .. '-' .. last
     vim.fn.setreg('+', path)
     print('Copied: ' .. path)
 end, { desc = 'Extract selected file:line-range' })

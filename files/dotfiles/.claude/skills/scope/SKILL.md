@@ -26,9 +26,10 @@ the spec's content beyond its `Parts` section, and never implement or commit.
 
 ## Target
 
-A spec file written by `/spec`, `<repo root>/.claude/features/<feature>/spec.md`: the path given, the `spec.md` of the
-feature directory given, or the only `spec.md` under `<repo root>/.claude/features/*/`. Its parts go into the same
-directory, beside it.
+A spec file written by `/spec`, `<main checkout>/.claude/features/<feature>/spec.md`: the path given, the `spec.md` of
+the feature directory given, or the only `spec.md` under `<main checkout>/.claude/features/*/`. `<main checkout>` is the
+first entry of `git worktree list`, also when the session runs in a worktree. Its parts go into the same directory,
+beside it.
 
 The spec's `Base repositories` section lists each repository with its base branch and test suite command. Without the
 section, the work is in the repository holding the spec.
@@ -228,5 +229,6 @@ with Jira, the issues with their keys and URLs, marked created, updated or uncha
 the parent, with the reason when it didn't.
 
 Then say how to start the run: open a Claude session in the first block's worktree (`cd <worktree>`, then `claude`,
-with one `--add-dir <worktree>` for each further block) and type `/feature <absolute spec path>` there. Starting it
+with one `--add-dir <worktree>` for each further block and one `--add-dir <checkout>` for each block's checkout, where
+`/feature` writes its review reports and decisions) and type `/feature <absolute spec path>` there. Starting it
 again the same way continues a run that stopped part-way.

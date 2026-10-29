@@ -3,7 +3,6 @@ name: pr
 description:
     "[auto] Create or update the PR for the current branch, on GitHub or Azure DevOps, with a generated title and
     description. Use when the user asks to open, create or update a PR."
-context: fork
 model: sonnet
 ---
 

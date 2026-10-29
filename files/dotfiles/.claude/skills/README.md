@@ -31,7 +31,7 @@ directory (`.claude/features/<feature>/spec.md`), `/scope` splits it into part f
 (`.claude/features/<feature>/<no>_<name>.md`, each a standalone brief) and lists them in the spec's `Parts` section, then
 creates a worktree per repository; `/feature <spec>`, typed in a Claude session started in that worktree, implements it
 with one PR per repository, handing independent parts to `implement` subagents that run at the same time, and writes a
-review report per repository to `.claude/features/<feature>/review.md` in its worktree, through `copilot-review`. The part files
+review report per repository to `.claude/features/<feature>/review.md` in its main checkout, through `copilot-review`. The part files
 carry all the context between the three, so none of them needs Jira: `/scope` mirrors the parts as Jira issues only on
 request, and `/feature` never reads Jira. `/feature` runs forked in the `commit-agent` agent
 (`~/.claude/agents/commit-agent.md`).
