@@ -161,9 +161,11 @@ here without being asked, so later skills don't repeat a mistake that was alread
 - **Fork `[auto]` skills** with `context: fork` when their input is the repo, files or arguments alone. A forked skill
   runs in a background subagent without the conversation history, so keep skills that rely on the chat (summaries,
   selected code) inline. Always fork skills that judge work (reviews), so they aren't biased by the conversation that
-  produced it. Unless its target is fixed (e.g. `pr` always works on the current branch), a forked skill must require an
-  explicit target in the request (PR, commits, files) and stop if none is given, since it can't see the chat or ask;
-  state this under `Target`. It also can't confirm mid-run, so replace any "confirm before X" step with a safe default.
+  produced it; a skill that must also run inside another subagent without spawning a second one (`review`, called by
+  `copilot-review`) stays inline and delegates itself when it runs in the main session. Unless its target is fixed (e.g.
+  `pr` always works on the current branch), a forked skill must require an explicit target in the request (PR, commits,
+  files) and stop if none is given, since it can't see the chat or ask; state this under `Target`. It also can't confirm
+  mid-run, so replace any "confirm before X" step with a safe default.
 - **Model choice.** Set `model` on forked skills and routine inline ones (API wrappers, note-taking): `sonnet` for
   routine work, `opus` where judgment matters (reviews). Use the aliases, which track the latest version, not pinned
   model IDs. Leave it unset on skills that need the session's model, like `spec`.

@@ -3,15 +3,25 @@ name: review
 description:
     "[auto] Review a specified PR, commits or changes and give structured feedback. Use when the user asks to review a
     specific PR, commits or changes."
-context: fork
 model: opus
 ---
 
 # Code Review
 
-Review code changes and give specific, actionable feedback. This runs as a separate agent so the review isn't biased by
+Review code changes and give specific, actionable feedback. The review runs in a separate agent so it isn't biased by
 the conversation that produced the change: judge it only by the diff, the surrounding code, commit messages and the PR
 description. Don't modify the code; the only file it writes is the review report.
+
+## Where it runs
+
+This skill has no `context: fork`, so it loads in whatever agent invoked it.
+
+- **In a subagent** (started by the Agent tool or a forked skill such as `copilot-review`), or where no Agent tool
+  exists (Copilot CLI): run the steps below yourself.
+- **In the main session** (the conversation with the user): don't review yourself. Start one Agent (general-purpose,
+  model `opus`) told to read `~/.claude/skills/review/SKILL.md` and follow it for the request, which you pass verbatim
+  with the absolute path of the directory to work in. It can't see the conversation, so add nothing from it. Return its
+  review as your result, ending with the report path.
 
 ## Target
 
