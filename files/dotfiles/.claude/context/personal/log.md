@@ -1,5 +1,10 @@
 # Directory Update Log
 
+## 2026-10-30
+
+- **Update**: [Coding rules](coding-rules.md): dataclasses are always filled in kwarg notation, never positionally.
+- **Creation**: Listed [Coding rules](coding-rules.md) (created 2026-10-23) in the index and log, where it was missing.
+
 ## 2026-10-24
 
 - Updated [My tmux setup](tmux-setup.md): the hidden `_qa` session with the Q&A Claude popup, its own key table,

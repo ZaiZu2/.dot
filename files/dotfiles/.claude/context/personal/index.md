@@ -2,6 +2,11 @@
 okf_version: '0.2'
 ---
 
+# Feedback
+
+- [Coding rules](coding-rules.md) - My rules for code written for me: the structure of code comments and keyword-argument
+  notation when constructing models and dataclasses by hand.
+
 # Reference
 
 - [Caller-scoped permission gates](caller-scoped-permission-gate.md) - My design for gating a sensitive Claude Code
