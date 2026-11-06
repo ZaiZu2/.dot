@@ -48,7 +48,8 @@ concept that already covers it instead of adding a duplicate; deprecate one it s
 
 ### 4. Draft
 
-Draft the concept, its `index.md` line and its `log.md` entry, following the spec and [Conventions](#conventions).
+Draft the concept, its `index.md` line and its `log.md` entry (new, or the uncommitted one rewritten), following the
+spec and [Conventions](#conventions).
 
 ### 5. Confirm
 
@@ -79,7 +80,10 @@ Write the concept, `index.md` and `log.md` in one change. A new file in the pers
   subdirectories included, grouped by `type` under capitalized top-level headings (`# User`, `# Feedback`,
   `# Project`, `# Reference`), optionally split by subdirectory under `## <subdir>` headings, with links relative to
   the bundle root. Only what the index lists is loaded into a session; fix any drift you notice.
-- Record every creation, update and deprecation in `log.md`.
+- Record every creation, update and deprecation in `log.md`, one entry per committed change. Before adding one, check
+  `git diff HEAD -- <bundle>/log.md`: if an uncommitted entry already covers the concept, rewrite that entry to
+  describe the change as a whole instead of adding another. A concept created and then updated before a commit keeps
+  its single `**Creation**` entry.
 
 ## Report
 

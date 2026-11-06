@@ -3,13 +3,18 @@ name: mkdoc
 description:
     "[auto] Write markdown documentation for a specified part of a project (module, tool, config, workflow), matching
     the project's existing doc style."
-context: fork
 model: sonnet
 ---
 
 # Project Documentation
 
 Write documentation that reads as native to the project, and covers only behavior visible in the code.
+
+## Where it runs
+
+Follow `~/.claude/skills/delegation.md`. Delegate, to model `sonnet`, when the request covers a lot of documentation
+(several documents, or a whole system or package) and a fresh look at the code would serve better than the
+conversation's view; otherwise run inline.
 
 ## Target
 

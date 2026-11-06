@@ -1,7 +1,6 @@
 ---
 name: doc
 description: "[auto] Add or update docstrings for specified files or code objects (functions, methods, classes)."
-context: fork
 model: sonnet
 ---
 
@@ -9,6 +8,12 @@ model: sonnet
 
 Add or update docstrings in place with the Edit tool. A good result tells the reader what they can't see from the
 signature, in the project's existing docstring style.
+
+## Where it runs
+
+Follow `~/.claude/skills/delegation.md`. Delegate, to model `sonnet`, when the request covers a lot of documentation
+(about ten files or objects, or a whole module or package) and a fresh look at the code would serve better than the
+conversation's view; otherwise run inline.
 
 ## Target
 

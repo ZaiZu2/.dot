@@ -147,8 +147,11 @@ for its result. Once every block has its PR, call `pr` again for each earlier on
 
 For each block, call the Skill tool with `copilot-review`, naming the commit range `<base>..HEAD`, the worktree path to
 run in, and the report path `<feature dir>/review.md`, and nothing else: the reviewer must judge
-the change without this run's reasoning. It falls back to `review` on its own when Copilot fails. Wait for its result,
-and note which reviewer wrote the report.
+the change without this run's reasoning. It falls back to `review` on its own when Copilot fails or its command is
+denied. Wait for its result, and note which reviewer wrote the report.
+
+If `copilot-review` returns without a review (it stopped, or reports a denied command), don't stop the block: call the
+Skill tool with `review` for the same target, worktree path and report path, and report the fallback reason.
 
 ### 6. Respond
 
@@ -246,7 +249,8 @@ Never ask. Where a question comes up, take the default and list it in the report
   and say which reading you rejected and why.
 - A fix that needs the user's input: gather it into `decisions.md` (step 6) instead of choosing.
 - A rejected push, or a pull that fails: stop that block and report the state. Never force.
-- A denied command: stop and report it, as the global rules require.
+- A denied command: stop and report it, as the global rules require. The exception is the Copilot command of step 5:
+  its denial is handled by the fallback to `review`, never a stop.
 
 ## Report
 

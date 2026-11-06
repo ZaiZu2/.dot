@@ -229,6 +229,7 @@ with Jira, the issues with their keys and URLs, marked created, updated or uncha
 the parent, with the reason when it didn't.
 
 Then say how to start the run: open a Claude session in the first block's worktree (`cd <worktree>`, then `claude`,
-with one `--add-dir <worktree>` for each further block and one `--add-dir <checkout>` for each block's checkout, where
-`/feature` writes its review reports and decisions) and type `/feature <absolute spec path>` there. Starting it
-again the same way continues a run that stopped part-way.
+with one `--add-dir <worktree>` for each further block and one `--add-dir <checkout>/.claude/features/<feature>` for
+each block, the feature directory outside the worktree where `/feature` reads the spec and parts and writes its review
+reports and decisions; never the whole checkout) and type `/feature <absolute spec path>` there. Starting it again the
+same way continues a run that stopped part-way.
