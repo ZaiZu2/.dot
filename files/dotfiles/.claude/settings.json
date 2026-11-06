@@ -205,7 +205,7 @@
     "autoMode": {
         "allow": [
             "$defaults",
-            "Copilot Review: running GitHub Copilot CLI headless (`copilot -p ... --allow-all --no-ask-user`) to review commits, a PR or changes in the current repository or one of its worktrees is allowed, as the copilot-review skill does: it is the user's chosen second reviewer and only reads the code and writes a review report"
+            "Copilot Review: running GitHub Copilot CLI headless (`copilot -p ... --no-ask-user` with an explicit `--allow-tool` allowlist of read-only git and gh pr commands, check-only linters and a write to one report file) to review commits, a PR or changes in the current repository or one of its worktrees is allowed, as the copilot-review skill does: it is the user's chosen second reviewer and only reads the code and writes a review report. Running it with `--allow-all`, `--yolo` or `--allow-all-tools` is not allowed"
         ]
     },
     "autoCompactEnabled": true

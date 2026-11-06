@@ -21,7 +21,8 @@ exist.
 ## Project instructions
 
 Instructions for agents in a repository go into `AGENTS.md`, so they work for any coding agent, not only Claude Code.
-This file stays `CLAUDE.md`: Claude Code has no user-level `AGENTS.md`.
+This file stays `CLAUDE.md`: Claude Code has no user-level `AGENTS.md`. `~/.copilot/copilot-instructions.md`, Copilot
+CLI's personal instructions, is a symlink to it.
 
 - Create and edit `AGENTS.md`, never `CLAUDE.md`: at the repository root, and in a subdirectory that needs instructions
   of its own. Claude Code reads a root `AGENTS.md` at launch and a subdirectory's once it reads a file there.
