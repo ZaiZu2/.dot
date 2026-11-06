@@ -34,4 +34,6 @@ if ! tmux has-session -t =_qa 2>/dev/null; then
 fi
 
 # Empty TMUX lets the popup's attach run nested, inside the client that opened it.
-tmux display-popup -E -w 80% -h 80% -T ' claude q&a ' 'TMUX= tmux attach -t =_qa'
+# The popup command runs in default-shell (zsh), where an unquoted `=_qa` is an
+# equals expansion that fails, so the target is quoted.
+tmux display-popup -E -w 80% -h 80% -T ' claude q&a ' "TMUX= tmux attach -t '=_qa'"
